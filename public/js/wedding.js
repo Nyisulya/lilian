@@ -181,7 +181,7 @@ async function loadWishes() {
     if (!Array.isArray(wishes) || wishes.length === 0) {
       stream.innerHTML = `
         <div class="wish-bubble" style="text-align: center; color: var(--text-muted);">
-          ✨ Kuwa wa kwanza kutoa pongezi kwa Bibi Harusi Lilian & Kelvin!
+          ✨ Kuwa wa kwanza kutoa pongezi kwa Bibi Harusi Lilian & James!
         </div>
       `;
       return;
@@ -314,3 +314,24 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+function copyHexCode(hex, btn) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(hex).then(() => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '✅ Imenakiliwa!';
+      btn.style.color = '#2ecc71';
+      btn.style.borderColor = '#2ecc71';
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    }).catch(() => {
+      prompt('Kodi ya Rangi (Hex):', hex);
+    });
+  } else {
+    prompt('Kodi ya Rangi (Hex):', hex);
+  }
+}
+

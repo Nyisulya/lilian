@@ -633,6 +633,25 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
+.palette-main-card .swatch-card {
+  padding: 12px 10px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.palette-main-card .swatch-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.btn-copy-hex {
+  transition: all 0.2s ease;
+}
+
+.btn-copy-hex:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
 /* ==========================================
    WISHES BOARD
    ========================================== */

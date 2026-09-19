@@ -369,7 +369,7 @@ function openEnvelope() {
 function shareCardViaWhatsApp() {
   if (!currentGuest || !currentEvent) return;
   const currentUrl = window.location.href;
-  const groom = currentEvent.groomName || 'Kelvin';
+  const groom = currentEvent.groomName || 'James';
   const bride = currentEvent.brideName || 'Lilian';
 
   const seatType = Number(currentGuest.seats) === 2 ? 'Double (Wewe na Mimi)' : (Number(currentGuest.seats) === 1 ? 'Single' : `Watu ${currentGuest.seats}`);
@@ -380,7 +380,7 @@ function shareCardViaWhatsApp() {
 
 function sendRsvpDirectToWhatsApp() {
   if (!currentGuest || !currentEvent) return;
-  const groom = currentEvent.groomName || 'Kelvin';
+  const groom = currentEvent.groomName || 'James';
   const bride = currentEvent.brideName || 'Lilian';
   const committeePhone = '255742999194'; // Committee number
 

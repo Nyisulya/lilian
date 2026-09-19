@@ -229,7 +229,7 @@ async function loadEventData() {
 
     const sidebarTitle = document.getElementById('sidebar-event-title');
     if (sidebarTitle && eventDetails) {
-      const groom = eventDetails.groomName || 'Kelvin';
+      const groom = eventDetails.groomName || 'James';
       const bride = eventDetails.brideName || 'Lilian';
       sidebarTitle.textContent = `Send-off ya ${bride} & ${groom}`;
     }
@@ -306,9 +306,9 @@ function renderStats(stats) {
 
 function renderDashboardOverview() {
   // Update Hero Titles
-  const groom = eventDetails?.groomName || 'Kelvin';
+  const groom = eventDetails?.groomName || 'James';
   const bride = eventDetails?.brideName || 'Lilian';
-  const venue = eventDetails?.receptionVenue || 'Mlimani City Conference Hall, Dar es Salaam';
+  const venue = eventDetails?.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
   const dateStr = eventDetails?.weddingDate || '13 Oktoba 2026';
 
   const heroTitle = document.getElementById('dash-hero-title');
@@ -471,7 +471,7 @@ function renderPledgesTable(guests) {
   let debtorCount = 0;
   let totalDebts = 0;
 
-  items.forEach(g => {
+  (allGuests || []).forEach(g => {
     const pledge = Number(g.pledgeAmount) || 0;
     const paid = Number(g.paidAmount) || 0;
     const balance = pledge - paid;
@@ -488,7 +488,7 @@ function renderPledgesTable(guests) {
 
   const total = items.length;
   if (total === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px;">Hakuna mualikwa aliyepatikana.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Hakuna mchangiaji aliyepatikana kwa vigezo hivi.</td></tr>`;
     renderPaginationBar('pagination-pledges', 0, 1, paginationState.pledges.pageSize, 'setPledgesPage', 'setPledgesPageSize');
     return;
   }
@@ -1204,7 +1204,7 @@ function selectReminderStage(stageNum) {
   const balance = (Number(g.pledgeAmount) - Number(g.paidAmount)).toLocaleString();
   const paid = Number(g.paidAmount).toLocaleString();
   const pledge = Number(g.pledgeAmount).toLocaleString();
-  const groom = eventDetails.groomName || 'Kelvin';
+  const groom = eventDetails.groomName || 'James';
   const bride = eventDetails.brideName || 'Lilian';
 
   let msg = '';
@@ -1418,7 +1418,7 @@ function updatePaymentPreview() {
     newBalEl.style.color = newBalance <= 0 ? '#2ecc71' : '#f39c12';
   }
 
-  const couple = `${eventDetails.groomName || 'Kelvin'} & ${eventDetails.brideName || 'Lilian'}`;
+  const couple = `${eventDetails.groomName || 'James'} & ${eventDetails.brideName || 'Lilian'}`;
 
   if (inputAmount <= 0) {
     if (previewText) previewText.textContent = 'Weka kiasi hapo juu kuona SMS itakayotumwa kiotomatiki...';
@@ -1802,7 +1802,11 @@ function applyGuestFilters() {
   const status = document.getElementById('filter-guest-status-select')?.value || 'all';
 
   const filtered = allGuests.filter(g => {
-    const matchesQuery = !q || (g.name && g.name.toLowerCase().includes(q)) || (g.phone && g.phone.includes(q)) || (g.id && g.id.toLowerCase().includes(q));
+    const matchesQuery = !q || 
+      (g.name && g.name.toLowerCase().includes(q)) || 
+      (g.phone && g.phone.includes(q)) || 
+      (g.id && String(g.id).toLowerCase().includes(q)) ||
+      (g.code && String(g.code).toLowerCase().includes(q));
     
     let matchesStatus = true;
     const pledge = Number(g.pledgeAmount) || 0;
@@ -1810,11 +1814,11 @@ function applyGuestFilters() {
     const balance = pledge - paid;
 
     if (status === 'completed') {
-      matchesStatus = pledge > 0 && balance <= 0;
+      matchesStatus = (pledge > 0 && balance <= 0) || (paid > 0 && balance <= 0);
     } else if (status === 'debtors') {
       matchesStatus = balance > 0;
     } else if (status === 'unpaid') {
-      matchesStatus = pledge > 0 && paid === 0;
+      matchesStatus = paid === 0;
     }
 
     return matchesQuery && matchesStatus;
@@ -1829,7 +1833,10 @@ function applyPledgesFilters() {
   const status = document.getElementById('filter-pledges-status-select')?.value || 'all';
 
   const filtered = allGuests.filter(g => {
-    const matchesQuery = !q || (g.name && g.name.toLowerCase().includes(q)) || (g.phone && g.phone.includes(q)) || (g.id && g.id.toLowerCase().includes(q));
+    const matchesQuery = !q || 
+      (g.name && g.name.toLowerCase().includes(q)) || 
+      (g.phone && g.phone.includes(q)) || 
+      (g.id && String(g.id).toLowerCase().includes(q));
     
     const pledge = Number(g.pledgeAmount) || 0;
     const paid = Number(g.paidAmount) || 0;
@@ -1837,11 +1844,13 @@ function applyPledgesFilters() {
 
     let matchesStatus = true;
     if (status === 'completed') {
-      matchesStatus = balance <= 0 && pledge > 0;
+      matchesStatus = (pledge > 0 && balance <= 0) || (paid > 0 && balance <= 0);
     } else if (status === 'partial') {
       matchesStatus = paid > 0 && balance > 0;
     } else if (status === 'unpaid') {
-      matchesStatus = paid === 0 && pledge > 0;
+      matchesStatus = paid === 0;
+    } else if (status === 'debtors') {
+      matchesStatus = balance > 0;
     }
 
     return matchesQuery && matchesStatus;
@@ -2437,7 +2446,7 @@ function renderContributorFinancialTable(filterMode) {
 }
 
 function populatePrintableFinancialStatement(totalPledges, totalPaid, totalBalance, percentage) {
-  const groom = eventDetails?.groomName || 'Kelvin';
+  const groom = eventDetails?.groomName || 'James';
   const bride = eventDetails?.brideName || 'Lilian';
 
   const elSub = document.getElementById('print-event-sub');
@@ -2538,11 +2547,11 @@ function copyFinancialWhatsAppReport() {
   const totalBalance = Math.max(0, totalPledges - totalPaid);
   const percentage = totalPledges > 0 ? ((totalPaid / totalPledges) * 100).toFixed(1) : 0;
 
-  const completed = allGuests.filter(g => Number(g.pledgeAmount) > 0 && Number(g.paidAmount) >= Number(g.pledgeAmount));
-  const partial = allGuests.filter(g => Number(g.paidAmount) > 0 && Number(g.paidAmount) < Number(g.pledgeAmount));
-  const zero = allGuests.filter(g => Number(g.paidAmount) === 0 && Number(g.pledgeAmount) > 0);
+  const completed = allGuests.filter(g => (Number(g.pledgeAmount) > 0 && Number(g.paidAmount) >= Number(g.pledgeAmount)) || (Number(g.paidAmount) > 0 && (Number(g.pledgeAmount) - Number(g.paidAmount)) <= 0));
+  const partial = allGuests.filter(g => Number(g.paidAmount) > 0 && (Number(g.pledgeAmount) - Number(g.paidAmount)) > 0);
+  const zero = allGuests.filter(g => Number(g.paidAmount) === 0);
 
-  const groom = eventDetails?.groomName || 'Kelvin';
+  const groom = eventDetails?.groomName || 'James';
   const bride = eventDetails?.brideName || 'Lilian';
   const todayStr = new Date().toLocaleDateString('sw-TZ', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -2824,8 +2833,8 @@ async function updateOrderStatus(orderId, newStatus) {
 // -------------------------------------------------------------
 function printAllTableQRCards() {
   const bride = eventDetails.brideName || 'Lilian';
-  const groom = eventDetails.groomName || 'Kelvin';
-  const venue = eventDetails.receptionVenue || 'Mlimani City Conference Hall, Dar es Salaam';
+  const groom = eventDetails.groomName || 'James';
+  const venue = eventDetails.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
   const dateStr = eventDetails?.weddingDate || '13 Oktoba 2026';
   const origin = window.location.origin;
 

@@ -422,7 +422,7 @@ app.post('/api/sms/test', async (req, res) => {
   }
 
   const firstName = smsService.getFirstName(name);
-  const text = message || `Habari ${firstName}, huu ni ujumbe wa majaribio kutoka Kamati ya Harusi ya Kelvin & Lilian kupitia jina jipya la SENDOFF. Mfumo wa SMS unafanya kazi kikamilifu!`;
+  const text = message || `Habari ${firstName}, huu ni ujumbe wa majaribio kutoka Kamati ya Harusi ya Lilian & James kupitia jina jipya la SENDOFF. Mfumo wa SMS unafanya kazi kikamilifu!`;
   const result = await smsService.sendRawSMS(phone, text, 'Majaribio ya SMS (Test)', firstName);
   res.json({
     success: result.success,
@@ -1407,7 +1407,7 @@ function handleOrderPage(req, res) {
   const tableId = req.params.tableId || req.query.table || 'meza-1';
   const table = (db.tables || []).find(t => String(t.id).toLowerCase() === String(tableId).toLowerCase()) || { name: 'Meza ya Wageni' };
   const event = db.event || {};
-  const groom = event.groomName || 'Kelvin';
+  const groom = event.groomName || 'James';
   const bride = event.brideName || 'Lilian';
 
   const filePath = path.join(__dirname, 'public', 'order.html');

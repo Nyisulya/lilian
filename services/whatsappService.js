@@ -191,7 +191,7 @@ async function sendFullWhatsAppInvitation(guest) {
   const msg2 = `📍 *UKUMBI & MAHALI ILIPO (LOCATION)* 📍\n\nSherehe itafanyika:\n🏛️ *Ukumbi:* ${venue}\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n\nBonyeza link hii ya Google Maps itakuongoza moja kwa moja hadi ukumbini bila kupotea:\n👉 ${mapsUrl}\n\nKaribu sana!`;
 
   // Message 3: Dress Code & Schedule
-  const msg3 = `👗 *DRESS CODE & RATIBA YA USIKU WA SEND-OFF* 👗\n\n🎨 *Rangi za Siku Hiyo (Dress Code):*\n• *Emerald Green & Touch of Gold* (Kijani Kibichi na Mguso wa Dhahabu) au vazi lolote nadhifu la heshima.\n\n⏰ *Ratiba ya Matukio:*\n• Saa 12:00 Jioni: Milango ya ukumbi inafunguliwa & Mapokezi ya wageni\n• Saa 01:30 Usiku: Bibi Harusi (${bride}) anaingia ukumbini\n• Saa 02:30 Usiku: Chakula cha usiku (Dinner) & Shamrashamra\n\nTunakutakia maandalizi mema, uwepo wako utaleta nakshi na furaha kubwa! 🙏💐`;
+  const msg3 = `👗👔 *DRESS CODE & RATIBA YA USIKU WA SEND-OFF* 👗👔\n\n🎨 *Rangi Rasmi za Siku Hiyo (Dress Code):*\n• *Shades of Blue & Sterling Silver* (Vivuli vya Bluu na Fedha kung'aa) au vazi lolote nadhifu la heshima.\n• Rangi zinazopendekezwa: Midnight Blue, Navy Blue, Royal Blue, Cerulean, Sky Blue, na vito/aksesori za Sterling Silver.\n\n⏰ *Ratiba ya Matukio:*\n• Saa 12:00 Jioni: Milango ya ukumbi inafunguliwa & Mapokezi ya wageni\n• Saa 01:30 Usiku: Bibi Harusi (${bride}) anaingia ukumbini\n• Saa 02:30 Usiku: Chakula cha usiku (Dinner) & Shamrashamra\n\nTunakutakia maandalizi mema, uwepo wako utaleta nakshi na furaha kubwa! 🙏💐`;
 
   const results = [];
   // Send 1st (Photo + Invite)
@@ -216,7 +216,7 @@ async function sendFullWhatsAppInvitation(guest) {
 async function sendTableDrinkOrderWhatsApp(order, targetPhone = '0787661560') {
   const db = readDB();
   const event = db.event || {};
-  const groom = event.groomName || 'Kelvin';
+  const groom = event.groomName || 'James';
   const bride = event.brideName || 'Lilian';
 
   const itemsList = (order.items || []).map(it => `• *${it.qty || 1}x* ${it.name} ${it.icon || '🍹'}`).join('\n');
