@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashibodi ya Kamati ya Harusi | Nyahende VIP Report</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+  <!-- VIP Committee PIN Lock Screen Overlay for /admin -->
+  <div id="admin-auth-lock" style="display: none; position: fixed; inset: 0; background: rgba(3, 14, 9, 0.96); backdrop-filter: blur(20px); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: linear-gradient(145deg, #0a251a 0%, #03140c 100%); border: 1px solid var(--gold-primary); border-radius: 24px; padding: 36px 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), var(--gold-glow);">
+      <div style="font-size: 2.8rem; margin-bottom: 12px;">🔐</div>
+      <h2 class="font-serif gold-text" style="font-size: 1.45rem; margin-bottom: 6px;">Eneo Lililolindwa la Kamati</h2>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Tafadhali ingiza nenosiri la Kamati (2030) ili kufungua Dashibodi Kuu:</p>
+      
+      <form onsubmit="verifyAdminAuth(event)">
+        <input type="password" id="admin-auth-pin" style="width: 100%; background: rgba(4, 18, 12, 0.9); border: 2px solid var(--gold-primary); color: var(--gold-light); font-family: monospace; font-size: 2rem; letter-spacing: 12px; text-align: center; padding: 12px 16px; border-radius: 14px; margin-bottom: 12px; outline: none; box-sizing: border-box;" placeholder="••••" autofocus maxlength="8" autocomplete="off">
+        <div id="admin-auth-error" style="color: #e74c3c; font-size: 0.85rem; font-weight: 600; min-height: 22px; margin-bottom: 14px;"></div>
+        
+        <div style="display: flex; gap: 10px;">
+          <a href="/" class="btn btn-outline-gold" style="flex: 1; padding: 10px 14px; font-size: 0.88rem;">🏠 Tovuti Kuu</a>
+          <button type="submit" class="btn btn-gold" style="flex: 1; padding: 10px 14px; font-size: 0.88rem;">Fungua ➔</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-wrapper">
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+
+    <!-- VIP Admin Sidebar Navigation -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <!-- Sidebar Header & Brand -->
+      <div class="sidebar-header">
+        <a href="/admin" class="sidebar-brand">
+          <div class="sidebar-logo-icon">💍</div>
+          <div class="sidebar-brand-text">
+            <div class="brand-title">KAMATI VIP</div>
+            <div class="brand-sub">NYAHENDE DIGITAL</div>
+          </div>
+        </a>
+        <button type="button" class="sidebar-close-btn" onclick="toggleSidebar(false)" aria-label="Funga menyu">&times;</button>
+      </div>
+
+      <!-- Quick Event Info Card -->
+      <div class="sidebar-event-card">
+        <div class="sidebar-event-name" id="sidebar-event-title">Send-off ya Lilian & Kelvin</div>
+        <div class="sidebar-event-status">
+          <span class="status-indicator-dot"></span>
+          <span>Mfumo wa Kamati Unafanya Kazi</span>
+        </div>
+      </div>
+
+      <!-- Sidebar Navigation Menu -->
+      <div class="sidebar-menu">
+        <div class="sidebar-group-title">MENYU KUU</div>
+        <nav class="sidebar-nav">
+          <button type="button" class="tab-btn active" data-target="tab-dashboard" data-title="📊 Dashibodi Kuu">
+            <span class="tab-icon">📊</span>
+            <span class="tab-text">Dashibodi Kuu</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-group-title">USIMAMIZI WA WAGENI & FEDHA</div>
+        <nav class="sidebar-nav">
+          <button type="button" class="tab-btn" data-target="tab-guests" data-title="👥 Orodha ya Wageni">
+            <span class="tab-icon">👥</span>
+            <span class="tab-text">Orodha ya Wageni</span>
+          </button>
+          <button type="button" class="tab-btn" data-target="tab-pledges" data-title="💰 Michango & Malipo">
+            <span class="tab-icon">💰</span>
+            <span class="tab-text">Michango & Malipo</span>
+          </button>
+
+          <button type="button" class="tab-btn" data-target="tab-finance-report" data-title="📑 Ripoti Kuu ya Fedha">
+            <span class="tab-icon">📑</span>
+            <span class="tab-text">Ripoti Kuu ya Fedha</span>
+          </button>
+          <button type="button" class="tab-btn" data-target="tab-sms" data-title="📨 Kumbukumbu za SMS & NextSMS">
+            <span class="tab-icon">📨</span>
+            <span class="tab-text">Kumbukumbu za SMS</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-group-title">UKUMBI, VINYWAJI & PICHA</div>
+        <nav class="sidebar-nav">
+          <button type="button" class="tab-btn" data-target="tab-seating" data-title="📍 Upangaji wa Meza">
+            <span class="tab-icon">📍</span>
+            <span class="tab-text">Upangaji wa Meza</span>
+          </button>
+          <button type="button" class="tab-btn" data-target="tab-drinks" data-title="🍾 Menyu & Picha za Vinywaji">
+            <span class="tab-icon">🍾</span>
+            <span class="tab-text">Menyu ya Vinywaji</span>
+          </button>
+          <button type="button" class="tab-btn" data-target="tab-orders" data-title="🍸 Oda za Vinywaji (Live Bar)">
+            <span class="tab-icon">🍸</span>
+            <span class="tab-text">Oda za Vinywaji (Bar)</span>
+            <span class="badge badge-gold" id="sidebar-orders-count-badge" style="margin-left: auto; font-size: 0.72rem; padding: 2px 7px; display: none;">0</span>
+          </button>
+          <button type="button" class="tab-btn" data-target="tab-gallery" data-title="📸 Picha za Bibi Harusi (Galari)">
+            <span class="tab-icon">📸</span>
+            <span class="tab-text">Picha za Harusi (Galari)</span>
+          </button>
+          <button type="button" class="tab-btn" data-target="tab-settings" data-title="⚙️ Mipangilio ya Harusi">
+            <span class="tab-icon">⚙️</span>
+            <span class="tab-text">Mipangilio ya Harusi</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-group-title">HUDUMA NYINGINE</div>
+        <nav class="sidebar-nav">
+          <a href="/order/meza-4" target="_blank" class="sidebar-link" title="Jaribu Menyu ya Vinywaji Mezani">
+            <span class="tab-icon">🍸</span>
+            <span class="tab-text">Menyu ya Vinywaji</span>
+            <span class="external-tag">↗</span>
+          </a>
+          <a href="/security" target="_blank" class="sidebar-link" title="Fungua Scanner ya Walinzi">
+            <span class="tab-icon">🛡️</span>
+            <span class="tab-text">Scanner ya Walinzi</span>
+            <span class="external-tag">↗</span>
+          </a>
+          <a href="/invite/1" target="_blank" class="sidebar-link" title="Tazama Mfano wa Kadi">
+            <span class="tab-icon">💌</span>
+            <span class="tab-text">Mfano wa Kadi</span>
+            <span class="external-tag">↗</span>
+          </a>
+          <a href="/" target="_blank" class="sidebar-link" title="Fungua Tovuti Kuu">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-text">Tovuti Kuu</span>
+            <span class="external-tag">↗</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button type="button" class="btn btn-gold btn-block" onclick="openAddGuestModal()">
+          + Ongeza Mualikwa
+        </button>
+        <div class="sidebar-version">Nyahende Smart Events &bull; v2.0</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="admin-main">
+      <!-- Admin Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button type="button" class="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Fungua Menyu ya Sidebar">
+            <span>☰</span>
+            <span class="menu-label">Menyu</span>
+          </button>
+          <div class="topbar-breadcrumbs">
+            <span class="crumb-root">Usimamizi</span>
+            <span class="crumb-separator">/</span>
+            <span class="crumb-active" id="topbar-active-title">📊 Dashibodi Kuu</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button type="button" class="btn btn-emerald btn-sm" onclick="initDashboard()" title="Sasisha Takwimu Zote">
+            🔄 <span class="btn-text-desktop">Sasisha Data</span>
+          </button>
+          <button type="button" class="btn btn-gold btn-sm" onclick="openAddGuestModal()" title="Sajili Mgeni Mpya">
+            + <span class="btn-text-desktop">Ongeza Mgeni</span>
+          </button>
+          <a href="/security" target="_blank" class="btn btn-outline-gold btn-sm" title="Fungua Scanner ya Walinzi">
+            🛡️ <span class="btn-text-desktop">Scanner</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Content Container -->
+      <main class="admin-content-container">
+
+        <!-- TAB 0: DASHBOARD OVERVIEW (PAGE YA KWANZA) -->
+        <div class="tab-panel active" id="tab-dashboard">
+          <!-- Hero Event Banner -->
+          <div class="dashboard-hero-card">
+            <div class="hero-left">
+              <div class="hero-tag">💍 TAARIFA ZA SHEREHE & KIKAO CHA KAMATI</div>
+              <h2 class="hero-title" id="dash-hero-title">Send-off ya Lilian & Kelvin</h2>
+              <p class="hero-subtitle" id="dash-hero-subtitle">Mlimani City Conference Hall &bull; Tarehe 13 Oktoba 2026</p>
+            </div>
+            <div class="hero-actions">
+              <button type="button" class="btn btn-gold btn-sm" onclick="openAddGuestModal()">+ Ongeza Mualikwa</button>
+              <button type="button" class="btn btn-emerald btn-sm" onclick="initDashboard()">🔄 Sasisha Data</button>
+            </div>
+          </div>
+
+          <!-- Top Key Statistics Grid (Kwenye Dashboard Pekee) -->
+          <div class="stat-grid">
+            <!-- Total Guests -->
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-val" id="stat-total-guests">0</div>
+              <div class="stat-label">Jumla ya Waalikwa</div>
+              <div class="stat-sub" id="stat-seats-allocated">0 Viti Vimetengwa</div>
+            </div>
+
+            <!-- Completed Pledges (Walio Kamilisha Ahadi 100%) -->
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-val" id="stat-completed-count" style="color: #2ecc71;">0</div>
+              <div class="stat-label">Walio Kamilisha Ahadi</div>
+              <div class="stat-sub" id="stat-completed-sub">0 Wamemaliza 100%</div>
+            </div>
+
+            <!-- Debtors with Balance (Wanaodaiwa Salio) -->
+            <div class="stat-card">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-val" id="stat-debtors-count" style="color: #f59e0b;">0</div>
+              <div class="stat-label">Wanaodaiwa Salio</div>
+              <div class="stat-sub" id="stat-debtors-sub">Baki: Tsh 0 Inadaiwa</div>
+            </div>
+
+            <!-- Total Paid Contributions -->
+            <div class="stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-val" id="stat-paid-amount" style="font-size: 1.5rem; color: #2ecc71;">Tsh 0</div>
+              <div class="stat-label" id="stat-pledges-total">Lengo: Tsh 0</div>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="stat-paid-progress" style="width: 0%;"></div>
+              </div>
+              <div class="stat-sub" style="display: flex; justify-content: space-between;">
+                <span id="stat-balance-amount">Baki: Tsh 0</span>
+                <span id="stat-percent-text" style="color: var(--gold-light); font-weight: 600;">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Analytics & Quick Insights Grid -->
+          <div class="dashboard-widgets-grid">
+
+
+            <!-- Upangaji wa Meza Snapshot -->
+            <div class="dashboard-widget-card">
+              <div>
+                <div class="widget-card-header">
+                  <h4>📍 Mpangilio wa Meza</h4>
+                  <span class="badge badge-gold" id="dash-tables-badge">0 Meza</span>
+                </div>
+                <div class="widget-main-stat" id="dash-seats-stat">0 / 0 Viti</div>
+                <p class="widget-subtext">Hali ya viti vilivyopangwa kulingana na uwezo wa ukumbi.</p>
+              </div>
+              <a href="javascript:void(0)" onclick="switchToTab('tab-seating')" class="widget-action-link">
+                Panga Wageni Kwenye Meza ➔
+              </a>
+            </div>
+
+            <!-- SMS & Mwaliko Snapshot -->
+            <div class="dashboard-widget-card">
+              <div>
+                <div class="widget-card-header">
+                  <h4>📨 SMS & Kadi za Mlangoni</h4>
+                  <span class="badge badge-success" id="dash-sms-status-badge">NextSMS Active</span>
+                </div>
+                <div class="widget-main-stat" id="dash-sms-count-stat">0 SMS Zimetumwa</div>
+                <p class="widget-subtext">Kutuma kadi za kidijitali na SMS za kukumbusha madeni au kodi za getini.</p>
+              </div>
+              <a href="javascript:void(0)" onclick="switchToTab('tab-sms')" class="widget-action-link">
+                Tazama Kumbukumbu za SMS ➔
+              </a>
+            </div>
+
+            <!-- Taarifa za Benki & Malipo Snapshot -->
+            <div class="dashboard-widget-card">
+              <div>
+                <div class="widget-card-header">
+                  <h4>🏦 Njia za Malipo ya Kamati</h4>
+                  <span class="badge badge-gold">Lipa Namba</span>
+                </div>
+                <div class="widget-main-stat" style="font-size: 1.1rem; color: #2ecc71;" id="dash-payment-details-stat">Lipa Namba M-Pesa: 552211</div>
+                <p class="widget-subtext">Maelekezo yanayotumwa kwa wachangiaji kupitia SMS za madeni.</p>
+              </div>
+              <a href="javascript:void(0)" onclick="switchToTab('tab-finance-report')" class="widget-action-link">
+                Fungua Ripoti Kuu ya Fedha ➔
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Recent Contributors Table Box -->
+          <div class="glass-card" style="margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h3 class="font-serif gold-text">👥 Wageni & Wachangiaji wa Hivi Karibuni</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Muhtasari wa wageni waliosajiliwa hivi karibuni kwenye mfumo.</p>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn btn-sm btn-gold" onclick="openAddGuestModal()">+ Ongeza Mualikwa</button>
+                <button type="button" class="btn btn-sm btn-outline-gold" onclick="switchToTab('tab-guests')">Tazama Wageni Wote ➔</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Namba</th>
+                    <th>Jina la Mualikwa</th>
+                    <th>Simu</th>
+                    <th>Mwaliko</th>
+                    <th>Ahadi (Tsh)</th>
+                    <th>Imelipwa (Tsh)</th>
+                    <th>Salio (Tsh)</th>
+                    <th>Kitendo</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-guests-tbody">
+                  <tr><td colspan="8" style="text-align: center; padding: 20px;">Inapakia data za wageni...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+    <!-- TAB 1: GUEST LIST -->
+    <div class="tab-panel" id="tab-guests">
+      <div class="filter-bar">
+        <div class="filter-search">
+          <span class="filter-search-icon">🔍</span>
+          <input type="text" id="search-guests-input" class="form-control" placeholder="Tafuta kwa jina, simu, namba (#) au kodi ya getini...">
+        </div>
+
+
+
+        <select id="filter-guest-status-select" class="form-control" style="width: auto;">
+          <option value="all">Hali Zote za Michango</option>
+          <option value="completed">Walio Kamilisha (100%)</option>
+          <option value="debtors">Wanaodaiwa Salio</option>
+          <option value="unpaid">Hawajalipa Kabisa</option>
+        </select>
+
+        <button class="btn btn-emerald btn-sm" onclick="openBulkInvitationModal()" title="Tuma SMS za mwaliko zenye kodi ya mlangoni kwa wageni wote 500 kwa mkupuo mmoja">
+          🚀 Tuma SMS za Mwaliko (Wote)
+        </button>
+
+        <button class="btn btn-gold btn-sm" onclick="openAddGuestModal()">
+          + Ongeza Mgeni
+        </button>
+
+        <button class="btn btn-outline-gold btn-sm" onclick="printGateGuestList()" title="Chapisha orodha ya wageni wote A-Z kwa ajili ya walinzi getini">
+          🖨️ Orodha ya Mlangoni (A-Z)
+        </button>
+      </div>
+
+      <div class="mobile-swipe-hint">
+        <span>👉</span> <span>Telezesha jedwali kushoto/kulia kuona safu zote</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 70px;">Namba</th>
+              <th>Jina la Mualikwa</th>
+              <th>Kodi ya Getini</th>
+              <th>Namba ya Simu</th>
+              <th>Meza & Mwaliko</th>
+              <th>Hali ya Mchango</th>
+              <th>Vitendo</th>
+            </tr>
+          </thead>
+          <tbody id="guest-table-body">
+            <!-- Populated by admin.js -->
+          </tbody>
+        </table>
+      </div>
+      <div class="table-pagination-bar" id="pagination-guests"></div>
+    </div>
+
+    <!-- TAB 2: CONTRIBUTIONS & AUTOMATIC SMS -->
+    <div class="tab-panel" id="tab-pledges">
+      <div style="margin-bottom: 16px;">
+        <h3 class="font-serif gold-text">Usimamizi wa Michango & SMS za Kiotomatiki</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">
+          Mtu akilipa unaingiza malipo na mfumo unamtumia SMS papo hapo (ya malipo ya awali na salio lililobaki, au ya kumaliza ahadi).
+        </p>
+      </div>
+
+      <!-- Debtors Action Banner -->
+      <div style="background: rgba(16, 57, 41, 0.6); border: 1px solid var(--gold-primary); border-radius: 14px; padding: 14px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">Ufuatiliaji wa Madeni (Debtors)</div>
+          <div style="font-size: 0.82rem; color: var(--gold-light);" id="debtors-summary-text">Inahesabu wanaodaiwa...</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-gold btn-sm" onclick="sendBulkDebtReminders()" id="bulk-reminder-btn">
+            📢 Tuma SMS ya Vikumbusho kwa Wanaodaiwa Wote
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter & Search Bar for Pledges -->
+      <div class="filter-bar" style="margin-bottom: 14px;">
+        <div class="filter-search">
+          <span class="filter-search-icon">🔍</span>
+          <input type="text" id="search-pledges-input" class="form-control" placeholder="Tafuta mchangiaji kwa jina au simu...">
+        </div>
+
+        <select id="filter-pledges-status-select" class="form-control" style="width: auto;">
+          <option value="all">Hali Zote za Michango</option>
+          <option value="completed">Walio Kamilisha (100%)</option>
+          <option value="partial">Wamelipa Kidogo (Partial)</option>
+          <option value="unpaid">Hawajalipa Kabisa (0%)</option>
+        </select>
+      </div>
+
+      <div class="mobile-swipe-hint">
+        <span>👉</span> <span>Telezesha jedwali kushoto/kulia kuona safu zote</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 70px;">Namba</th>
+              <th>Mchangiaji</th>
+              <th>Ahadi (Pledge)</th>
+              <th>Iliyolipwa (Paid)</th>
+              <th>Salio (Balance)</th>
+              <th>Vikumbusho</th>
+              <th>Vitendo</th>
+            </tr>
+          </thead>
+          <tbody id="pledges-table-body">
+            <!-- Populated by admin.js -->
+          </tbody>
+        </table>
+      </div>
+      <div class="table-pagination-bar" id="pagination-pledges"></div>
+    </div>
+
+
+
+    <!-- TAB: COMPREHENSIVE FINANCIAL REPORTS & MICHANGO -->
+    <div class="tab-panel" id="tab-finance-report">
+      <!-- Finance Header & Quick Actions -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h2 class="font-serif gold-text" style="font-size: 1.5rem; margin-bottom: 4px;">
+            📊 Ripoti Kuu ya Fedha & Mwenendo wa Michango
+          </h2>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Uchambuzi wa kina wa mapato, madeni, orodha ya miamala ya kila siku, na zana za kuchapisha (Print/PDF) au kupakua Excel kwa ajili ya kikao.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-gold btn-sm" onclick="printFinancialReport()">
+            🖨️ Chapisha / Hifadhi PDF
+          </button>
+          <button class="btn btn-emerald btn-sm" onclick="exportFinancialCSV()">
+            📥 Pakua Excel (CSV)
+          </button>
+          <button class="btn btn-whatsapp btn-sm" onclick="copyFinancialWhatsAppReport()">
+            💬 Nakili Ripoti ya WhatsApp
+          </button>
+          <button class="btn btn-outline-gold btn-sm" onclick="renderFinancialReportView()">
+            🔄 Sasisha Hesabu
+          </button>
+        </div>
+      </div>
+
+      <!-- Financial Hero Banner with KPIs -->
+      <div class="finance-hero">
+        <div class="finance-kpi-grid">
+          <!-- Total Target -->
+          <div class="finance-kpi-card">
+            <div class="finance-kpi-title">🎯 Lengo la Ahadi (Target)</div>
+            <div class="finance-kpi-value gold-text" id="fin-hero-target">Tsh 0</div>
+            <div class="finance-kpi-sub">Jumla ya ahadi zote zilizosajiliwa</div>
+          </div>
+
+          <!-- Total Collected -->
+          <div class="finance-kpi-card">
+            <div class="finance-kpi-title">💵 Pesa Iliyopokelewa (Collected)</div>
+            <div class="finance-kpi-value" style="color: #2ecc71;" id="fin-hero-paid">Tsh 0</div>
+            <div class="finance-kpi-sub" id="fin-hero-paid-sub">0% ya lengo kuu</div>
+          </div>
+
+          <!-- Total Outstanding Debt -->
+          <div class="finance-kpi-card">
+            <div class="finance-kpi-title">⏳ Salio Lililobaki (Madeni)</div>
+            <div class="finance-kpi-value" style="color: #f39c12;" id="fin-hero-balance">Tsh 0</div>
+            <div class="finance-kpi-sub" id="fin-hero-balance-sub">Bado linasubiriwa</div>
+          </div>
+
+          <!-- Average Contribution -->
+          <div class="finance-kpi-card">
+            <div class="finance-kpi-title">👥 Wastani wa Mchango</div>
+            <div class="finance-kpi-value" style="color: #60a5fa;" id="fin-hero-avg">Tsh 0</div>
+            <div class="finance-kpi-sub">Kwa kila mchangiaji</div>
+          </div>
+        </div>
+
+        <!-- Visual Collection Progress Bar -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.85rem;">
+            <span style="font-weight: 600; color: #ffffff;">Mwenendo wa Ukusanyaji wa Fedha:</span>
+            <span id="fin-hero-progress-text" class="gold-text" style="font-weight: 700; font-size: 0.95rem;">0% Imekusanywa</span>
+          </div>
+          <div class="progress-bar-wrap" style="height: 12px;">
+            <div class="progress-bar-fill" id="fin-hero-progress-bar" style="width: 0%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.78rem; color: var(--text-secondary);">
+            <span>Walio kamilisha: <strong id="fin-mini-completed" style="color: #2ecc71;">0</strong> / <span id="fin-mini-total">0</span></span>
+            <span>Bado wanadaiwa salio: <strong id="fin-mini-debtors" style="color: #f39c12;">0</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contributor Segmentation Analytics -->
+      <div style="margin-bottom: 12px;">
+        <h3 class="font-serif gold-text" style="font-size: 1.15rem; margin-bottom: 4px;">
+          Uchambuzi wa Makundi ya Wachangiaji
+        </h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary);">
+          Gawanyo la wageni kulingana na hatua zao za uchangiaji kwa ufuatiliaji madhubuti.
+        </p>
+      </div>
+
+      <div class="finance-segments-grid">
+        <!-- Segment 1: Completed -->
+        <div class="segment-card completed" onclick="filterFinancialTable('completed')">
+          <div class="segment-card-header">
+            <span class="segment-title" style="color: #2ecc71;">
+              <span>✅</span> Walio Kamilisha (100%)
+            </span>
+            <span class="segment-count-badge" id="fin-seg-completed-count">0</span>
+          </div>
+          <div style="font-size: 1.3rem; font-weight: 700; color: #ffffff; margin-bottom: 4px;" id="fin-seg-completed-sum">
+            Tsh 0
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+            <span>Wamemaliza ahadi zote</span>
+            <span style="color: #2ecc71; font-weight: 600;">Kadi Ziko Tayari</span>
+          </div>
+        </div>
+
+        <!-- Segment 2: Partial -->
+        <div class="segment-card partial" onclick="filterFinancialTable('partial')">
+          <div class="segment-card-header">
+            <span class="segment-title" style="color: #f39c12;">
+              <span>⏳</span> Waliolipa Nusu (Salio)
+            </span>
+            <span class="segment-count-badge" id="fin-seg-partial-count">0</span>
+          </div>
+          <div style="font-size: 1.3rem; font-weight: 700; color: #ffffff; margin-bottom: 4px;" id="fin-seg-partial-balance">
+            Tsh 0
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+            <span id="fin-seg-partial-paid-text">Tayari wamelipa Tsh 0</span>
+            <span style="color: #f39c12; font-weight: 600;">Wanadaiwa</span>
+          </div>
+        </div>
+
+        <!-- Segment 3: Zero -->
+        <div class="segment-card zero" onclick="filterFinancialTable('zero')">
+          <div class="segment-card-header">
+            <span class="segment-title" style="color: #e74c3c;">
+              <span>⚠️</span> Bado Hawajalipa (0%)
+            </span>
+            <span class="segment-count-badge" id="fin-seg-zero-count">0</span>
+          </div>
+          <div style="font-size: 1.3rem; font-weight: 700; color: #ffffff; margin-bottom: 4px;" id="fin-seg-zero-sum">
+            Tsh 0
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+            <span>Ahadi zote ambazo hazijalipwa</span>
+            <span style="color: #e74c3c; font-weight: 600;">Hatua ya Kwanza</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Donors & Payment Details Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 28px;">
+        <!-- Top Donors Card -->
+        <div class="glass-card" style="padding: 20px;">
+          <h4 class="font-serif gold-text" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <span>🏆</span> Wachangiaji Wakuu (Top Contributors)
+          </h4>
+          <div id="fin-top-donors-list">
+            <!-- Populated by admin.js -->
+          </div>
+        </div>
+
+        <!-- Committee Financial Info Card -->
+        <div class="glass-card" style="padding: 20px;">
+          <h4 class="font-serif gold-text" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <span>🏦</span> Taarifa Rasmi za Akaunti ya Kamati
+          </h4>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px;">
+            Njia zinazotumika kupokea michango na kutumwa kwenye SMS za wadaiwa:
+          </p>
+          <div style="background: rgba(4, 20, 14, 0.7); border: 1px solid var(--bg-glass-border); border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">LIPA NAMBA & AKAUNTI:</div>
+            <div style="font-size: 1rem; font-weight: 700; color: #ffffff;" id="fin-payment-details-display">
+              Lipa Namba M-Pesa: 552211 (Kamati ya Harusi) au NMB: 20110022334
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-emerald btn-sm" style="flex: 1;" onclick="switchTab('tab-pledges')">
+              + Weka Malipo ya Mtu
+            </button>
+            <button class="btn btn-gold btn-sm" style="flex: 1;" onclick="sendBulkDebtReminders()">
+              📢 Tuma SMS kwa Wadaiwa
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction Audit Ledger (Orodha ya Miamala Yote) -->
+      <div style="margin-bottom: 28px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 class="font-serif gold-text" style="font-size: 1.2rem; margin-bottom: 2px;">
+              📋 Daftari Rasmi la Miamala ya Pesa (Payment Ledger)
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-secondary);">
+              Kila malipo yaliyowahi kuingizwa na kamati yakiwa na tarehe, risiti, kiasi na uthibitisho wa SMS.
+            </p>
+          </div>
+          <div style="font-size: 0.82rem; color: var(--gold-light);">
+            Jumla ya Miamala: <strong id="fin-ledger-count" style="color: #ffffff;">0</strong>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tarehe & Muda</th>
+                <th>Mchangiaji</th>
+                <th>Kiasi Kilichoingia</th>
+                <th>Salio Baada ya Malipo</th>
+                <th>Risiti / Note</th>
+                <th>Uthibitisho wa SMS</th>
+              </tr>
+            </thead>
+            <tbody id="fin-ledger-table-body">
+              <!-- Populated by admin.js -->
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination-bar" id="pagination-fin-ledger"></div>
+      </div>
+
+      <!-- Comprehensive Contributor Table -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 class="font-serif gold-text" style="font-size: 1.2rem; margin-bottom: 2px;">
+              👥 Orodha ya Kina ya Michango ya Kila Mgeni
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-secondary);">
+              Tazama hali ya mchango wa kila mtu, asilimia aliyofikisha na salio analodaiwa.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-sm btn-outline-gold" onclick="filterFinancialTable('all')">Wote</button>
+            <button class="btn btn-sm btn-outline-gold" onclick="filterFinancialTable('completed')">Walio Kamilisha</button>
+            <button class="btn btn-sm btn-outline-gold" onclick="filterFinancialTable('partial')">Wenye Madeni</button>
+            <button class="btn btn-sm btn-outline-gold" onclick="filterFinancialTable('zero')">Hawajalipa</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Msimbo</th>
+                <th>Mualikwa</th>
+                <th>Simu</th>
+                <th>Ahadi</th>
+                <th>Iliyolipwa</th>
+                <th>Salio</th>
+                <th>Maendeleo (%)</th>
+                <th>Hali</th>
+                <th>Vitendo</th>
+              </tr>
+            </thead>
+            <tbody id="fin-contributors-table-body">
+              <!-- Populated by admin.js -->
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination-bar" id="pagination-fin-contributors"></div>
+      </div>
+    </div>
+
+    <!-- TAB: SMS LOGS & NEXTSMS OUTBOX -->
+    <div class="tab-panel" id="tab-sms">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 class="font-serif gold-text">Daftari la SMS Zilizotumwa (SMS Outbox)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Fuatilia SMS zote zilizotumwa kiotomatiki kwa ajili ya malipo ya awali, kukamilisha ahadi, au kukumbusha madeni.
+          </p>
+        </div>
+        <button class="btn btn-emerald btn-sm" onclick="loadSmsLogs()">
+          🔄 Sasisha Daftari la SMS
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Muda</th>
+              <th>Mpokeaji</th>
+              <th>Namba ya Simu</th>
+              <th>Aina ya SMS</th>
+              <th>Ujumbe Uliotumwa</th>
+              <th>Hali (Status)</th>
+            </tr>
+          </thead>
+          <tbody id="sms-logs-table-body">
+            <!-- Populated by admin.js -->
+          </tbody>
+        </table>
+      </div>
+      <div class="table-pagination-bar" id="pagination-sms"></div>
+    </div>
+
+    <!-- TAB 3: SEATING & TABLE ALLOCATION -->
+    <div class="tab-panel" id="tab-seating">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 class="font-serif gold-text">Mpangilio wa Meza & QR Code za Vinywaji</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Ugawaji wa meza na kadi za QR za mezani kwa ajili ya kuagiza vinywaji moja kwa moja.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-emerald btn-sm" onclick="printAllTableQRCards()" title="Tengeneza na chapisha kadi za QR za kuweka juu ya kila meza ukumbini">
+            🖨️ Chapisha QR za Meza Zote (Table Stands)
+          </button>
+          <a href="/order/meza-4" target="_blank" class="btn btn-outline-gold btn-sm" title="Fungua menyu ya vinywaji">
+            🍸 Jaribu Menyu ya Vinywaji ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="seating-grid" id="seating-tables-grid">
+        <!-- Populated by admin.js -->
+      </div>
+    </div>
+
+    <!-- TAB: TABLE DRINK ORDERS (LIVE BAR MONITOR) -->
+    <div class="tab-panel" id="tab-orders">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 class="font-serif gold-text">🍸 Oda za Vinywaji Mezani (Live Bar Service)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Orodha ya moja kwa moja ya vinywaji vinavyoagizwa mezani na wageni kupitia QR Code. Taarifa zinatumwa pia WhatsApp <strong>0787661560</strong>.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn btn-sm btn-gold" onclick="loadDrinkOrders()">
+            🔄 Sasisha Oda
+          </button>
+          <button type="button" class="btn btn-sm btn-emerald" onclick="printAllTableQRCards()">
+            🖨️ Chapisha QR Cards za Meza
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-bar" style="margin-bottom: 16px;">
+        <select id="filter-order-status" class="form-control" style="width: auto;" onchange="renderOrdersTable()">
+          <option value="all">Hali Zote za Oda</option>
+          <option value="pending">⏳ Mpya / Zinasubiri (Pending)</option>
+          <option value="preparing">🍸 Zinaandaliwa (Preparing)</option>
+          <option value="delivered">✅ Zilizofikishwa (Delivered)</option>
+        </select>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Oda #</th>
+              <th>Muda</th>
+              <th>Meza</th>
+              <th>Mgeni</th>
+              <th>Vinywaji Vilivyoagizwa</th>
+              <th>Maelekezo</th>
+              <th>Hali</th>
+              <th>Vitendo vya Mhudumu</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table-body">
+            <tr><td colspan="8" style="text-align: center; padding: 24px;">Inapakia oda za vinywaji...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: DRINKS MENU MANAGEMENT -->
+    <div class="tab-panel" id="tab-drinks">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 class="font-serif gold-text">🍾 Usimamizi wa Menyu & Picha za Vinywaji</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Ongeza, hariri au pakia picha za vinywaji vitakavyoonekana kwenye menyu ya QR code mezani.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn btn-gold btn-sm" onclick="openAddDrinkModal()">
+            + Ongeza Kinywaji Kipya
+          </button>
+          <a href="/order/meza-4" target="_blank" class="btn btn-outline-gold btn-sm">
+            🍸 Fungua Menyu ya Wageni ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="filter-bar" style="margin-bottom: 18px;">
+        <select id="filter-drinks-category" class="form-control" style="width: auto;" onchange="renderDrinksAdminTable()">
+          <option value="all">Kategoria Zote za Vinywaji</option>
+          <option value="Champagne & Wine">🍾 Champagne & Wine</option>
+          <option value="Whiskeys & Spirits">🥃 Whiskeys & Spirits</option>
+          <option value="Bia & Ciders">🍺 Bia & Ciders</option>
+          <option value="Juisi & Vinywaji Baridi">🍹 Juisi & Soda</option>
+          <option value="Maji">💧 Maji Safi</option>
+        </select>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 60px;">Picha</th>
+              <th>Jina la Kinywaji</th>
+              <th>Kategoria</th>
+              <th>Maelezo Fupi</th>
+              <th>Vitendo</th>
+            </tr>
+          </thead>
+          <tbody id="drinks-admin-table-body">
+            <tr><td colspan="5" style="text-align: center; padding: 24px;">Inapakia orodha ya vinywaji...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: WEDDING PHOTO GALLERY & BRIDE PORTRAIT MANAGER -->
+    <div class="tab-panel" id="tab-gallery">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 class="font-serif gold-text">📸 Picha za Bibi Harusi, Maharusi & Galari</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            Pakia na ubadilishe picha ya Bibi Harusi (Msichana), Maharusi (Couple) na picha za ukumbi zitakazoonekana kwenye kadi na tovuti.
+          </p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-gold btn-sm" onclick="triggerGenericPhotoUpload()">
+            + Pakia Picha Mpya Kwenye Galari
+          </button>
+        </div>
+      </div>
+
+      <!-- 3 Primary Key Photos Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        
+        <!-- 1. Bride Portrait Card -->
+        <div class="glass-card" style="border: 2px solid var(--gold-primary); text-align: center; position: relative;">
+          <div style="position: absolute; top: 12px; right: 12px; background: var(--gold-gradient); color: #04140e; font-weight: 800; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px;">
+            VIP SEND-OFF
+          </div>
+          <h4 class="font-serif gold-text" style="font-size: 1.15rem; margin-bottom: 4px;">👰 Picha ya Bibi Harusi (Msichana)</h4>
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">
+            Inatumika kwenye Kadi za Kidijitali, Picha ya Kadi & Mwaliko wa WhatsApp.
+          </p>
+          <div style="width: 100%; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.4); margin-bottom: 14px; background: #020b07;">
+            <img id="preview-bride-img" src="/images/lilian_sendoff.jpg" alt="Picha ya Bibi Harusi" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          </div>
+          <label class="btn btn-gold btn-sm" style="width: 100%; cursor: pointer;">
+            📁 Badilisha Picha ya Bibi Harusi
+            <input type="file" id="upload-bride-input" accept="image/*" style="display: none;" onchange="handleBridePhotoUpload(event)">
+          </label>
+        </div>
+
+        <!-- 2. Couple Hero Photo Card -->
+        <div class="glass-card" style="border: 1px solid var(--bg-glass-border); text-align: center; position: relative;">
+          <div style="position: absolute; top: 12px; right: 12px; background: rgba(16, 185, 129, 0.2); color: #a7f3d0; font-weight: 700; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px;">
+            TOVUTI KUU
+          </div>
+          <h4 class="font-serif gold-text" style="font-size: 1.15rem; margin-bottom: 4px;">💍 Picha Kuu ya Maharusi (Couple)</h4>
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">
+            Inaonekana kwenye Ukurasa Mkuu (Hero Banner) wa tovuti ya harusi.
+          </p>
+          <div style="width: 100%; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.4); margin-bottom: 14px; background: #020b07;">
+            <img id="preview-couple-img" src="/images/wedding_couple.jpg" alt="Picha ya Maharusi" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          </div>
+          <label class="btn btn-emerald btn-sm" style="width: 100%; cursor: pointer;">
+            📁 Badilisha Picha ya Maharusi
+            <input type="file" id="upload-couple-input" accept="image/*" style="display: none;" onchange="handleCouplePhotoUpload(event)">
+          </label>
+        </div>
+
+        <!-- 3. Venue & Decor Photo Card -->
+        <div class="glass-card" style="border: 1px solid var(--bg-glass-border); text-align: center; position: relative;">
+          <div style="position: absolute; top: 12px; right: 12px; background: rgba(59, 130, 246, 0.2); color: #93c5fd; font-weight: 700; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px;">
+            UKUMBI
+          </div>
+          <h4 class="font-serif gold-text" style="font-size: 1.15rem; margin-bottom: 4px;">🏛️ Picha ya Ukumbi & Mapambo</h4>
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">
+            Inaonyesha muonekano wa ukumbi wa Mlimani City na mandhari ya sherehe.
+          </p>
+          <div style="width: 100%; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.4); margin-bottom: 14px; background: #020b07;">
+            <img id="preview-venue-img" src="/images/wedding_venue.jpg" alt="Picha ya Ukumbi" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          </div>
+          <label class="btn btn-outline-gold btn-sm" style="width: 100%; cursor: pointer;">
+            📁 Badilisha Picha ya Ukumbi
+            <input type="file" id="upload-venue-input" accept="image/*" style="display: none;" onchange="handleVenuePhotoUpload(event)">
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Full Photo Album Grid -->
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h4 class="font-serif gold-text">🖼️ Galari ya Picha Zote Zilizopakiwa</h4>
+            <p style="font-size: 0.82rem; color: var(--text-secondary);">Bofya picha yoyote kuiona kwa ukubwa au kuweka kama picha kuu.</p>
+          </div>
+          <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+            + Pakia Picha Hapa
+            <input type="file" id="generic-gallery-upload-input" accept="image/*" style="display: none;" onchange="handleGenericGalleryUpload(event)">
+          </label>
+        </div>
+
+        <div id="gallery-album-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
+          <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">Inapakia galari ya picha...</div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- TAB 6: SETTINGS -->
+    <div class="tab-panel" id="tab-settings">
+      <div style="max-width: 700px; margin: 0 auto;" class="glass-card">
+        <h3 class="font-serif gold-text" style="margin-bottom: 16px;">Mipangilio ya Harusi</h3>
+        
+        <form id="settings-form">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label>Jina la Bwana Harusi (Fupi):</label>
+              <input type="text" id="set-groom-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Jina Kamili la Bwana Harusi:</label>
+              <input type="text" id="set-groom-fullname" class="form-control" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label>Jina la Bibi Harusi (Fupi):</label>
+              <input type="text" id="set-bride-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Jina Kamili la Bibi Harusi:</label>
+              <input type="text" id="set-bride-fullname" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tarehe ya Harusi:</label>
+            <input type="date" id="set-wedding-date" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label>Ukumbi wa Ibada (Church/Mosque):</label>
+            <input type="text" id="set-church-venue" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label>Ukumbi wa Sherehe (Reception):</label>
+            <input type="text" id="set-reception-venue" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label>Google Maps URL (Location):</label>
+            <input type="text" id="set-maps-url" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>YouTube Live Link:</label>
+            <input type="text" id="set-youtube-url" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Picture Gallery Link (Google Drive / Photos):</label>
+            <input type="text" id="set-gallery-url" class="form-control">
+          </div>
+
+          <button type="submit" class="btn btn-gold" style="width: 100%; margin-top: 10px;">
+            💾 Hifadhi Mabadiliko ya Harusi
+          </button>
+        </form>
+
+        <!-- NextSMS Integration Settings Box -->
+        <div style="margin-top: 28px; border-top: 1px solid var(--bg-glass-border); padding-top: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 class="font-serif gold-text">Mipangilio ya NextSMS API</h3>
+            <span class="badge badge-gold" id="sms-mode-badge">Simulation Mode</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+            Weka API Key yako ya NextSMS hapa ili mfumo utume SMS halisi moja kwa moja kwenye simu za wachangiaji.
+          </p>
+
+          <form id="sms-config-form">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label>NextSMS Username / Key:</label>
+                <input type="text" id="set-sms-username" class="form-control" placeholder="Weka username hapa">
+              </div>
+              <div class="form-group">
+                <label>NextSMS Password / Secret:</label>
+                <input type="password" id="set-sms-password" class="form-control" placeholder="Weka password hapa">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label>Sender ID (Jina la Mtumaji):</label>
+                <input type="text" id="set-sms-senderid" class="form-control" placeholder="SENDOFF" value="SENDOFF">
+              </div>
+              <div class="form-group">
+                <label>Hali ya Majaribio (Simulation):</label>
+                <select id="set-sms-simulation" class="form-control">
+                  <option value="true">NDIO - Majaribio (Haitumii salio la SMS)</option>
+                  <option value="false">HAPANA - Tuma SMS Halisi Moja kwa Moja</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Maelekezo ya Malipo (Lipa Namba ya Kamati inayoonekana kwenye SMS za madeni):</label>
+              <input type="text" id="set-sms-payment-details" class="form-control" placeholder="mfano: Lipa Namba M-Pesa: 552211 (Send-off ya Kelvin & Lilian)">
+            </div>
+
+            <!-- Thank You SMS (Strictly 1 SMS) -->
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label style="margin-bottom: 0;">Ujumbe wa Shukrani za Malipo (Thank You SMS):</label>
+                <span id="sms-thankyou-units-badge" class="badge badge-success" style="font-size: 0.78rem;">1 SMS (Herufi ~157 / 160)</span>
+              </div>
+              <textarea id="set-sms-thankyou-template" class="form-control" rows="3" style="font-family: monospace; font-size: 0.88rem; line-height: 1.45;"></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <small style="color: var(--text-muted); font-size: 0.76rem;">Ujumbe huu unatoka mtu anapotoa mchango. Kikomo: <strong>SMS 1 pekee</strong> (Herufi 160) na ina website domain.</small>
+                <small id="sms-thankyou-status-msg" style="color: #2ecc71; font-size: 0.76rem; font-weight: 600;">✓ Haitazidi SMS 1</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label style="margin-bottom: 0;">Ujumbe wa Kikumbusho cha Sendoff (SMS Template):</label>
+                <span id="sms-reminder-units-badge" class="badge badge-success" style="font-size: 0.78rem;">3 SMS (Herufi ~423 / 459)</span>
+              </div>
+              <textarea id="set-sms-reminder-template" class="form-control" rows="8" style="font-family: monospace; font-size: 0.88rem; line-height: 1.45;"></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <small style="color: var(--text-muted); font-size: 0.76rem;">Tumia <code>{name}</code> kuweka jina la mgeni. Kikomo: <strong>SMS 3</strong> (Herufi 459) na ina website domain.</small>
+                <small id="sms-reminder-status-msg" style="color: #2ecc71; font-size: 0.76rem; font-weight: 600;">✓ Haitazidi SMS 3</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Domain ya VPS / URL ya Mfumo (mfano: https://lilian.nyisu.com):</label>
+              <input type="text" id="set-sms-systemurl" class="form-control" placeholder="https://lilian.nyisu.com">
+              <small style="color: var(--text-muted); font-size: 0.75rem;">Link hii itatumika kiotomatiki kutuma viungo vya kadi za kidijitali za wageni kwenye SMS zao watakapomaliza mchango.</small>
+            </div>
+
+            <button type="submit" class="btn btn-gold" style="width: 100%;">
+              💾 Hifadhi Mipangilio ya NextSMS & VPS Domain
+            </button>
+          </form>
+
+          <!-- Quick Test SMS Box -->
+          <div style="margin-top: 20px; background: rgba(0, 0, 0, 0.35); border: 1px dashed var(--gold-primary); border-radius: 12px; padding: 14px 16px;">
+            <div style="font-weight: 700; color: var(--gold-light); margin-bottom: 6px; font-size: 0.95rem;">
+              🧪 Jaribu Kutuma SMS ya Majaribio (Test SMS via SENDOFF)
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">
+              Ingiza namba yoyote hapa kutuma ujumbe wa papo hapo kupitia jina jipya la <strong>SENDOFF</strong>.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <input type="text" id="test-sms-phone" class="form-control" placeholder="0787661560" value="0787661560" style="flex: 1; min-width: 200px;">
+              <button type="button" class="btn btn-emerald btn-sm" onclick="sendQuickTestSMS()" id="test-sms-btn">
+                🚀 Tuma SMS Sasa
+              </button>
+            </div>
+            <div id="test-sms-status" style="margin-top: 8px; font-size: 0.8rem;"></div>
+          </div>
+
+          <!-- WhatsApp Automated Card Dispatch Settings Box -->
+          <div style="margin-top: 28px; border-top: 1px solid var(--bg-glass-border); padding-top: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <h3 class="font-serif gold-text">Mipangilio ya Kutuma Kadi WhatsApp Kiotomatiki</h3>
+              <span class="badge badge-success">Auto WhatsApp Engine</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+              Mtu akimaliza kulipa mchango wake (Salio = Tsh 0), mfumo unamrushia moja kwa moja kadi ya picha, kodi ya mlangoni na ujumbe wa mwaliko kwenye WhatsApp yake.
+            </p>
+
+            <form id="whatsapp-config-form">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                  <label>Mtoa Huduma wa WhatsApp (Gateway):</label>
+                  <select id="set-wa-provider" class="form-control">
+                    <option value="UltraMsg">UltraMsg (Inapendekezwa & Rahisi Zaidi)</option>
+                    <option value="Meta">Meta Official Cloud API</option>
+                    <option value="Wasender">Wasender Gateway</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Hali ya Majaribio (Simulation):</label>
+                  <select id="set-wa-simulation" class="form-control">
+                    <option value="true">NDIO - Majaribio (Haitumii salio la API)</option>
+                    <option value="false">HAPANA - Tuma Kadi Halisi Moja kwa Moja WhatsApp</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                  <label>Instance ID / Phone Number ID:</label>
+                  <input type="text" id="set-wa-instance" class="form-control" placeholder="mfano: instance12345">
+                </div>
+                <div class="form-group">
+                  <label>API Token / Secret Key:</label>
+                  <input type="password" id="set-wa-token" class="form-control" placeholder="Weka token ya WhatsApp Gateway">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-whatsapp" style="width: 100%;">
+                💾 Hifadhi Mipangilio ya WhatsApp ya Kiotomatiki
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT GUEST -->
+  <div class="modal-overlay" id="guest-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('guest-modal')">&times;</button>
+      <h3 class="font-serif gold-text" id="modal-guest-title" style="margin-bottom: 16px;">Ongeza Mualikwa</h3>
+      
+      <form id="guest-form">
+        <div class="form-group">
+          <label>Jina Kamili la Mualikwa:</label>
+          <input type="text" id="guest-input-name" class="form-control" placeholder="mfano: Eng. Baraka Josephat" required>
+        </div>
+
+        <div class="form-group">
+          <label>Wadhifa / Uhusiano:</label>
+          <input type="text" id="guest-input-title" class="form-control" placeholder="mfano: Marafiki wa Ofisini, Ndugu, n.k.">
+        </div>
+
+        <div class="form-group">
+          <label>Namba ya Simu (WhatsApp - e.g. 255712345678):</label>
+          <input type="text" id="guest-input-phone" class="form-control" placeholder="2557XXXXXXXX" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Aina ya Kadi (Mwaliko):</label>
+            <select id="guest-input-seats" class="form-control" required>
+              <option value="1">👤 Single (Mtu 1)</option>
+              <option value="2" selected>👥 Double (Watu 2 / Mwenza)</option>
+              <option value="3">👨‍👩‍👧 Watu 3 (Familia)</option>
+              <option value="4">👨‍👩‍👧‍👦 Watu 4 (Kikundi)</option>
+              <option value="5">👥 Watu 5</option>
+              <option value="10">👑 Meza Nzima (Watu 10)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Panga Meza:</label>
+            <select id="guest-table-select" class="form-control">
+              <!-- Populated by admin.js -->
+            </select>
+          </div>
+        </div>
+
+
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Ahadi ya Mchango (Tsh):</label>
+            <input type="number" id="guest-input-pledge" class="form-control" value="200000" min="0" step="10000">
+          </div>
+          <div class="form-group">
+            <label>Kiasi Kilicholipwa (Tsh):</label>
+            <input type="number" id="guest-input-paid" class="form-control" value="0" min="0" step="10000">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width: 100%; margin-top: 10px;">
+          💾 Hifadhi Mualikwa
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: RECORD PAYMENT -->
+  <div class="modal-overlay" id="payment-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('payment-modal')">&times;</button>
+      <h3 class="font-serif gold-text" style="margin-bottom: 12px;">Weka Malipo ya Mchango</h3>
+      <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px;">
+        Mualikwa: <strong id="pay-guest-name" style="color: #ffffff;">-</strong>
+        <br>
+        <span id="pay-pledge">Ahadi: Tsh 0</span> | <span id="pay-current-paid" style="color: #2ecc71;">Imelipwa: Tsh 0</span>
+      </p>
+
+      <form id="payment-form">
+        <div class="form-group">
+          <label>Kiasi cha Malipo Mapya Yanayoingia (Tsh):</label>
+          <input type="number" id="pay-amount-input" class="form-control" placeholder="mfano: 100000" min="1000" step="1000" required oninput="updatePaymentPreview()">
+        </div>
+
+        <!-- Live Calculation and SMS Preview -->
+        <div id="payment-calc-box" style="background: rgba(4, 20, 14, 0.7); border: 1px solid var(--bg-glass-border); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span>Salio la Sasa:</span>
+            <strong id="pay-calc-current-bal" style="color: #e74c3c;">Tsh 0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Salio Jipya Baada ya Malipo Haya:</span>
+            <strong id="pay-calc-new-bal" style="color: #2ecc71;">Tsh 0</strong>
+          </div>
+          <div id="pay-sms-badge-wrap" style="margin-top: 8px;">
+            <span class="badge badge-success" id="pay-sms-badge">SMS ya Kiotomatiki</span>
+          </div>
+          <div style="margin-top: 8px; font-size: 0.78rem; color: var(--text-muted);">
+            <strong>Hakikisho la SMS itakayotumwa kiotomatiki:</strong>
+            <div id="pay-sms-preview-text" style="background: rgba(0,0,0,0.5); padding: 8px 10px; border-radius: 8px; color: #d1fae5; margin-top: 4px; font-family: monospace; font-size: 0.8rem; line-height: 1.4;">
+              Weka kiasi hapo juu kuona SMS itakavyoonekana...
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+          <input type="checkbox" id="pay-send-sms-checkbox" checked style="width: 18px; height: 18px; accent-color: var(--gold-primary);">
+          <label for="pay-send-sms-checkbox" style="margin-bottom: 0; font-size: 0.88rem; cursor: pointer; color: #ffffff;">
+            Tuma SMS ya kiotomatiki kwa mchangiaji huyu mara moja (NextSMS)
+          </label>
+        </div>
+
+        <button type="submit" id="pay-submit-btn" class="btn btn-gold" style="width: 100%;">
+          ✅ Sajili Malipo & Tuma SMS Kiotomatiki
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: 5-STAGE WHATSAPP REMINDER -->
+  <div class="modal-overlay" id="reminder-modal">
+    <div class="modal-box" style="max-width: 620px;">
+      <button class="modal-close" onclick="closeModal('reminder-modal')">&times;</button>
+      <h3 class="font-serif gold-text" style="margin-bottom: 6px;">Kukumbusha Michango x 5 (WhatsApp)</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px;">
+        Mualikwa: <strong id="reminder-guest-name" style="color: #ffffff;">-</strong>
+        <br>
+        <span id="reminder-pledge-info" style="color: var(--gold-light);"></span>
+      </p>
+
+      <!-- Stage Selector Tabs -->
+      <label style="font-size: 0.85rem; font-weight: 600; color: var(--gold-light); display: block; margin-bottom: 6px;">
+        Chagua Hatua ya Kikumbusho (Stage 1 - 5):
+      </label>
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 14px;">
+        <button type="button" class="btn btn-sm btn-emerald reminder-stage-btn active" data-stage="1" onclick="selectReminderStage(1)">H1: Salamu</button>
+        <button type="button" class="btn btn-sm btn-emerald reminder-stage-btn" data-stage="2" onclick="selectReminderStage(2)">H2: Maendeleo</button>
+        <button type="button" class="btn btn-sm btn-emerald reminder-stage-btn" data-stage="3" onclick="selectReminderStage(3)">H3: Kikao</button>
+        <button type="button" class="btn btn-sm btn-emerald reminder-stage-btn" data-stage="4" onclick="selectReminderStage(4)">H4: Wiki ya Mwisho</button>
+        <button type="button" class="btn btn-sm btn-emerald reminder-stage-btn" data-stage="5" onclick="selectReminderStage(5)">H5: Kadi & Meza</button>
+      </div>
+
+      <div class="form-group">
+        <label>Ujumbe Utakaotumwa kwa WhatsApp (Unaweza kuhariri):</label>
+        <textarea id="reminder-message-preview" class="form-control" rows="8" style="font-size: 0.88rem; line-height: 1.5;"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 14px;">
+        <button type="button" class="btn btn-whatsapp" style="flex: 1;" onclick="sendSelectedReminder()">
+          📲 Tuma kwa WhatsApp Sasa
+        </button>
+        <button type="button" class="btn btn-outline-gold" onclick="closeModal('reminder-modal')">
+          Funga
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SENDOFF WHATSAPP & PHOTO CARD DISPATCH -->
+  <div class="modal-overlay" id="whatsapp-sendoff-modal">
+    <div class="modal-box" style="max-width: 920px; max-height: 94vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeModal('whatsapp-sendoff-modal')">&times;</button>
+      
+      <!-- Top Navigation & Guest Status Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--bg-glass-border); padding-bottom: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="font-serif gold-text" style="font-size: 1.25rem; margin-bottom: 0;">
+              💌 Kadi & Ujumbe wa Mwaliko
+            </h3>
+            <span class="badge badge-gold" id="wa-card-guest-code-badge" style="font-size: 0.82rem; font-weight: 700; padding: 4px 8px;">
+              Kodi: 4829
+            </span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; margin-bottom: 0;">
+            Mualikwa: <strong id="wa-card-guest-name" style="color: #ffffff;">-</strong> | 
+            <span id="wa-card-guest-seats" style="color: var(--gold-light);">2 Viti</span> | 
+            <span id="wa-card-guest-table" style="color: #a7f3d0;">Meza ya VIP 1</span>
+          </p>
+        </div>
+
+        <!-- Fast 500-Guest Queue Step Controls -->
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-sm btn-outline-gold" onclick="navigateSendoffGuest(-1)" title="Fungua mgeni aliyepita">
+            ⬅️ Aliyepita
+          </button>
+          <span id="wa-queue-counter" style="font-size: 0.82rem; color: var(--gold-light); font-weight: 700; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--gold-primary);">
+            Mgeni 1 / 10
+          </span>
+          <button type="button" class="btn btn-sm btn-gold" onclick="navigateSendoffGuest(1)" title="Fungua mgeni anayefuata">
+            Anayefuata ➡️
+          </button>
+        </div>
+      </div>
+
+      <div class="sendoff-dispatch-layout">
+        <!-- Left Side: Live Card Image Canvas Preview & Download -->
+        <div class="sendoff-card-col">
+          <div class="card-preview-container">
+            <canvas id="sendoff-card-canvas" width="1080" height="1440" style="display: none;"></canvas>
+            <img id="sendoff-card-img-preview" src="" alt="Kadi ya Send-off" style="width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); border: 2px solid var(--gold-primary); display: block;">
+            
+            <div id="card-generating-spinner" style="padding: 40px 20px; text-align: center; color: var(--gold-light); display: none;">
+              <div style="font-size: 2.2rem; margin-bottom: 10px;">🎨</div>
+              <div style="font-weight: 600;">Inatengeneza Kadi ya Picha...</div>
+            </div>
+          </div>
+
+          <!-- Action Buttons for Image & Single SMS -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+            <button type="button" class="btn btn-gold btn-sm" onclick="downloadSendoffCard()">
+              📥 Pakua Picha (PNG)
+            </button>
+            <button type="button" class="btn btn-outline-gold btn-sm" onclick="copySendoffCardImage()" id="btn-copy-card-img">
+              📋 Nakili Picha
+            </button>
+          </div>
+
+          <!-- Direct 1-Click SMS Button -->
+          <div style="margin-top: 10px;">
+            <button type="button" class="btn btn-emerald btn-sm" style="width: 100%; font-size: 0.82rem;" onclick="sendSingleGuestInvitationSMS()">
+              📨 Tuma SMS Rasmi yenye Pass Code (SENDOFF)
+            </button>
+          </div>
+
+          <div style="font-size: 0.76rem; color: var(--text-muted); text-align: center; margin-top: 8px; line-height: 1.4;">
+            💡 <em>Ukiwa kwenye WhatsApp Web, bonyeza "Nakili Picha" kisha paste (Ctrl+V) moja kwa moja kwenye chat!</em>
+          </div>
+        </div>
+
+        <!-- Right Side: The 3 WhatsApp Messages Sequence -->
+        <div class="sendoff-messages-col">
+          
+          <div class="wa-msg-tabs">
+            <button class="wa-msg-tab active" onclick="selectWaMsgTab(1)">1️⃣ Mwaliko (Kadi & Pass)</button>
+            <button class="wa-msg-tab" onclick="selectWaMsgTab(2)">2️⃣ Location</button>
+            <button class="wa-msg-tab" onclick="selectWaMsgTab(3)">3️⃣ Dress Code & Ratiba</button>
+          </div>
+
+          <!-- Message Panel 1: Card Invite -->
+          <div class="wa-msg-panel active" id="wa-panel-1">
+            <div class="wa-panel-header">
+              <span class="wa-badge">Ujumbe wa 1</span>
+              <strong>Mwaliko Pamoja na Kodi ya Mlangoni</strong>
+            </div>
+            <p class="wa-hint">Tuma ujumbe huu kwa mgeni pamoja na picha ya kadi uliyoipakua/kuinakili:</p>
+            <textarea id="wa-text-msg-1" class="form-control wa-textarea" rows="7"></textarea>
+            <div class="wa-action-bar">
+              <button class="btn btn-whatsapp" onclick="sendWhatsAppDirect(1)">
+                📲 Tuma Ujumbe 1 WhatsApp
+              </button>
+              <button class="btn btn-sm btn-outline-gold" onclick="copyWaText(1)">
+                📋 Nakili Maneno
+              </button>
+            </div>
+          </div>
+
+          <!-- Message Panel 2: Venue Location -->
+          <div class="wa-msg-panel" id="wa-panel-2">
+            <div class="wa-panel-header">
+              <span class="wa-badge">Ujumbe wa 2</span>
+              <strong>Location ya Ukumbi (Google Maps)</strong>
+            </div>
+            <p class="wa-hint">Ujumbe unaompa mgeni ramani ya moja kwa moja ya ukumbi bila kupotea:</p>
+            <textarea id="wa-text-msg-2" class="form-control wa-textarea" rows="6"></textarea>
+            <div class="wa-action-bar">
+              <button class="btn btn-whatsapp" onclick="sendWhatsAppDirect(2)">
+                📍 Tuma Location WhatsApp
+              </button>
+              <button class="btn btn-sm btn-outline-gold" onclick="copyWaText(2)">
+                📋 Nakili Maneno
+              </button>
+            </div>
+          </div>
+
+          <!-- Message Panel 3: Dress Code & Schedule -->
+          <div class="wa-msg-panel" id="wa-panel-3">
+            <div class="wa-panel-header">
+              <span class="wa-badge">Ujumbe wa 3</span>
+              <strong>Dress Code & Ratiba ya Muda</strong>
+            </div>
+            <p class="wa-hint">Rangi ya nguo za sherehe (Emerald Green & Gold) na muda wa kuingia ukumbini:</p>
+            <textarea id="wa-text-msg-3" class="form-control wa-textarea" rows="7"></textarea>
+            <div class="wa-action-bar">
+              <button class="btn btn-whatsapp" onclick="sendWhatsAppDirect(3)">
+                👗 Tuma Dress Code & Ratiba WhatsApp
+              </button>
+              <button class="btn btn-sm btn-outline-gold" onclick="copyWaText(3)">
+                📋 Nakili Maneno
+              </button>
+            </div>
+          </div>
+
+          <!-- Fast Step Next Guest Footer -->
+          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(212, 175, 55, 0.3); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <button type="button" class="btn btn-sm btn-outline-gold" onclick="navigateSendoffGuest(-1)">
+              ⬅️ Mgeni Aliyepita
+            </button>
+            <button type="button" class="btn btn-sm btn-gold" onclick="navigateSendoffGuest(1)" style="font-weight: 700;">
+              Nimemaliza Huyu, Fungua Anayefuata ➡️
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BULK SEND INVITATION SMS (FOR 500 GUESTS) -->
+  <div class="modal-overlay" id="bulk-invitation-modal">
+    <div class="modal-box" style="max-width: 650px;">
+      <button class="modal-close" onclick="closeModal('bulk-invitation-modal')">&times;</button>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <span style="font-size: 1.8rem;">🚀</span>
+        <div>
+          <h3 class="font-serif gold-text" style="font-size: 1.3rem; margin-bottom: 2px;">
+            Tuma SMS za Mwaliko kwa Wageni Wote
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0;">
+            Tuma mwaliko rasmi wenye Meza na Kodi ya Tarakimu 4 ya kuingilia mlangoni mara moja.
+          </p>
+        </div>
+      </div>
+
+      <div style="background: rgba(4, 20, 14, 0.7); border: 1px solid var(--gold-primary); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.88rem;">
+          <span>Jumla ya Wageni Watakaopokea:</span>
+          <strong id="bulk-sms-recipient-count" style="color: #2ecc71; font-size: 1.05rem;">0 Wageni</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.88rem;">
+          <span>Jina la Mtumaji (Sender ID):</span>
+          <strong style="color: var(--gold-light);">SENDOFF</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.88rem;">
+          <span>Usalama Getini:</span>
+          <strong style="color: #ffffff;">Kila mgeni anapata Kodi yake ya kipekee ya tarakimu 4</strong>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--gold-light); display: block; margin-bottom: 4px;">
+          Hakikisho la Ujumbe wa SMS Utakaotumwa (Sample Preview):
+        </label>
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--bg-glass-border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 0.82rem; line-height: 1.4; color: #d1fae5;" id="bulk-sms-preview-sample">
+          Habari Ndugu [Jina la Mgeni], unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 13/10/2026 ukumbi wa Mlimani City kuanzia saa 12:30 jioni. Meza yako ni: [Meza] (Viti [Viti]). Kodi yako ya kuingilia mlangoni ni: [4829]. Karibu sana!
+        </div>
+      </div>
+
+      <div id="bulk-sms-progress-wrap" style="display: none; margin-bottom: 14px; text-align: center;">
+        <div style="font-size: 1.5rem; margin-bottom: 6px;">⏳</div>
+        <div style="font-weight: 700; color: var(--gold-light);" id="bulk-sms-progress-text">Inatuma SMS... Tafadhali subiri sekunde chache.</div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn btn-emerald" id="btn-start-bulk-sms" style="flex: 1; font-weight: 700;" onclick="executeBulkInvitationSMS()">
+          🚀 Anza Kutuma SMS Zote Mara Moja
+        </button>
+        <button type="button" class="btn btn-outline-gold" onclick="closeModal('bulk-invitation-modal')">
+          Ghairi
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- PRINTABLE OFFICIAL FINANCIAL STATEMENT (Used for print / save PDF) -->
+  <div id="printable-financial-statement">
+    <div class="print-header">
+      <h1 id="print-event-title">RIPOTI RASMI YA FEDHA NA MICHANGO YA HARUSI</h1>
+      <p id="print-event-sub">KAMATI YA SEND-OFF YA KELVIN & LILIAN | TAREHE YA KIKAO: <span id="print-report-date"></span></p>
+      <p>Mfumo wa Kidijitali wa Nyahende Smart Invitations</p>
+    </div>
+
+    <!-- 4 Summary Boxes -->
+    <div class="print-summary-boxes">
+      <div class="print-box">
+        <div class="val" id="print-stat-target">Tsh 0</div>
+        <div class="lbl">Jumla ya Lengo / Ahadi</div>
+      </div>
+      <div class="print-box">
+        <div class="val" id="print-stat-paid" style="color: #27ae60;">Tsh 0</div>
+        <div class="lbl">Jumla Iliyokusanywa</div>
+      </div>
+      <div class="print-box">
+        <div class="val" id="print-stat-balance" style="color: #c0392b;">Tsh 0</div>
+        <div class="lbl">Madeni Yanayodaiwa</div>
+      </div>
+      <div class="print-box">
+        <div class="val" id="print-stat-percent">0%</div>
+        <div class="lbl">Kiwango cha Utekelezaji</div>
+      </div>
+    </div>
+
+    <!-- Table of all contributors -->
+    <h3 style="font-size: 1rem; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px;">
+      ORODHA YA WACHANGIAJI NA HALI YA MICHANGO
+    </h3>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th>Na.</th>
+          <th>Jina Kamili la Mualikwa</th>
+          <th>Cheo / Uhusiano</th>
+          <th>Simu</th>
+          <th>Ahadi (Tsh)</th>
+          <th>Iliyolipwa (Tsh)</th>
+          <th>Salio (Tsh)</th>
+          <th>Hali</th>
+        </tr>
+      </thead>
+      <tbody id="print-table-body">
+        <!-- Populated by admin.js -->
+      </tbody>
+    </table>
+
+    <!-- Signatures -->
+    <div class="print-signatures">
+      <div class="print-sig-line">
+        <strong>Mwenyekiti wa Kamati</strong>
+        <br><br>
+        Saini: ____________________
+      </div>
+      <div class="print-sig-line">
+        <strong>Katibu Mkuu</strong>
+        <br><br>
+        Saini: ____________________
+      </div>
+      <div class="print-sig-line">
+        <strong>Mhazini (Mtunza Hazina)</strong>
+        <br><br>
+        Saini: ____________________
+      </div>
+  <!-- MODAL: ADD / EDIT DRINK -->
+  <div class="modal-overlay" id="drink-modal">
+    <div class="modal-box" style="max-width: 520px;">
+      <button class="modal-close" onclick="closeModal('drink-modal')">&times;</button>
+      <h3 class="font-serif gold-text" id="drink-modal-title" style="margin-bottom: 14px;">Ongeza Kinywaji Kipya</h3>
+      
+      <form id="drink-form" onsubmit="handleSaveDrink(event)">
+        <input type="hidden" id="drink-edit-id">
+        <input type="hidden" id="drink-image-url">
+
+        <div class="form-group">
+          <label>Jina la Kinywaji:</label>
+          <input type="text" id="drink-input-name" class="form-control" placeholder="mfano: Moët & Chandon Brut, Heineken..." required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Kategoria:</label>
+            <select id="drink-input-category" class="form-control" required>
+              <option value="Champagne & Wine">🍾 Champagne & Wine</option>
+              <option value="Whiskeys & Spirits">🥃 Whiskeys & Spirits</option>
+              <option value="Bia & Ciders">🍺 Bia & Ciders</option>
+              <option value="Juisi & Vinywaji Baridi">🍹 Juisi & Vinywaji Baridi</option>
+              <option value="Maji">💧 Maji Safi</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Aikoni / Emoji:</label>
+            <input type="text" id="drink-input-icon" class="form-control" value="🍹" placeholder="🍺, 🍷, 🍾, 🥃, 🍸..." required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Maelezo Fupi (Hiari):</label>
+          <input type="text" id="drink-input-desc" class="form-control" placeholder="mfano: Very Special Cognac / Chilled Lager">
+        </div>
+
+        <!-- Photo Upload Box with Live Preview -->
+        <div class="form-group" style="margin-top: 10px;">
+          <label>Picha ya Kinywaji (Hiari):</label>
+          <div style="display: flex; gap: 12px; align-items: center; background: rgba(4, 20, 14, 0.7); border: 1px dashed var(--gold-primary); border-radius: 12px; padding: 12px;">
+            <div id="drink-preview-box" style="width: 60px; height: 60px; border-radius: 8px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); font-size: 1.8rem;">
+              🍹
+            </div>
+            <div style="flex: 1;">
+              <input type="file" id="drink-file-input" accept="image/*" class="form-control" style="font-size: 0.78rem; padding: 6px;" onchange="previewDrinkImageFile(event)">
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Pakia picha ya chupa au glasi ya kinywaji hiki.</div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold" id="btn-save-drink" style="width: 100%; margin-top: 16px;">
+          💾 Hifadhi Kinywaji
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

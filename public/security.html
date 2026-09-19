@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Gate Scanner | Nyahende Gate Scan</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/security.css">
+  <!-- HTML5 QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <a href="/security" class="navbar-brand">
+      <span class="logo-icon">🛡️</span>
+      <div>
+        <div class="brand-title">SECURITY GATE SCAN</div>
+        <div class="brand-sub">NYAHENDE GATE SCAN</div>
+      </div>
+    </a>
+
+    <div style="display: flex; gap: 8px;">
+      <a href="/admin" class="btn btn-outline-gold btn-sm">📊 Kamati App</a>
+      <a href="/" class="btn btn-emerald btn-sm">🏠 Mwanzo</a>
+    </div>
+  </nav>
+
+  <div class="scanner-container">
+
+    <!-- Header & Instructions -->
+    <div class="security-header">
+      <div class="security-badge">GATE ACCESS CONTROL</div>
+      <h1 class="security-title">Ukaguzi wa Kadi za Mwaliko</h1>
+      <p class="security-sub">Scan QR Code ya kadi au ingiza Kodi ya mgeni ya tarakimu 4 (mfano: 4829) kuthibitisha papo hapo.</p>
+    </div>
+
+    <!-- Live Gate Attendance Statistics -->
+    <div class="gate-stats">
+      <div class="gate-stat-box">
+        <div class="gate-stat-num" id="gate-scanned-count" style="color: #2ecc71;">0</div>
+        <div class="gate-stat-label">Walioingia (Ndani)</div>
+      </div>
+      <div class="gate-stat-box">
+        <div class="gate-stat-num" id="gate-confirmed-count" style="color: var(--gold-light);">0</div>
+        <div class="gate-stat-label">Waliodhibitisha</div>
+      </div>
+      <div class="gate-stat-box">
+        <div class="gate-stat-num" id="gate-remaining-count" style="color: #f39c12;">0</div>
+        <div class="gate-stat-label">Bado Kuingia</div>
+      </div>
+    </div>
+
+    <!-- Camera Scanning Viewport -->
+    <div class="scanner-viewport-wrap">
+      <div id="reader"></div>
+      
+      <!-- Optical Target Overlay -->
+      <div class="scan-overlay-target">
+        <div class="scan-laser-beam"></div>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; text-align: center;">
+      <button id="toggle-camera-btn" class="btn btn-gold" style="width: 100%;">
+        📷 Washa Kamera ya Simu Kuscan
+      </button>
+    </div>
+
+    <!-- Manual Name, Phone, or Code Fallback -->
+    <div class="glass-card" style="margin-top: 18px; padding: 16px;">
+      <div style="font-size: 0.9rem; color: var(--gold-light); font-weight: 700; margin-bottom: 4px;">
+        🔍 Ukaguzi wa Kodi (Pass), Jina au Simu (Bila QR Code):
+      </div>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">
+        Weka Kodi ya siri ya mgeni ya tarakimu 4 (kutoka kwenye SMS au kadi yake), au andika jina/simu yake:
+      </p>
+      <form id="manual-code-form" class="manual-entry-box">
+        <input type="text" id="manual-code-input" class="form-control" placeholder="Kodi ya tarakimu 4 (mfano: 4829), Jina au Simu..." required>
+        <button type="submit" class="btn btn-emerald" style="padding: 0 20px;">
+          Kagua
+        </button>
+      </form>
+    </div>
+
+    <!-- Scan & Verification Result Card Area -->
+    <div id="scan-result-container">
+      <!-- Result pops in dynamically -->
+    </div>
+
+    <!-- Recent Scanned Log -->
+    <div class="recent-scans-box">
+      <div class="recent-scans-title">
+        <span>Kumbukumbu ya Waliopita Getini (Recent Scans)</span>
+        <button class="btn btn-outline-gold btn-sm" onclick="loadGateStats()" style="padding: 2px 10px; font-size: 0.75rem;">
+          🔄 Sasisha
+        </button>
+      </div>
+      <div class="scanned-list" id="recent-scans-list">
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.82rem; padding: 12px;">
+          Bado hakuna mgeni aliyekaguliwa getini kwa sasa.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/js/security.js"></script>
+</body>
+</html>

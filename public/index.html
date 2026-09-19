@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👑 Send-off ya Lilian Marcus Nyahende | Sherehe ya Kifalme (13/10/2026)</title>
+  
+  <!-- Favicon & Mobile App Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" type="image/jpeg" href="/og-image.jpg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#071510">
+
+  <!-- Open Graph / Facebook / WhatsApp / SMS Rich Link Previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lilian.nyisu.com/">
+  <meta property="og:site_name" content="Send-off ya Lilian Marcus Nyahende">
+  <meta property="og:title" content="👑 Send-off ya Lilian Marcus Nyahende | 13 Oktoba 2026">
+  <meta property="og:description" content="Tovuti Rasmi ya Maandalizi na Kadi za Mwaliko wa Send-off ya Lilian Marcus Nyahende. Fungua kadi yako, hadithi ya safari ya Lilian, na ratiba ya ukumbi wa Mlimani City.">
+  <meta property="og:image" content="https://lilian.nyisu.com/images/lilian_sendoff.jpg">
+  <meta property="og:image:secure_url" content="https://lilian.nyisu.com/images/lilian_sendoff.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1024">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lilian.nyisu.com/">
+  <meta name="twitter:title" content="👑 Send-off ya Lilian Marcus Nyahende | 13 Oktoba 2026">
+  <meta name="twitter:description" content="Tovuti Rasmi ya Send-off ya Lilian Marcus Nyahende. Fungua kadi yako na ratiba hapa.">
+  <meta name="twitter:image" content="https://lilian.nyisu.com/images/lilian_sendoff.jpg">
+
+  <!-- Fonts & Meta -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/wedding.css">
+</head>
+<body>
+
+  <!-- Top Wedding Navbar with Secret Committee Button -->
+  <header class="wedding-navbar">
+    <a href="/" class="wedding-brand">
+      <div class="wedding-logo-emblem">👑</div>
+      <div class="wedding-brand-text">
+        <div class="couple-initials">Lilian & Kelvin</div>
+        <div class="wedding-date-tag">13 OKTOBA 2026 &bull; DAR ES SALAAM</div>
+      </div>
+    </a>
+
+    <!-- Center Nav Links -->
+    <nav class="wedding-nav-links">
+      <a href="#hero">Nyumbani</a>
+      <a href="#lookup">Kadi Yangu</a>
+      <a href="#story">Hadithi ya Lilian</a>
+      <a href="#gallery">Picha</a>
+      <a href="#timeline">Ratiba</a>
+      <a href="#venue">Ukumbi</a>
+      <a href="#dresscode">Dress Code</a>
+      <a href="#wishes">Pongezi</a>
+    </nav>
+
+    <!-- Top Right Actions: Music Player & Discreet Committee Button -->
+    <div class="wedding-nav-actions">
+      <button type="button" class="btn-music-toggle" id="music-toggle-btn" onclick="toggleWeddingMusic()">
+        🎵 Muziki wa Harusi
+      </button>
+
+      <!-- DISCREET COMMITTEE BUTTON WITH PASSWORD 2030 -->
+      <button type="button" class="btn-kamati-lock" onclick="openKamatiPinModal()" title="Bofya kuingiza nenosiri la Kamati">
+        🔐 Kamati VIP
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="wedding-hero" id="hero">
+    <div class="hero-content">
+      <div class="hero-royal-badge pulse">
+        ✨ MWALIKO RASMI WA SEND-OFF YA KIFALME — LILIAN
+      </div>
+
+      <!-- Couple Photo Portrait Avatar -->
+      <div class="hero-couple-avatar">
+        <img src="/images/lilian_sendoff.jpg" alt="Lilian Send-off">
+      </div>
+
+      <h1 class="hero-couple-title">Lilian & Kelvin</h1>
+      <div class="hero-event-subtitle">Send-Off ya Kifalme & Agano la Upendo</div>
+
+      <p class="hero-quote">
+        "Kutoka Tarime hadi Dar es Salaam — safari ya malezi mema, bidii, na muujiza wa upendo. Tunayo furaha kubwa kuwakaribisha ndugu, jamaa na marafiki kushuhudia usiku huu wa baraka."
+      </p>
+
+      <div class="hero-event-details-bar">
+        <span>📅 13 Oktoba 2026</span>
+        <span>&bull;</span>
+        <span>⏰ Saa 12:30 Jioni</span>
+        <span>&bull;</span>
+        <span>🏛️ Mlimani City Conference Hall, Dar es Salaam</span>
+      </div>
+
+      <!-- Live Countdown Timer -->
+      <div class="countdown-container">
+        <div class="countdown-box">
+          <div class="countdown-num" id="cd-days">00</div>
+          <div class="countdown-label">Siku</div>
+        </div>
+        <div class="countdown-box">
+          <div class="countdown-num" id="cd-hours">00</div>
+          <div class="countdown-label">Masaa</div>
+        </div>
+        <div class="countdown-box">
+          <div class="countdown-num" id="cd-mins">00</div>
+          <div class="countdown-label">Dakika</div>
+        </div>
+        <div class="countdown-box">
+          <div class="countdown-num" id="cd-secs">00</div>
+          <div class="countdown-label">Sekunde</div>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="hero-cta-group">
+        <a href="/invite/1" class="btn btn-gold btn-lg">
+          💌 Mfano wa Kadi ya VIP
+        </a>
+        <a href="#venue" class="btn btn-outline-gold btn-lg">
+          📍 Ramani ya Ukumbi
+        </a>
+        <a href="#wishes" class="btn btn-emerald btn-lg">
+          ✍️ Tuma Pongezi
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guest Card Lookup Floating Section -->
+  <div class="lookup-section" id="lookup">
+    <div class="lookup-card">
+      <h3 class="font-serif gold-text" style="font-size: 1.4rem; margin-bottom: 8px;">
+        🔍 Fungua Kadi Yako Rasmi ya VIP & Kodi ya Mlangoni
+      </h3>
+      <p style="font-size: 0.92rem; color: var(--text-secondary);">
+        Ingiza jina lako, namba ya simu au Kodi yako ya Tarakimu 4 uliyotumiwa kwenye SMS/WhatsApp:
+      </p>
+
+      <form id="guest-lookup-form" class="lookup-input-wrap">
+        <input type="text" id="lookup-query-input" placeholder="mfano: 4829 au 0712345678 au Baraka..." required>
+        <button type="submit" class="btn btn-gold">
+          Fungua Kadi Yangu ➔
+        </button>
+      </form>
+      <div id="lookup-status" style="margin-top: 10px; font-size: 0.88rem;"></div>
+    </div>
+  </div>
+
+  <!-- Love Story Section -->
+  <section class="wedding-section" id="story">
+    <div class="section-header">
+      <span class="section-tag">SAFARI YA MAISHA NA UPENDO</span>
+      <h2 class="section-title">Hadithi ya Lilian: Kutoka Tarime Hadi Dar es Salaam</h2>
+      <p class="section-desc">
+        Safari ya malezi mema mkoani Mara, bidii ya kujiendeleza jijini Dar es Salaam, na muungano wa upendo wa dhati na mchumba wake Kelvin unaotupeleka kwenye usiku wa kifalme wa Send-off tarehe 13 Oktoba 2026.
+      </p>
+    </div>
+
+    <!-- Lead Quote Banner -->
+    <div class="story-lead-banner">
+      <p class="story-lead-quote">
+        "Kila hatua ya safari ya maisha yangu imekuwa ushuhuda wa neema ya Mungu, malezi ya wazazi wangu wenye upendo kutoka Tarime, na baraka ya kukutana na mtu anayeithamini na kuipenda roho yangu kwa dhati."
+      </p>
+      <div class="story-lead-author">✨ LILIAN — BIBI HARUSI MTARAJIWA ✨</div>
+    </div>
+
+    <div class="story-grid">
+      <!-- Chapter 1 -->
+      <div class="story-card">
+        <div class="story-card-header">
+          <span class="story-badge">Utotoni & Asili</span>
+          <span class="story-step-num">01</span>
+        </div>
+        <div class="story-icon">🌄</div>
+        <h3>Mwanzo Wenye Baraka — Tarime, Mara</h3>
+        <p>
+          Lilian alizaliwa na kulelewa katika mji wa Tarime, Mkoa wa Mara — ardhi yenye mandhari tulivu, misingi imara ya heshima na mila zenye staha. Tangu utotoni, Lilian alijulikana kwa furaha, tabasamu lenye bashasha, unyenyekevu na bidii ya pekee masomoni akiwa mtiifu na fahari kubwa kwa wazazi na familia yake.
+        </p>
+      </div>
+
+      <!-- Chapter 2 -->
+      <div class="story-card">
+        <div class="story-card-header">
+          <span class="story-badge">Ndoto & Safari</span>
+          <span class="story-step-num">02</span>
+        </div>
+        <div class="story-icon">🏙️</div>
+        <h3>Safari ya Kuelekea Dar es Salaam</h3>
+        <p>
+          Safari ya kimaisha ilimleta Lilian jijini Dar es Salaam kufungua ukurasa mpya wa kujiendeleza. Akiwa amebeba maadili safi ya nyumbani, sala za wazazi na moyo thabiti wa ujasiri, alikabiliana na mikiki ya jiji kubwa kwa umakini na nidhamu ya hali ya juu akilenga kufikia kilele cha ndoto zake.
+        </p>
+      </div>
+
+      <!-- Chapter 3 -->
+      <div class="story-card">
+        <div class="story-card-header">
+          <span class="story-badge">Kazi & Weledi</span>
+          <span class="story-step-num">03</span>
+        </div>
+        <div class="story-icon">💼</div>
+        <h3>Kazi na Kujituma Jijini Dar</h3>
+        <p>
+          Kwa uadilifu, hekima na uchapakazi usioteteleka, Lilian alifanikiwa kupata kazi nzuri na yenye hadhi jijini Dar es Salaam. Alijituma kazini kwa uaminifu mkubwa, akajenga sifa njema na kuaminika, akiendelea kuwa tegemeo imara na heshima kubwa kwa wazazi waliomlea kwa jasho na sala.
+        </p>
+      </div>
+
+      <!-- Chapter 4 -->
+      <div class="story-card">
+        <div class="story-card-header">
+          <span class="story-badge">Upendo wa Dhati</span>
+          <span class="story-step-num">04</span>
+        </div>
+        <div class="story-icon">💍</div>
+        <h3>Kupata Mchumba — Kelvin</h3>
+        <p>
+          Jijini Dar es Salaam, mikono ya Mwenyezi Mungu iliunganisha hatua zake na Kelvin. Urafiki wao ulichanua kwa heshima ya dhati, uaminifu na maono yanayofanana ya maisha, hadi Kelvin alipopiga goti na kumwomba awe ubavu wake wa milele. Kwa machozi ya shukrani na furaha, Lilian akajibu "NDIYO!"
+        </p>
+      </div>
+
+      <!-- Chapter 5 (Featured) -->
+      <div class="story-card featured">
+        <div class="story-card-header">
+          <span class="story-badge">Send-Off ya Kifalme</span>
+          <span class="story-step-num">05</span>
+        </div>
+        <div class="story-icon">👑</div>
+        <h3>Send-Off ya Kifahari — 13 Oktoba 2026</h3>
+        <p>
+          Huu ndio usiku wa heshima na vigelegele wa kumuaga binti kipenzi cha Tarime! Tarehe 13 mwezi wa 10 (13 Oktoba 2026), Mlimani City Conference Hall, wazazi, ndugu, jamaa na Kamati yote wanakusanyika kwa shangwe kumtakia safari njema kuelekea maisha mapya ya ndoa yenye baraka tele.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Photo Gallery Section -->
+  <section class="wedding-section" id="gallery" style="background: rgba(3, 14, 9, 0.5); border-radius: 28px; margin-bottom: 60px;">
+    <div class="section-header">
+      <span class="section-tag">MATUNZIO YA SHEREHE</span>
+      <h2 class="section-title">Picha za Maharusi & Ukumbi</h2>
+      <p class="section-desc">
+        Kumbukumbu nzuri za safari ya maandalizi ya usiku wetu wa kihistoria.
+      </p>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="/images/wedding_couple.jpg" alt="Lilian & Kelvin Royal Portrait">
+        <div class="gallery-overlay">
+          <h4>Lilian & Kelvin</h4>
+          <p>Royal Emerald & Gold Elegance</p>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="/images/lilian_sendoff.jpg" alt="Bibi Harusi Lilian">
+        <div class="gallery-overlay">
+          <h4>Bibi Harusi Mtarajiwa (Lilian)</h4>
+          <p>Usiku wa Send-Off ya Kifalme</p>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="/images/wedding_venue.jpg" alt="Mlimani City Banquet Hall">
+        <div class="gallery-overlay">
+          <h4>Mlimani City Conference Hall</h4>
+          <p>Ukumbi wa Sherehe & Champagne Gala</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Program & Timeline Section -->
+  <section class="wedding-section" id="timeline">
+    <div class="section-header">
+      <span class="section-tag">RATIBA YA TUKIO</span>
+      <h2 class="section-title">Ratiba ya Sherehe</h2>
+      <p class="section-desc">
+        Tafadhali zingatia muda ili upate nafasi nzuri ya kushuhudia matukio yote ya kipekee.
+      </p>
+    </div>
+
+    <div class="timeline-container">
+      <div class="timeline-item">
+        <div class="timeline-time-badge">SAA 12:00 JIONI</div>
+        <div class="timeline-content">
+          <h4>Kuwasili kwa Wageni & Red Carpet Reception</h4>
+          <p>Wageni waalikwa wanapokelewa, kupigwa picha kwenye Photo Booth rasmi na kuelekezwa kwenye meza zao za VIP kwa kutumia kodi ya getini.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-time-badge">SAA 1:30 USIKU</div>
+        <div class="timeline-content">
+          <h4>Kuingia kwa Kishindo kwa Bibi Harusi (Lilian)</h4>
+          <p>Kuingia rasmi kwa Bibi Harusi akiwa na wasindikizaji wake kwa shangwe, vigelegele na shamrashamra za kifalme.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-time-badge">SAA 2:15 USIKU</div>
+        <div class="timeline-content">
+          <h4>Neno la Shukrani kutoka kwa Wazazi & Viongozi</h4>
+          <p>Ujumbe mzito wa baraka, mawaidha na shukrani za dhati kutoka kwa wazazi wa pande zote mbili na Mwenyekiti wa Kamati.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-time-badge">SAA 2:45 USIKU</div>
+        <div class="timeline-content">
+          <h4>Chakula cha Usiku (Buffet Banquet) & Toast</h4>
+          <p>Kufungua meza kuu ya chakula cha kifalme, vinywaji baridi na toast ya champagne ya kuwatakia maisha marefu maharusi.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-time-badge">SAA 3:45 USIKU</div>
+        <div class="timeline-content">
+          <h4>Kukata Keki, Zawadi & Pongezi za Wageni</h4>
+          <p>Tukio la kukata keki ya kifahari, kutoa zawadi maalumu na wageni kupata fursa ya kupiga picha na maharusi.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-time-badge">SAA 5:00 USIKU</div>
+        <div class="timeline-content">
+          <h4>Dansi Kuu ya Maharusi & Muziki Mwanana</h4>
+          <p>Maharusi wanafungua uwanja wa dansi, kufuatiwa na burudani safi ya muziki hadi mwisho wa sherehe.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Venue & Directions Section -->
+  <section class="wedding-section" id="venue">
+    <div class="section-header">
+      <span class="section-tag">UKUMBI & MAELEKEZO</span>
+      <h2 class="section-title">Ukumbi wa Sherehe</h2>
+      <p class="section-desc">
+        Mlimani City Conference Hall, Barabara ya Sam Nujoma, Dar es Salaam.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; align-items: center;">
+      <div class="glass-card">
+        <h3 class="font-serif gold-text" style="font-size: 1.5rem; margin-bottom: 12px;">Mlimani City Conference Hall</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 18px; line-height: 1.6;">
+          Ukumbi wa kisasa na wenye hadhi ya juu, ukiwa na ulinzi wa kutosha, maegesho salama ya magari (parking ya bure), kiyoyozi tulivu na mazingira ya kupendeza ya kupiga picha.
+        </p>
+
+        <ul class="feature-list" style="margin-bottom: 24px;">
+          <li><span>✓</span> Maegesho Salama (Free VIP Parking)</li>
+          <li><span>✓</span> Ulinzi wa Getini kwa QR Code & Namba Maalumu</li>
+          <li><span>✓</span> Viti na Meza Zilizopangwa Kisasa</li>
+        </ul>
+
+        <a href="https://maps.google.com/?q=Mlimani+City+Conference+Centre+Dar+es+Salaam" target="_blank" class="btn btn-gold btn-block">
+          📍 Fungua Ramani ya Google Maps ➔
+        </a>
+      </div>
+
+      <div style="border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--gold-primary); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+        <img src="/images/wedding_venue.jpg" alt="Venue Hall" style="width: 100%; height: 320px; object-fit: cover; display: block;">
+      </div>
+    </div>
+  </section>
+
+  <!-- Dress Code Section -->
+  <section class="wedding-section" id="dresscode">
+    <div class="section-header">
+      <span class="section-tag">RANGI ZA SHEREHE</span>
+      <h2 class="section-title">Dress Code</h2>
+      <p class="section-desc">
+        Tafadhali pendeza kwa mujibu wa rangi zetu za heshima na fahari ya kifalme:
+      </p>
+    </div>
+
+    <div class="dress-code-grid">
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background: linear-gradient(135deg, #0a3622 0%, #1b533d 100%);"></div>
+        <h4 style="color: #ffffff; margin-bottom: 4px;">Emerald Green</h4>
+        <p style="font-size: 0.85rem; color: var(--gold-light);">Kijani Kibichi cha Kifalme</p>
+      </div>
+
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background: var(--gold-gradient);"></div>
+        <h4 style="color: #ffffff; margin-bottom: 4px;">Touch of Gold</h4>
+        <p style="font-size: 0.85rem; color: var(--gold-light);">Dhahabu Safi & Champagne</p>
+      </div>
+
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background: #111111; border-color: #444;"></div>
+        <h4 style="color: #ffffff; margin-bottom: 4px;">Classic Black & White</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Suti za Heshima / Tuxedo</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guest Wishes Section -->
+  <section class="wedding-section" id="wishes">
+    <div class="section-header">
+      <span class="section-tag">KITABU CHA PONGEZI</span>
+      <h2 class="section-title">Tuma Baraka & Pongezi</h2>
+      <p class="section-desc">
+        Andika maneno yako ya upendo na pongezi kwa Lilian & Kelvin moja kwa moja hapa:
+      </p>
+    </div>
+
+    <div class="wishes-layout">
+      <!-- Wishes Form -->
+      <div class="glass-card">
+        <h3 class="font-serif gold-text" style="font-size: 1.25rem; margin-bottom: 16px;">✍️ Andika Ujumbe Wako</h3>
+        <form onsubmit="submitWish(event)">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Jina Lako:</label>
+            <input type="text" id="wish-name-input" class="form-control" placeholder="mfano: Dr. Joel & Familia" required style="width: 100%; background: rgba(3, 15, 10, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); color: #fff; padding: 12px 16px; border-radius: 10px;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Ujumbe wa Pongezi:</label>
+            <textarea id="wish-msg-input" class="form-control" rows="4" placeholder="Andika baraka zako kwa maharusi hapa..." required style="width: 100%; background: rgba(3, 15, 10, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); color: #fff; padding: 12px 16px; border-radius: 10px; resize: vertical;"></textarea>
+          </div>
+
+          <button type="submit" id="wish-submit-btn" class="btn btn-gold" style="width: 100%;">
+            💌 Tuma Pongezi Zangu Sasa
+          </button>
+        </form>
+      </div>
+
+      <!-- Live Wishes Stream -->
+      <div>
+        <h3 class="font-serif gold-text" style="font-size: 1.25rem; margin-bottom: 16px;">💌 Pongezi za Wageni</h3>
+        <div class="wishes-stream" id="wishes-stream">
+          <div class="wish-bubble">
+            <div class="wish-author">Inapakia pongezi...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="text-align: center; padding: 40px 20px 60px 20px; border-top: 1px solid var(--bg-glass-border); color: var(--text-muted); font-size: 0.85rem; background: #030e09;">
+    <div style="font-size: 1.6rem; margin-bottom: 10px;">💍</div>
+    <div style="font-family: var(--font-serif); font-size: 1.1rem; color: #ffffff;">Send-off ya Lilian & Kelvin</div>
+    <div style="margin-top: 6px;">13 Oktoba 2026 &bull; Mlimani City Conference Hall, Dar es Salaam</div>
+    <div style="margin-top: 12px; font-size: 0.78rem; color: var(--gold-light);">
+      Mfumo wa Kidijitali wa Nyahende Smart Invitations &bull; 
+      <a href="javascript:void(0)" onclick="openKamatiPinModal()" style="color: var(--gold-light); text-decoration: underline;">🔐 Ingia Kamati</a>
+    </div>
+  </footer>
+
+  <!-- ============================================================== -->
+  <!-- VIP KAMATI PIN LOCK MODAL (PASSWORD: 2030) -->
+  <!-- ============================================================== -->
+  <div class="pin-modal-overlay" id="kamati-pin-modal">
+    <div class="pin-modal-box" id="pin-modal-box">
+      <button type="button" class="pin-modal-close" onclick="closeKamatiPinModal()">&times;</button>
+      
+      <div class="pin-modal-icon">🔐</div>
+      
+      <h3 class="font-serif gold-text" style="font-size: 1.4rem; margin-bottom: 4px;">Kamati ya Harusi</h3>
+      <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">
+        Weka nenosiri la Kamati ili kufungua Dashibodi Kuu ya Usimamizi:
+      </p>
+
+      <input type="password" id="kamati-pin-input" class="pin-input" maxlength="8" placeholder="••••" autocomplete="off">
+      
+      <div class="pin-error-msg" id="pin-error-msg"></div>
+
+      <!-- Numeric Keypad for Touch & Click -->
+      <div class="pin-keypad">
+        <button type="button" class="pin-key" onclick="appendPinDigit('1')">1</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('2')">2</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('3')">3</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('4')">4</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('5')">5</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('6')">6</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('7')">7</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('8')">8</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('9')">9</button>
+        <button type="button" class="pin-key" onclick="clearPinDigit()" style="font-size: 1rem; color: #e74c3c;">⌫</button>
+        <button type="button" class="pin-key" onclick="appendPinDigit('0')">0</button>
+        <button type="button" class="pin-key" onclick="verifyKamatiPin()" style="font-size: 1rem; background: var(--gold-gradient); color: #04140e;">✓</button>
+      </div>
+
+      <div style="margin-top: 18px;">
+        <button type="button" class="btn btn-gold btn-block" onclick="verifyKamatiPin()" style="width: 100%;">
+          Fungua Dashibodi ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/wedding.js"></script>
+</body>
+</html>

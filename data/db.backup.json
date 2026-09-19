@@ -1,0 +1,996 @@
+{
+  "event": {
+    "id": "harusi-2026",
+    "groomName": "Kelvin",
+    "groomFullName": "Kelvin Mwita Joseph",
+    "brideName": "Lilian",
+    "brideFullName": "Lilian",
+    "weddingDate": "2026-10-13",
+    "weddingTime": "18:30:00",
+    "churchVenue": "St. Peters Catholic Church, Oysterbay",
+    "churchTime": "14:00 - 16:00",
+    "receptionVenue": "Mlimani City Conference Hall, Dar es Salaam",
+    "receptionTime": "Kuanzia Saa 18:30 Jioni",
+    "googleMapsUrl": "https://maps.google.com/?q=Mlimani+City+Conference+Centre+Dar+es+Salaam",
+    "googleMapsEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.944208034083!2d39.217316775797375!3d-6.776632466270639!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4939b6b7a2bb%3A0x6fb7eb08c4cb2407!2sMlimani%20City%20Conference%20Centre!5e0!3m2!1sen!2stz!4v1700000000000!5m2!1sen!2stz",
+    "themeColor": "Emerald Green & Royal Gold",
+    "dressCode": "Black Tie / Elegant Emerald Green & Gold Touches",
+    "youtubeLiveUrl": "https://www.youtube.com/watch?v=live_stream_placeholder",
+    "pictureGalleryUrl": "https://photos.google.com/share/harusi-kelvin-lilian",
+    "thankYouVideoUrl": "https://www.youtube.com/watch?v=thank_you_placeholder",
+    "thankYouMessage": "Tunatoa shukrani zetu za dhati kutoka mioyoni mwetu kwa upendo, sala, michango na uwepo wenu katika siku yetu hii kuu na ya kihistoria. Mungu awabariki sana!",
+    "package": "NYAHENDE VIP PACKAGE",
+    "musicUrl": "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-harp-and-strings-1002.mp3",
+    "bridePhoto": "/images/lilian_sendoff.jpg",
+    "story": {
+      "title": "Kutoka Tarime Hadi Dar es Salaam — Hadithi ya Lilian",
+      "chapters": [
+        {
+          "badge": "Utotoni & Asili",
+          "title": "Mwanzo Wenye Baraka — Tarime, Mara",
+          "icon": "🌄",
+          "text": "Lilian alizaliwa na kulelewa katika mji wa Tarime, Mkoa wa Mara — ardhi yenye mandhari tulivu, heshima na mila imara. Tangu utotoni, Lilian alikuwa mtoto mwenye furaha, mnyenyekevu, mwenye tabasamu la upendo na mwenye bidii ya kipekee katika masomo na malezi ya wazazi wake."
+        },
+        {
+          "badge": "Ndoto & Hatua Mpya",
+          "title": "Safari ya Kuelekea Dar es Salaam",
+          "icon": "🏙️",
+          "text": "Kipindi kilipofika cha kujiendeleza kimaisha, safari yake ilimleta jijini Dar es Salaam. Akiwa na heshima, maadili na sala za familia yake kutoka Tarime, Lilian alikabiliana na maisha ya jiji kwa ujasiri na bidii kubwa ya kufanikisha ndoto zake."
+        },
+        {
+          "badge": "Kazi & Mafanikio",
+          "title": "Kazi na Kujituma Jijini Dar",
+          "icon": "💼",
+          "text": "Kwa uadilifu na uchapakazi hodari, Lilian alifanikiwa kupata kazi nzuri jijini Dar es Salaam. Alijituma kwa weledi wa hali ya juu na kuaminika sana, akiwa kielelezo cha binti mwenye nidhamu na anayeleta fahari kwa wazazi na jamii yake."
+        },
+        {
+          "badge": "Upendo wa Dhati",
+          "title": "Kupata Mchumba (Kelvin)",
+          "icon": "💍",
+          "text": "Akiwa jijini Dar es Salaam, Mungu aliunganisha hatua zake na Kelvin — mchumba mwenye upendo, staha na maono ya maisha. Upendo wao ulichanua kwa heshima, ucheshi na sala, hadi siku Kelvin alipoweka agano la uchumba kwa ahadi ya kuanza safari ya milele pamoja."
+        },
+        {
+          "badge": "Usiku wa Send-Off",
+          "title": "Send-Off ya Kifahari — 13 Oktoba",
+          "icon": "👑",
+          "text": "Na sasa, tarehe 13 mwezi wa 10 (13 Oktoba 2026), katika ukumbi wa kifahari wa Mlimani City Hall, Dar es Salaam, familia, ndugu na Kamati yote wanakusanyika kwa furaha na vigelegele kumuaga binti yao mpendwa Lilian kuelekea maisha mapya ya ndoa!"
+        }
+      ]
+    }
+  },
+  "committeeMembers": [
+    {
+      "id": "cm-1",
+      "name": "Eng. Baraka Josephat",
+      "role": "Mwenyekiti wa Kamati",
+      "phone": "255712345678",
+      "targetAmount": 2000000
+    },
+    {
+      "id": "cm-2",
+      "name": "Dkt. Grace Mwakyusa",
+      "role": "Katibu wa Kamati",
+      "phone": "255754987654",
+      "targetAmount": 1500000
+    },
+    {
+      "id": "cm-3",
+      "name": "Bw. Patrick Lyimo",
+      "role": "Mhazini (Mtunza Hazina)",
+      "phone": "255713445566",
+      "targetAmount": 1500000
+    },
+    {
+      "id": "cm-4",
+      "name": "Mhandisi Frank Maro",
+      "role": "Mjumbe - Marafiki wa Bwana Harusi",
+      "phone": "255789123456",
+      "targetAmount": 1000000
+    },
+    {
+      "id": "cm-5",
+      "name": "Bi. Shamim Ally",
+      "role": "Mjumbe - Marafiki wa Bibi Harusi",
+      "phone": "255655443322",
+      "targetAmount": 1000000
+    },
+    {
+      "id": "cm-6",
+      "name": "Mzee Stephen Msaki",
+      "role": "Mjumbe - Familia & Wazazi",
+      "phone": "255767112233",
+      "targetAmount": 2000000
+    }
+  ],
+  "tables": [
+    {
+      "id": "meza-1",
+      "name": "Meza Kuu (High Table)",
+      "capacity": 10,
+      "notes": "Maharusi na Wasimamizi"
+    },
+    {
+      "id": "meza-2",
+      "name": "Meza ya Wazazi wa Bwana Harusi",
+      "capacity": 8,
+      "notes": "Wazazi & Ndugu wa Karibu - Mwita Family"
+    },
+    {
+      "id": "meza-3",
+      "name": "Meza ya Wazazi wa Bibi Harusi",
+      "capacity": 8,
+      "notes": "Wazazi & Ndugu wa Karibu - Msaki Family"
+    },
+    {
+      "id": "meza-4",
+      "name": "Meza ya VIP 1 - Kamati ya Harusi",
+      "capacity": 10,
+      "notes": "Mwenyekiti, Katibu na Wajumbe Wakuu"
+    },
+    {
+      "id": "meza-5",
+      "name": "Meza ya VIP 2 - Marafiki wa Kazini",
+      "capacity": 10,
+      "notes": "Wafanyakazi wenza wa Kelvin & Lilian"
+    },
+    {
+      "id": "meza-6",
+      "name": "Meza ya Marafiki wa Chuo (UDSM)",
+      "capacity": 10,
+      "notes": "Classmates & Alumni"
+    },
+    {
+      "id": "meza-7",
+      "name": "Meza ya Vijana & Marafiki wa Karibu",
+      "capacity": 10,
+      "notes": "Youth & Close Friends"
+    },
+    {
+      "id": "meza-8",
+      "name": "Meza ya Majirani & Marafiki wa Familia",
+      "capacity": 10,
+      "notes": "Wageni Maalumu"
+    }
+  ],
+  "drinks": [
+    {
+      "id": "moet-chandon",
+      "name": "Moët & Chandon Brut Imperial",
+      "category": "Champagne & Wine",
+      "description": "Champagne ya Kifahari ya Ufaransa",
+      "icon": "🍾"
+    },
+    {
+      "id": "red-wine",
+      "name": "Robertson Sweet Red Wine",
+      "category": "Champagne & Wine",
+      "description": "South African Sweet Blend",
+      "icon": "🍷"
+    },
+    {
+      "id": "white-wine",
+      "name": "Nederburg Sauvignon Blanc White Wine",
+      "category": "Champagne & Wine",
+      "description": "Crisp & Chilled South African White",
+      "icon": "🥂"
+    },
+    {
+      "id": "four-cousins",
+      "name": "Four Cousins Sweet Red",
+      "category": "Champagne & Wine",
+      "description": "Sweet Ruby Red Wine",
+      "icon": "🍷"
+    },
+    {
+      "id": "hennessy-vs",
+      "name": "Hennessy V.S Cognac",
+      "category": "Whiskeys & Spirits",
+      "description": "Very Special French Cognac",
+      "icon": "🥃"
+    },
+    {
+      "id": "jameson",
+      "name": "Jameson Irish Whiskey",
+      "category": "Whiskeys & Spirits",
+      "description": "Triple Distilled Smooth Whiskey",
+      "icon": "🥃"
+    },
+    {
+      "id": "black-label",
+      "name": "Johnnie Walker Black Label 12Y",
+      "category": "Whiskeys & Spirits",
+      "description": "Blended Scotch Whisky",
+      "icon": "🥃"
+    },
+    {
+      "id": "gordons-gin",
+      "name": "Gordon's London Dry Gin",
+      "category": "Whiskeys & Spirits",
+      "description": "Classic Dry Gin with Tonic",
+      "icon": "🍸"
+    },
+    {
+      "id": "heineken",
+      "name": "Heineken Premium Beer",
+      "category": "Bia & Ciders",
+      "description": "Lager ya Kimataifa - Chilled",
+      "icon": "🍺"
+    },
+    {
+      "id": "serengeti-lite",
+      "name": "Serengeti Premium Lite",
+      "category": "Bia & Ciders",
+      "description": "Bia Safi ya Nyumbani",
+      "icon": "🍺"
+    },
+    {
+      "id": "corona-extra",
+      "name": "Corona Extra Beer",
+      "category": "Bia & Ciders",
+      "description": "With Fresh Lime Wedge",
+      "icon": "🍺"
+    },
+    {
+      "id": "savanna",
+      "name": "Savanna Dry Apple Cider",
+      "category": "Bia & Ciders",
+      "description": "Crisp Cider with Lemon",
+      "icon": "🍾"
+    },
+    {
+      "id": "ceres-juice",
+      "name": "Ceres 100% Fruit Juice (Apple/Orange)",
+      "category": "Juisi & Vinywaji Baridi",
+      "description": "Juisi Asilia Bila Sukari ya Ziada",
+      "icon": "🧃"
+    },
+    {
+      "id": "passion-fresh",
+      "name": "Fresh Passion & Mint Mocktail",
+      "category": "Juisi & Vinywaji Baridi",
+      "description": "Juisi ya Pasheni Safi yenye Nanaa",
+      "icon": "🍹"
+    },
+    {
+      "id": "red-bull",
+      "name": "Red Bull Energy Drink",
+      "category": "Juisi & Vinywaji Baridi",
+      "description": "Chilled Energy Booster",
+      "icon": "⚡"
+    },
+    {
+      "id": "coca-cola",
+      "name": "Soda (Coke / Fanta / Sprite / Tonic)",
+      "category": "Juisi & Vinywaji Baridi",
+      "description": "Soda Baridi na Barafu",
+      "icon": "🥤"
+    },
+    {
+      "id": "kilimanjaro-water",
+      "name": "Kilimanjaro Pure Mineral Water",
+      "category": "Maji",
+      "description": "Maji Safi ya Asili (Chilled / Room Temp)",
+      "icon": "💧"
+    },
+    {
+      "id": "sparkling-water",
+      "name": "San Pellegrino Sparkling Water",
+      "category": "Maji",
+      "description": "Maji ya Gesi na Ndimu",
+      "icon": "✨"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-656978",
+      "tableId": "meza-4",
+      "tableName": "Meza ya VIP 1 - Kamati ya Harusi",
+      "guestName": "Mgeni wa Meza",
+      "items": [
+        {
+          "id": "sparkling-water",
+          "name": "San Pellegrino Sparkling Water",
+          "qty": 2,
+          "category": "Maji",
+          "icon": "✨"
+        }
+      ],
+      "notes": "ya moto",
+      "status": "cancelled",
+      "timestamp": "2026-09-16T21:04:16.978Z"
+    },
+    {
+      "id": "ORD-102898",
+      "tableId": "meza-4",
+      "tableName": "Meza ya VIP 1 - Kamati ya Harusi",
+      "guestName": "Eng. Baraka",
+      "items": [
+        {
+          "id": "heineken",
+          "name": "Heineken Premium Beer",
+          "qty": 2,
+          "category": "Kinywaji",
+          "icon": "🍺"
+        },
+        {
+          "id": "red-wine",
+          "name": "Robertson Sweet Red Wine",
+          "qty": 1,
+          "category": "Kinywaji",
+          "icon": "🍷"
+        }
+      ],
+      "notes": "Baridi sana na glasi 2",
+      "status": "delivered",
+      "timestamp": "2026-09-16T20:55:02.898Z",
+      "deliveredAt": "2026-09-16T21:01:41.724Z"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "14:00 - 16:00",
+      "title": "Ibada ya Ndoa",
+      "venue": "St. Peters Catholic Church",
+      "icon": "⛪"
+    },
+    {
+      "time": "16:15 - 17:45",
+      "title": "Kupiga Picha za Ukumbusho",
+      "venue": "Hyatt Regency Gardens",
+      "icon": "📸"
+    },
+    {
+      "time": "18:30",
+      "title": "Wageni Kuingia Ukumbini & Ukaguzi wa Kadi",
+      "venue": "Mlimani City Gate A",
+      "icon": "🎟️"
+    },
+    {
+      "time": "19:15",
+      "title": "Kuingia kwa Maharusi kwa Shangwe",
+      "venue": "Hall Kuu",
+      "icon": "🎺"
+    },
+    {
+      "time": "19:45",
+      "title": "Ufunguzi, Sala & Chakula cha Usiku",
+      "venue": "Buffet Dinner & Vinywaji",
+      "icon": "🍽️"
+    },
+    {
+      "time": "21:00",
+      "title": "Kukata Keki ya Harusi & Champagne",
+      "venue": "Stage Kuu",
+      "icon": "🎂"
+    },
+    {
+      "time": "21:30",
+      "title": "Zawadi, Pongezi & Maneno ya Wazazi",
+      "venue": "Podium",
+      "icon": "🎁"
+    },
+    {
+      "time": "22:30",
+      "title": "Muziki, Dansi & Kusherehekea Hadi Majogoo",
+      "venue": "Dance Floor",
+      "icon": "💃"
+    }
+  ],
+  "guests": [
+    {
+      "id": "1",
+      "name": "Eng. Baraka Josephat",
+      "title": "Mwenyekiti wa Kamati",
+      "phone": "255712345678",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-4",
+      "seats": 2,
+      "pledgeAmount": 500000,
+      "paidAmount": 500000,
+      "rsvpStatus": "confirmed",
+      "guestCountAttending": 2,
+      "drinkPreference": "red-wine",
+      "checkedIn": true,
+      "reminderCount": 5,
+      "wishes": "Hongera sana Kelvin na Lilian. Mungu awalinde na awajalie maisha yenye furaha tele na amani tele!",
+      "createdAt": "2026-08-10T10:00:00.000Z",
+      "code": "4829",
+      "checkInTime": "2026-09-15T13:59:58.557Z"
+    },
+    {
+      "id": "2",
+      "name": "Dkt. Grace Mwakyusa",
+      "title": "Katibu wa Kamati",
+      "phone": "255754987654",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-5",
+      "seats": 2,
+      "pledgeAmount": 300000,
+      "paidAmount": 300000,
+      "rsvpStatus": "confirmed",
+      "guestCountAttending": 2,
+      "drinkPreference": "serengeti-lite",
+      "checkedIn": true,
+      "checkInTime": "2026-11-28T18:42:15.000Z",
+      "reminderCount": 3,
+      "wishes": "Mungu aibariki ndoa yenu iwe yenye baraka na furaha tele!",
+      "createdAt": "2026-08-12T14:30:00.000Z",
+      "code": "7134"
+    },
+    {
+      "id": "3",
+      "name": "Mhandisi Frank Maro",
+      "title": "Rafiki wa Bwana Harusi",
+      "phone": "255789123456",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-6",
+      "seats": 1,
+      "pledgeAmount": 200000,
+      "paidAmount": 200000,
+      "rsvpStatus": "confirmed",
+      "guestCountAttending": 1,
+      "drinkPreference": "heineken",
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 2,
+      "wishes": "Harusi njema sana bro! Mungu akutangulie katika hatua hii kubwa.",
+      "createdAt": "2026-08-15T09:20:00.000Z",
+      "paymentHistory": [
+        {
+          "id": "pay-1789395675095",
+          "amount": 20000,
+          "date": "2026-09-14T14:21:15.095Z",
+          "previousPaid": 150000,
+          "newTotalPaid": 170000,
+          "balance": 30000,
+          "note": ""
+        },
+        {
+          "id": "pay-1789395675171",
+          "amount": 30000,
+          "date": "2026-09-14T14:21:15.171Z",
+          "previousPaid": 170000,
+          "newTotalPaid": 200000,
+          "balance": 0,
+          "note": ""
+        }
+      ],
+      "code": "9251"
+    },
+    {
+      "id": "4",
+      "name": "Bi. Shamim Ally & Mwenza",
+      "title": "Rafiki wa Bibi Harusi",
+      "phone": "255655443322",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-7",
+      "seats": 2,
+      "pledgeAmount": 250000,
+      "paidAmount": 250000,
+      "rsvpStatus": "confirmed",
+      "guestCountAttending": 2,
+      "drinkPreference": "savanna",
+      "checkedIn": false,
+      "reminderCount": 4,
+      "wishes": "Lilian my dear, umependeza mno leo! Nawatakia maisha marefu ya upendo usioisha.",
+      "createdAt": "2026-08-20T11:00:00.000Z",
+      "code": "3810"
+    },
+    {
+      "id": "5",
+      "name": "Mzee Stephen Msaki",
+      "title": "Familia ya Bibi Harusi",
+      "phone": "255767112233",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-3",
+      "seats": 2,
+      "pledgeAmount": 1000000,
+      "paidAmount": 1000000,
+      "rsvpStatus": "confirmed",
+      "guestCountAttending": 2,
+      "drinkPreference": "white-wine",
+      "checkedIn": false,
+      "reminderCount": 1,
+      "wishes": "Binti yetu kipenzi Lilian na mkwe wetu Kelvin, upendo uwe ngao yenu daima.",
+      "createdAt": "2026-08-25T16:00:00.000Z",
+      "code": "6472"
+    },
+    {
+      "id": "6",
+      "name": "Bw. Patrick Lyimo",
+      "title": "Mhazini wa Kamati",
+      "phone": "255626240798",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-4",
+      "seats": 1,
+      "pledgeAmount": 200000,
+      "paidAmount": 200000,
+      "rsvpStatus": "pending",
+      "guestCountAttending": 1,
+      "drinkPreference": null,
+      "checkedIn": false,
+      "reminderCount": 2,
+      "wishes": null,
+      "createdAt": "2026-09-01T08:00:00.000Z",
+      "paymentHistory": [
+        {
+          "id": "pay-1789395960118",
+          "amount": 50000,
+          "date": "2026-09-14T14:26:00.118Z",
+          "previousPaid": 50000,
+          "newTotalPaid": 100000,
+          "balance": 100000,
+          "note": ""
+        },
+        {
+          "id": "pay-1789395960142",
+          "amount": 100000,
+          "date": "2026-09-14T14:26:00.142Z",
+          "previousPaid": 100000,
+          "newTotalPaid": 200000,
+          "balance": 0,
+          "note": ""
+        }
+      ],
+      "code": "1593"
+    },
+    {
+      "id": "7",
+      "name": "Felician Joseph",
+      "title": "Mgeni Maalumu",
+      "phone": "255787661560",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-4",
+      "seats": 2,
+      "pledgeAmount": 200000,
+      "paidAmount": 40000,
+      "rsvpStatus": "pending",
+      "guestCountAttending": 1,
+      "drinkPreference": null,
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 2,
+      "wishes": null,
+      "createdAt": "2026-09-14T10:00:00.000Z",
+      "paymentHistory": [
+        {
+          "id": "pay-sample-1",
+          "amount": 50000,
+          "date": "2026-09-14T09:00:00.000Z",
+          "previousPaid": 0,
+          "newTotalPaid": 50000,
+          "balance": 150000,
+          "note": "Malipo ya awali"
+        },
+        {
+          "id": "pay-1789404239316",
+          "amount": 50000,
+          "date": "2026-09-14T16:43:59.316Z",
+          "previousPaid": 50000,
+          "newTotalPaid": 100000,
+          "balance": 100000,
+          "note": "Awamu ya 2"
+        },
+        {
+          "id": "pay-1789413274390",
+          "amount": 20000,
+          "date": "2026-09-14T19:14:34.390Z",
+          "previousPaid": 10000,
+          "newTotalPaid": 30000,
+          "balance": 170000,
+          "note": ""
+        },
+        {
+          "id": "pay-1789468469634",
+          "amount": 10000,
+          "date": "2026-09-15T10:34:29.634Z",
+          "previousPaid": 30000,
+          "newTotalPaid": 40000,
+          "balance": 160000,
+          "note": ""
+        }
+      ],
+      "code": "8347"
+    },
+    {
+      "id": "8",
+      "name": "Josephat Mwenda",
+      "title": "Mfanyakazi Mwenzake Baraka",
+      "phone": "255714556677",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-5",
+      "seats": 2,
+      "pledgeAmount": 300000,
+      "paidAmount": 300000,
+      "rsvpStatus": "confirmed",
+      "guestCountAttending": 2,
+      "drinkPreference": "serengeti-lite",
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 1,
+      "wishes": null,
+      "createdAt": "2026-09-14T11:00:00.000Z",
+      "code": "5290",
+      "paymentHistory": [
+        {
+          "id": "pay-1789481474908",
+          "amount": 150000,
+          "date": "2026-09-15T14:11:14.908Z",
+          "previousPaid": 150000,
+          "newTotalPaid": 300000,
+          "balance": 0,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Amina Salum",
+      "title": "Rafiki wa Grace",
+      "phone": "255756670798",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-7",
+      "seats": 2,
+      "pledgeAmount": 250000,
+      "paidAmount": 100000,
+      "rsvpStatus": "confirmed",
+      "guestCountAttending": 2,
+      "drinkPreference": "ceres-juice",
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 3,
+      "wishes": null,
+      "createdAt": "2026-09-14T11:30:00.000Z",
+      "code": "2764"
+    },
+    {
+      "id": "10",
+      "name": "Geofrey Tarimo",
+      "title": "Mfanyabiashara - Rafiki wa Patrick",
+      "phone": "255787661560",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-6",
+      "seats": 2,
+      "pledgeAmount": 200000,
+      "paidAmount": 0,
+      "rsvpStatus": "pending",
+      "guestCountAttending": 2,
+      "drinkPreference": null,
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 1,
+      "wishes": null,
+      "createdAt": "2026-09-14T12:00:00.000Z",
+      "code": "4185"
+    },
+    {
+      "id": "11",
+      "code": "9250",
+      "name": "Gongwa Kisinza",
+      "title": "Mualikwa",
+      "phone": "078373748",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-1",
+      "seats": 2,
+      "pledgeAmount": 0,
+      "paidAmount": 0,
+      "rsvpStatus": "pending",
+      "guestCountAttending": 2,
+      "drinkPreference": null,
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 0,
+      "wishes": null,
+      "createdAt": "2026-09-18T17:04:29.178Z"
+    }
+  ],
+  "wishes": [
+    {
+      "id": "wish-1",
+      "guestName": "Eng. Baraka Josephat",
+      "message": "Hongera sana Kelvin na Lilian. Mungu awalinde na awajalie maisha yenye furaha tele na amani tele!",
+      "time": "2026-11-20T14:30:00.000Z"
+    },
+    {
+      "id": "wish-2",
+      "guestName": "Dkt. Grace Mwakyusa",
+      "message": "Mungu aibariki ndoa yenu iwe yenye baraka na amani tele kila siku!",
+      "time": "2026-11-22T09:15:00.000Z"
+    },
+    {
+      "id": "wish-3",
+      "guestName": "Bi. Shamim Ally",
+      "message": "Lilian my dear, umependeza mno leo! Nawatakia maisha marefu ya upendo usioisha.",
+      "time": "2026-11-25T17:40:00.000Z"
+    }
+  ],
+  "smsConfig": {
+    "provider": "nextsms",
+    "username": "felicianjoseph575.6cd",
+    "password": "Nyisulya@2003",
+    "apiKey": "d94dc48d2a2d80f7137365afdbce6d90",
+    "senderId": "SENDOFF",
+    "paymentDetails": "Lipa Namba M-Pesa: 552211 (Kamati ya Harusi) au NMB: 20110022334",
+    "simulationMode": false
+  },
+  "smsLogs": [
+    {
+      "id": "sms-1789501669663-402",
+      "timestamp": "2026-09-15T19:47:49.665Z",
+      "recipientName": "Felician Joseph",
+      "recipientPhone": "255787661560",
+      "messageType": "Mwaliko & Pass Code",
+      "messageText": "Habari Ndugu Felician Joseph, unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 28/11/2026 ukumbi wa Mlimani City kuanzia saa 12:30 jioni. Meza yako ni: Meza ya VIP 1 - Kamati ya Harusi (Viti 2). Namba yako ya kuingilia mlangoni ni: 8347. Karibu sana!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789481475043-654",
+      "timestamp": "2026-09-15T14:11:15.043Z",
+      "recipientName": "Josephat Mwenda",
+      "recipientPhone": "255714556677",
+      "messageType": "Mwaliko Kamili & Gate Pass",
+      "messageText": "Hongera na shukrani nyingi Ndugu Josephat Mwenda! Umekamilisha mchango wako wote (Tsh 300,000) wa Send-off ya Lilian. Meza yako ni: Meza ya VIP 2 - Marafiki wa Kazini (Viti 2). Kodi yako ya kuingilia getini ni: 5290. Fungua kadi yako rasmi hapa: http://localhost:3000/invite/8. Karibu sana!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789480802788-874",
+      "timestamp": "2026-09-15T14:00:02.788Z",
+      "recipientName": "Mhandisi Frank Maro",
+      "recipientPhone": "255789123456",
+      "messageType": "Mwaliko & Pass Code",
+      "messageText": "Habari Ndugu Mhandisi Frank Maro, unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 28/11/2026 ukumbi wa Mlimani City kuanzia saa 12:30 jioni. Meza yako ni: Meza ya Marafiki wa Chuo (UDSM) (Viti 1). Namba yako ya kuingilia mlangoni ni: 9251. Karibu sana!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789480801106-159",
+      "timestamp": "2026-09-15T14:00:01.106Z",
+      "recipientName": "Dkt. Grace Mwakyusa",
+      "recipientPhone": "255754987654",
+      "messageType": "Mwaliko & Pass Code",
+      "messageText": "Habari Ndugu Dkt. Grace Mwakyusa, unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 28/11/2026 ukumbi wa Mlimani City kuanzia saa 12:30 jioni. Meza yako ni: Meza ya VIP 2 - Marafiki wa Kazini (Viti 2). Namba yako ya kuingilia mlangoni ni: 7134. Karibu sana!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789480800145-956",
+      "timestamp": "2026-09-15T14:00:00.145Z",
+      "recipientName": "Eng. Baraka Josephat",
+      "recipientPhone": "255712345678",
+      "messageType": "Mwaliko & Pass Code",
+      "messageText": "Habari Ndugu Eng. Baraka Josephat, unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 28/11/2026 ukumbi wa Mlimani City kuanzia saa 12:30 jioni. Meza yako ni: Meza ya VIP 1 - Kamati ya Harusi (Viti 2). Namba yako ya kuingilia mlangoni ni: 4829. Karibu sana!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789480798570-416",
+      "timestamp": "2026-09-15T13:59:58.570Z",
+      "recipientName": "Eng. Baraka Josephat",
+      "recipientPhone": "255712345678",
+      "messageType": "Mwaliko & Pass Code",
+      "messageText": "Habari Ndugu Eng. Baraka Josephat, unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 28/11/2026 ukumbi wa Mlimani City kuanzia saa 12:30 jioni. Meza yako ni: Meza ya VIP 1 - Kamati ya Harusi (Viti 2). Namba yako ya kuingilia mlangoni ni: 4829. Karibu sana!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789468956431-892",
+      "timestamp": "2026-09-15T10:42:36.431Z",
+      "recipientName": "Felician",
+      "recipientPhone": "255787661560",
+      "messageType": "Majaribio ya SMS (Test)",
+      "messageText": "Habari Ndugu Felician, huu ni ujumbe wa majaribio kutoka Kamati ya Harusi ya Kelvin & Lilian kupitia jina jipya la SENDOFF. Mfumo wa SMS unafanya kazi kikamilifu!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789468613561-398",
+      "timestamp": "2026-09-15T10:36:53.561Z",
+      "recipientName": "Felician Joseph",
+      "recipientPhone": "255787661560",
+      "messageType": "Jaribio la SENDOFF",
+      "messageText": "Habari Ndugu Felician Joseph! Huu ni ujumbe wa majaribio kutoka Kamati ya Harusi ya Kelvin & Lilian kupitia jina jipya la SENDOFF. Mfumo wa SMS unafanya kazi kikamilifu!",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789468469708-811",
+      "timestamp": "2026-09-15T10:34:29.708Z",
+      "recipientName": "Felician Joseph",
+      "recipientPhone": "255787661560",
+      "messageType": "Malipo ya Awali (Partial)",
+      "messageText": "Habari Ndugu Felician Joseph, Kamati ya Harusi ya Kelvin & Lilian inashukuru kupokea mchango wako wa Tsh 10,000. Jumla uliyolipa hadi sasa ni Tsh 40,000. Salio lililobaki ni Tsh 160,000. Asante sana kwa ushirikiano wako!",
+      "provider": "NextSMS",
+      "senderId": "IBADA SIFA",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789413274508-529",
+      "timestamp": "2026-09-14T19:14:34.508Z",
+      "recipientName": "Felician Joseph",
+      "recipientPhone": "255787661560",
+      "messageType": "Malipo ya Awali (Partial)",
+      "messageText": "Habari Ndugu Felician Joseph, Kamati ya Harusi ya Kelvin & Lilian inashukuru kupokea mchango wako wa Tsh 20,000. Jumla uliyolipa hadi sasa ni Tsh 30,000. Salio lililobaki ni Tsh 170,000. Asante sana kwa ushirikiano wako!",
+      "provider": "NextSMS",
+      "senderId": "IBADA SIFA",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789404239348-645",
+      "timestamp": "2026-09-14T16:43:59.348Z",
+      "recipientName": "Felician Joseph",
+      "recipientPhone": "255787661560",
+      "messageType": "Malipo ya Awali (Partial)",
+      "messageText": "Habari Ndugu Felician Joseph, Kamati ya Harusi ya Kelvin & Lilian inashukuru kupokea mchango wako wa Tsh 50,000. Jumla uliyolipa hadi sasa ni Tsh 100,000. Salio lililobaki ni Tsh 100,000. Asante sana kwa ushirikiano wako!",
+      "provider": "NextSMS",
+      "senderId": "IBADA SIFA",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
+      "id": "sms-1789395960146-431",
+      "timestamp": "2026-09-14T14:26:00.146Z",
+      "recipientName": "Bw. Patrick Lyimo",
+      "recipientPhone": "255713445566",
+      "messageType": "Malipo Kamili (Completed)",
+      "messageText": "Hongera na shukrani nyingi Ndugu Bw. Patrick Lyimo! Kamati ya Harusi ya Kelvin & Lilian imepokea Tsh 100,000. Umekamilisha ahadi yako yote ya Tsh 200,000. Kadi yako ya mwaliko ya VIP imeandaliwa. Mungu akubariki sana!",
+      "provider": "NextSMS",
+      "senderId": "NEXTSMS",
+      "status": "delivered",
+      "responseMessage": "Imetumwa kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "sms-1789395960122-789",
+      "timestamp": "2026-09-14T14:26:00.122Z",
+      "recipientName": "Bw. Patrick Lyimo",
+      "recipientPhone": "255713445566",
+      "messageType": "Malipo ya Awali (Partial)",
+      "messageText": "Habari Ndugu Bw. Patrick Lyimo, Kamati ya Harusi ya Kelvin & Lilian inashukuru kupokea mchango wako wa Tsh 50,000. Jumla uliyolipa hadi sasa ni Tsh 100,000. Salio lililobaki ni Tsh 100,000. Asante sana kwa ushirikiano wako!",
+      "provider": "NextSMS",
+      "senderId": "NEXTSMS",
+      "status": "delivered",
+      "responseMessage": "Imetumwa kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "sms-1789395675174-259",
+      "timestamp": "2026-09-14T14:21:15.174Z",
+      "recipientName": "Mhandisi Frank Maro",
+      "recipientPhone": "255789123456",
+      "messageType": "Malipo Kamili (Completed)",
+      "messageText": "Hongera na shukrani nyingi Ndugu Mhandisi Frank Maro! Kamati ya Harusi ya Kelvin & Lilian imepokea Tsh 30,000. Umekamilisha ahadi yako yote ya Tsh 200,000. Kadi yako ya mwaliko ya VIP imeandaliwa. Mungu akubariki sana!",
+      "provider": "NextSMS",
+      "senderId": "NEXTSMS",
+      "status": "delivered",
+      "responseMessage": "Imetumwa kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "sms-1789395675137-118",
+      "timestamp": "2026-09-14T14:21:15.137Z",
+      "recipientName": "Mhandisi Frank Maro",
+      "recipientPhone": "255789123456",
+      "messageType": "Malipo ya Awali (Partial)",
+      "messageText": "Habari Ndugu Mhandisi Frank Maro, Kamati ya Harusi ya Kelvin & Lilian inashukuru kupokea mchango wako wa Tsh 20,000. Jumla uliyolipa hadi sasa ni Tsh 170,000. Salio lililobaki ni Tsh 30,000. Asante sana kwa ushirikiano wako!",
+      "provider": "NextSMS",
+      "senderId": "NEXTSMS",
+      "status": "delivered",
+      "responseMessage": "Imetumwa kwa mafanikio (Simulation Mode)"
+    }
+  ],
+  "whatsappLogs": [
+    {
+      "id": "wa-1789592656985-117",
+      "timestamp": "2026-09-16T21:04:16.985Z",
+      "recipientName": "Mgeni wa Meza",
+      "recipientPhone": "255787661560",
+      "messageType": "Oda ya Kinywaji cha Meza",
+      "messageText": "🍾 *ODA MPYA YA KINYAWAJI (BAR ORDER)* 🍾\n💍 *Sherehe:* Send-off ya LILIAN & KELVIN\n📍 *Meza:* *MEZA YA VIP 1 - KAMATI YA HARUSI*\n👤 *Mualikwa / Mteja:* Mgeni wa Meza\n\n📋 *Vinywaji Vilivyoagizwa:*\n• *2x* San Pellegrino Sparkling Water ✨\n\n📝 *Maelekezo:* ya moto\n⏰ *Muda:* Saa 14:04\n🔢 *Namba ya Oda:* #ORD-656978\n\n_Mhudumu wa baa tafadhali fikisha vinywaji hivi kwenye meza husika mara moja!_ 🥂",
+      "imageUrl": null,
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "wa-1789592102971-232",
+      "timestamp": "2026-09-16T20:55:02.971Z",
+      "recipientName": "Eng. Baraka",
+      "recipientPhone": "255787661560",
+      "messageType": "Oda ya Kinywaji cha Meza",
+      "messageText": "🍾 *ODA MPYA YA KINYAWAJI (BAR ORDER)* 🍾\n💍 *Sherehe:* Send-off ya LILIAN & KELVIN\n📍 *Meza:* *MEZA YA VIP 1 - KAMATI YA HARUSI*\n👤 *Mualikwa / Mteja:* Eng. Baraka\n\n📋 *Vinywaji Vilivyoagizwa:*\n• *2x* Heineken Premium Beer 🍺\n• *1x* Robertson Sweet Red Wine 🍷\n\n📝 *Maelekezo:* Baridi sana na glasi 2\n⏰ *Muda:* Saa 13:55\n🔢 *Namba ya Oda:* #ORD-102898\n\n_Mhudumu wa baa tafadhali fikisha vinywaji hivi kwenye meza husika mara moja!_ 🥂",
+      "imageUrl": null,
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "wa-1789481476694-177",
+      "timestamp": "2026-09-15T14:11:16.694Z",
+      "recipientName": "Josephat Mwenda",
+      "recipientPhone": "255714556677",
+      "messageType": "Dress Code & Ratiba",
+      "messageText": "👗 *DRESS CODE & RATIBA YA USIKU WA SEND-OFF* 👗\n\n🎨 *Rangi za Siku Hiyo (Dress Code):*\n• *Emerald Green & Touch of Gold* (Kijani Kibichi na Mguso wa Dhahabu) au vazi lolote nadhifu la heshima.\n\n⏰ *Ratiba ya Matukio:*\n• Saa 12:00 Jioni: Milango ya ukumbi inafunguliwa & Mapokezi ya wageni\n• Saa 01:30 Usiku: Bibi Harusi (Lilian) anaingia ukumbini\n• Saa 02:30 Usiku: Chakula cha usiku (Dinner) & Shamrashamra\n\nTunakutakia maandalizi mema, uwepo wako utaleta nakshi na furaha kubwa! 🙏💐",
+      "imageUrl": null,
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "wa-1789481476687-980",
+      "timestamp": "2026-09-15T14:11:16.687Z",
+      "recipientName": "Josephat Mwenda",
+      "recipientPhone": "255714556677",
+      "messageType": "Ramani ya Ukumbi (Location)",
+      "messageText": "📍 *UKUMBI & MAHALI ILIPO (LOCATION)* 📍\n\nSherehe itafanyika:\n🏛️ *Ukumbi:* Mlimani City Conference Hall, Dar es Salaam\n📅 *Tarehe:* Jumamosi, 13 Oktoba 2026\n⏰ *Muda:* Kuanzia Saa 12:30 Jioni\n\nBonyeza link hii ya Google Maps itakuongoza moja kwa moja hadi ukumbini bila kupotea:\n👉 https://maps.google.com/?q=Mlimani+City+Conference+Centre+Dar+es+Salaam\n\nKaribu sana!",
+      "imageUrl": null,
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "wa-1789481476680-32",
+      "timestamp": "2026-09-15T14:11:16.680Z",
+      "recipientName": "Josephat Mwenda",
+      "recipientPhone": "255714556677",
+      "messageType": "Kadi ya Picha & Mwaliko",
+      "messageText": "💍 *MWALIKO WA SHEREHE YA SEND-OFF YA LILIAN* 💍\n\nHabari Ndugu *Josephat Mwenda*,\n\nFamilia ya Mzee Daniel Msaki inayo heshima na furaha kubwa kukualika wewe na mwenza wako katika usiku wa sherehe ya kumuaga binti yao mpendwa *Lilian* (Send-off Party).\n\n🎟️ *Idadi ya Viti:* Watu 2\n📍 *Meza Yako:* Meza ya VIP 2 - Marafiki wa Kazini\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *5290*\n📅 *Tarehe:* Jumamosi, 13 Oktoba 2026\n⏰ *Muda:* Kuanzia Saa 12:30 Jioni\n🏛️ *Ukumbi:* Mlimani City Conference Hall, Dar es Salaam\n\n✨ Fungua Kadi Yako ya Kidijitali ya VIP hapa:\n👉 http://localhost:3000/invite/8\n\nPicha ya kadi yako rasmi imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂",
+      "imageUrl": "http://localhost:3000/images/lilian_sendoff.jpg",
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "wa-1789481474824-986",
+      "timestamp": "2026-09-15T14:11:14.824Z",
+      "recipientName": "Eng. Baraka Josephat",
+      "recipientPhone": "255712345678",
+      "messageType": "Dress Code & Ratiba",
+      "messageText": "👗 *DRESS CODE & RATIBA YA USIKU WA SEND-OFF* 👗\n\n🎨 *Rangi za Siku Hiyo (Dress Code):*\n• *Emerald Green & Touch of Gold* (Kijani Kibichi na Mguso wa Dhahabu) au vazi lolote nadhifu la heshima.\n\n⏰ *Ratiba ya Matukio:*\n• Saa 12:00 Jioni: Milango ya ukumbi inafunguliwa & Mapokezi ya wageni\n• Saa 01:30 Usiku: Bibi Harusi (Lilian) anaingia ukumbini\n• Saa 02:30 Usiku: Chakula cha usiku (Dinner) & Shamrashamra\n\nTunakutakia maandalizi mema, uwepo wako utaleta nakshi na furaha kubwa! 🙏💐",
+      "imageUrl": null,
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "wa-1789481474818-548",
+      "timestamp": "2026-09-15T14:11:14.818Z",
+      "recipientName": "Eng. Baraka Josephat",
+      "recipientPhone": "255712345678",
+      "messageType": "Ramani ya Ukumbi (Location)",
+      "messageText": "📍 *UKUMBI & MAHALI ILIPO (LOCATION)* 📍\n\nSherehe itafanyika:\n🏛️ *Ukumbi:* Mlimani City Conference Hall, Dar es Salaam\n📅 *Tarehe:* Jumamosi, 13 Oktoba 2026\n⏰ *Muda:* Kuanzia Saa 12:30 Jioni\n\nBonyeza link hii ya Google Maps itakuongoza moja kwa moja hadi ukumbini bila kupotea:\n👉 https://maps.google.com/?q=Mlimani+City+Conference+Centre+Dar+es+Salaam\n\nKaribu sana!",
+      "imageUrl": null,
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    },
+    {
+      "id": "wa-1789481474803-616",
+      "timestamp": "2026-09-15T14:11:14.803Z",
+      "recipientName": "Eng. Baraka Josephat",
+      "recipientPhone": "255712345678",
+      "messageType": "Kadi ya Picha & Mwaliko",
+      "messageText": "💍 *MWALIKO WA SHEREHE YA SEND-OFF YA LILIAN* 💍\n\nHabari Ndugu *Eng. Baraka Josephat*,\n\nFamilia ya Mzee Daniel Msaki inayo heshima na furaha kubwa kukualika wewe na mwenza wako katika usiku wa sherehe ya kumuaga binti yao mpendwa *Lilian* (Send-off Party).\n\n🎟️ *Idadi ya Viti:* Watu 2\n📍 *Meza Yako:* Meza ya VIP 1 - Kamati ya Harusi\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *4829*\n📅 *Tarehe:* Jumamosi, 13 Oktoba 2026\n⏰ *Muda:* Kuanzia Saa 12:30 Jioni\n🏛️ *Ukumbi:* Mlimani City Conference Hall, Dar es Salaam\n\n✨ Fungua Kadi Yako ya Kidijitali ya VIP hapa:\n👉 http://localhost:3000/invite/1\n\nPicha ya kadi yako rasmi imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂",
+      "imageUrl": "http://localhost:3000/images/lilian_sendoff.jpg",
+      "provider": "UltraMsg",
+      "status": "delivered",
+      "responseMessage": "Imetumwa WhatsApp kwa mafanikio (Simulation Mode)"
+    }
+  ]
+}
