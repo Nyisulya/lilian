@@ -347,22 +347,97 @@ function switchCardTab(tabId) {
   }
 }
 
+function setupMusicPlayer() {
+  const musicUrl = currentEvent?.musicUrl || '/music/harusi_song.mp3';
+  if (!audioPlayer) {
+    audioPlayer = new Audio(musicUrl);
+    audioPlayer.loop = true;
+    audioPlayer.volume = 0.8;
+    audioPlayer.preload = 'auto';
+
+    audioPlayer.addEventListener('play', () => {
+      isAudioPlaying = true;
+      updateCardMusicUI(true);
+    });
+
+    audioPlayer.addEventListener('pause', () => {
+      isAudioPlaying = false;
+      updateCardMusicUI(false);
+    });
+
+    audioPlayer.addEventListener('ended', () => {
+      isAudioPlaying = false;
+      updateCardMusicUI(false);
+    });
+  }
+
+  const toggleBtn = document.getElementById('music-toggle-btn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleCardMusic();
+    });
+  }
+
+  // Also enable on first interaction if envelope is skipped or already open
+  const startOnInteraction = () => {
+    if (audioPlayer && !isAudioPlaying) {
+      audioPlayer.play().then(() => {
+        isAudioPlaying = true;
+        updateCardMusicUI(true);
+      }).catch(() => {});
+    }
+  };
+  document.addEventListener('click', startOnInteraction, { once: true });
+  document.addEventListener('touchstart', startOnInteraction, { once: true });
+}
+
+function updateCardMusicUI(playing) {
+  const toggleBtn = document.getElementById('music-toggle-btn');
+  if (toggleBtn) {
+    if (playing) {
+      toggleBtn.classList.add('playing');
+      toggleBtn.innerHTML = '🎶';
+      toggleBtn.title = 'Sitisha Muziki';
+    } else {
+      toggleBtn.classList.remove('playing');
+      toggleBtn.innerHTML = '🎵';
+      toggleBtn.title = 'Washa Muziki wa Harusi';
+    }
+  }
+}
+
+function toggleCardMusic() {
+  if (!audioPlayer) setupMusicPlayer();
+  if (!isAudioPlaying) {
+    audioPlayer.play().then(() => {
+      isAudioPlaying = true;
+      updateCardMusicUI(true);
+    }).catch(err => {
+      console.warn('Playback error:', err);
+    });
+  } else {
+    audioPlayer.pause();
+    isAudioPlaying = false;
+    updateCardMusicUI(false);
+  }
+}
+
 function openEnvelope() {
   const overlay = document.getElementById('envelope-overlay');
   if (overlay) {
     overlay.classList.add('opened');
   }
 
-  // Play audio on tap
-  if (audioPlayer && !isAudioPlaying) {
+  // Start playing real wedding music upon opening envelope
+  if (!audioPlayer) setupMusicPlayer();
+  if (audioPlayer) {
     audioPlayer.play().then(() => {
       isAudioPlaying = true;
-      const toggleBtn = document.getElementById('music-toggle-btn');
-      if (toggleBtn) {
-        toggleBtn.classList.add('playing');
-        toggleBtn.innerHTML = '🎶';
-      }
-    }).catch(() => {});
+      updateCardMusicUI(true);
+    }).catch((err) => {
+      console.warn('Autoplay error on envelope open:', err);
+    });
   }
 }
 

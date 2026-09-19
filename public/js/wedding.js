@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadWishes();
   setupPinModalEvents();
   setupLookupForm();
+  initWeddingAudio();
+  setupAudioFirstTouch();
 });
 
 // -------------------------------------------------------------
@@ -240,70 +242,91 @@ async function submitWish(e) {
 }
 
 // -------------------------------------------------------------
-// 5. ROMANTIC AMBIENT WEDDING AUDIO SYNTHESIZER
+// 5. REAL WEDDING VOCAL AUDIO PLAYER
 // -------------------------------------------------------------
-let audioCtx = null;
+let weddingAudio = null;
 let isPlaying = false;
-let ambientInterval = null;
+let weddingMusicUrl = '/music/harusi_song.mp3';
 
-function toggleWeddingMusic() {
+function initWeddingAudio() {
+  if (!weddingAudio) {
+    weddingAudio = new Audio(weddingMusicUrl);
+    weddingAudio.loop = true;
+    weddingAudio.volume = 0.8;
+    weddingAudio.preload = 'auto';
+
+    weddingAudio.addEventListener('play', () => {
+      isPlaying = true;
+      updateWeddingMusicUI(true);
+    });
+    weddingAudio.addEventListener('pause', () => {
+      isPlaying = false;
+      updateWeddingMusicUI(false);
+    });
+    weddingAudio.addEventListener('ended', () => {
+      isPlaying = false;
+      updateWeddingMusicUI(false);
+    });
+  }
+}
+
+function updateWeddingMusicUI(playing) {
   const btn = document.getElementById('music-toggle-btn');
-  if (!isPlaying) {
-    startAmbientChimes();
-    isPlaying = true;
-    if (btn) {
+  const floatingBtn = document.getElementById('floating-music-btn');
+  if (btn) {
+    if (playing) {
       btn.classList.add('playing');
-      btn.innerHTML = '🎶 Muziki Unacheza (Pause)';
-    }
-  } else {
-    stopAmbientChimes();
-    isPlaying = false;
-    if (btn) {
+      btn.innerHTML = '🎶 Muziki Unaimba (Sitisha)';
+    } else {
       btn.classList.remove('playing');
       btn.innerHTML = '🎵 Muziki wa Harusi';
     }
   }
-}
-
-function startAmbientChimes() {
-  try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const pentatonicNotes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
-    
-    function playChime() {
-      if (!audioCtx || audioCtx.state === 'closed') return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      const freq = pentatonicNotes[Math.floor(Math.random() * pentatonicNotes.length)];
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-      gain.gain.setValueAtTime(0, audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.0);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 3.1);
+  if (floatingBtn) {
+    if (playing) {
+      floatingBtn.classList.add('playing');
+      floatingBtn.innerHTML = '🎶';
+      floatingBtn.title = 'Sitisha Muziki';
+    } else {
+      floatingBtn.classList.remove('playing');
+      floatingBtn.innerHTML = '🎵';
+      floatingBtn.title = 'Washa Muziki wa Harusi';
     }
-
-    playChime();
-    ambientInterval = setInterval(playChime, 1200);
-  } catch (e) {
-    console.log('Audio not supported:', e);
   }
 }
 
-function stopAmbientChimes() {
-  if (ambientInterval) clearInterval(ambientInterval);
-  if (audioCtx) {
-    audioCtx.close();
-    audioCtx = null;
+function toggleWeddingMusic() {
+  initWeddingAudio();
+  if (!isPlaying) {
+    weddingAudio.play().then(() => {
+      isPlaying = true;
+      updateWeddingMusicUI(true);
+    }).catch(err => {
+      console.warn('Audio playback error:', err);
+    });
+  } else {
+    weddingAudio.pause();
+    isPlaying = false;
+    updateWeddingMusicUI(false);
   }
 }
+
+function setupAudioFirstTouch() {
+  const playOnTouch = () => {
+    initWeddingAudio();
+    if (!isPlaying && weddingAudio) {
+      weddingAudio.play().then(() => {
+        isPlaying = true;
+        updateWeddingMusicUI(true);
+      }).catch(() => {
+        // Autoplay may still be restricted until explicit button click
+      });
+    }
+  };
+  document.addEventListener('click', playOnTouch, { once: true });
+  document.addEventListener('touchstart', playOnTouch, { once: true });
+}
+
 
 function escapeHtml(str) {
   if (!str) return '';

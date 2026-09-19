@@ -772,3 +772,45 @@
   text-align: right;
   margin-top: 4px;
 }
+
+/* Floating Music Toggle on Card */
+.music-toggle {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(10, 37, 27, 0.85);
+  border: 1.5px solid var(--gold-primary);
+  color: #ffffff;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10001;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 12px rgba(212, 175, 55, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.music-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+.music-toggle.playing {
+  animation: musicRotate 4s linear infinite;
+  background: var(--gold-gradient);
+  color: #04140e;
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+}
+
+@keyframes musicRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

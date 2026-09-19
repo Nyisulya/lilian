@@ -821,3 +821,79 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Wedding Portal Music Controls */
+.btn-music-toggle {
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-light);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-music-toggle:hover {
+  background: rgba(212, 175, 55, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-music-toggle.playing {
+  background: var(--gold-gradient);
+  color: #04140e;
+  border-color: #ffffff;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+  animation: musicPulse 2s infinite alternate;
+}
+
+/* Floating Music Toggle Button (Sticky / Always Accessible) */
+.floating-music-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(4, 20, 14, 0.9);
+  border: 2px solid var(--gold-primary);
+  color: var(--gold-light);
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.floating-music-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+}
+
+.floating-music-btn.playing {
+  background: var(--gold-gradient);
+  color: #04140e;
+  border-color: #ffffff;
+  animation: musicRotate 4s linear infinite;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+}
+
+@keyframes musicPulse {
+  0% { box-shadow: 0 0 8px rgba(212, 175, 55, 0.4); }
+  100% { box-shadow: 0 0 22px rgba(212, 175, 55, 0.9); }
+}
+
+@keyframes musicRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
