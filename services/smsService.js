@@ -137,9 +137,11 @@ async function sendPaymentNotificationSMS(guest, amountPaidNewly, newBalance, to
   const config = db.smsConfig || {};
   const domain = config.domainName || 'lilian.nyisu.com';
 
-  // Base text requested: "Ndugu {name}, asante sana kwa mchango wako katika maandalizi ya Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee. Asante kwa upendo wako."
-  // Tuned to guarantee strictly <= 160 characters (1 SMS) with domain lilian.nyisu.com at the end
-  let message = `Ndugu ${guest.name}, asante kwa mchango wako Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee. Asante kwa upendo! ${domain}`;
+  // Formatted to prioritize https:// when within 160 chars, otherwise lilian.nyisu.com, always strictly 1 SMS
+  let message = `Ndugu ${guest.name}, asante kwa mchango wako Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee. Asante kwa upendo! https://${domain}`;
+  if (message.length > 160) {
+    message = `Ndugu ${guest.name}, asante kwa mchango wako Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee. Asante kwa upendo! ${domain}`;
+  }
   if (message.length > 160) {
     // Failsafe for extra-long guest names (e.g. 25+ chars):
     message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee! Asante. ${domain}`;

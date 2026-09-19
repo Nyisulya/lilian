@@ -2097,6 +2097,18 @@
   },
   "smsLogs": [
     {
+      "id": "sms-1789829078521-301",
+      "timestamp": "2026-09-19T14:44:38.521Z",
+      "recipientName": "Felician",
+      "recipientPhone": "255787661560",
+      "messageType": "Majaribio ya Shukrani (1 SMS)",
+      "messageText": "Ndugu Felician, asante kwa mchango wako Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee. Asante kwa upendo! https://lilian.nyisu.com",
+      "provider": "NextSMS",
+      "senderId": "SENDOFF",
+      "status": "delivered",
+      "responseMessage": "Message sent to next instance"
+    },
+    {
       "id": "sms-1789824606162-558",
       "timestamp": "2026-09-19T13:30:06.162Z",
       "recipientName": "Ally Kasongo",
