@@ -1787,4 +1787,22 @@
   box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
 }
 
+/* Modal Overlay & Active Rules */
+.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  display: none !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 999999 !important;
+  padding: 20px !important;
+}
+
+.modal-overlay.active {
+  display: flex !important;
+}
+
 

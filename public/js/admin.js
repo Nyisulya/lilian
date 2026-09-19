@@ -1426,21 +1426,24 @@ function updatePaymentPreview() {
     return;
   }
 
+  const guestFirstName = getClientFirstName(activePaymentGuest.name);
+  const domain = 'lilian.nyisu.com';
+
   if (newBalance <= 0 && pledge > 0) {
     // Completed
     if (badgeWrap) {
-      badgeWrap.innerHTML = `<span class="badge badge-success">🎉 SMS ya Kukamilisha Ahadi (Full Payment)</span>`;
+      badgeWrap.innerHTML = `<span class="badge badge-success">🎉 SMS ya Shukrani (1 SMS)</span>`;
     }
     if (previewText) {
-      previewText.textContent = `Hongera na shukrani nyingi Ndugu ${activePaymentGuest.name}! Kamati ya Harusi ya ${couple} imepokea Tsh ${inputAmount.toLocaleString('sw-TZ')}. Umekamilisha ahadi yako yote ya Tsh ${pledge.toLocaleString('sw-TZ')}. Kadi yako ya mwaliko ya VIP imeandaliwa. Mungu akubariki sana!`;
+      previewText.textContent = `Habari ${guestFirstName}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: https://${domain}`;
     }
   } else {
     // Partial
     if (badgeWrap) {
-      badgeWrap.innerHTML = `<span class="badge badge-warning">💬 SMS ya Malipo ya Awali & Salio (Partial Payment)</span>`;
+      badgeWrap.innerHTML = `<span class="badge badge-success">💬 SMS ya Shukrani (1 SMS)</span>`;
     }
     if (previewText) {
-      previewText.textContent = `Habari Ndugu ${activePaymentGuest.name}, Kamati ya Harusi ya ${couple} inashukuru kupokea mchango wako wa Tsh ${inputAmount.toLocaleString('sw-TZ')}. Jumla uliyolipa hadi sasa ni Tsh ${newTotalPaid.toLocaleString('sw-TZ')}. Salio lililobaki ni Tsh ${(newBalance > 0 ? newBalance : 0).toLocaleString('sw-TZ')}. Asante sana kwa ushirikiano wako!`;
+      previewText.textContent = `Habari ${guestFirstName}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: https://${domain}`;
     }
   }
 }
@@ -1663,7 +1666,7 @@ function updateThankYouSmsUnits() {
   if (!textarea || !badge) return;
 
   const text = textarea.value || '';
-  const sampleText = text.replace('{name}', 'Mr & Mrs Bright Nyahende');
+  const sampleText = text.replace('{name}', 'Peter');
   const charCount = sampleText.length;
   
   if (charCount <= 160) {
@@ -2109,6 +2112,19 @@ function openWhatsAppWindow(phone, text) {
   const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
   const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
+}
+
+function getClientFirstName(fullName) {
+  if (!fullName || typeof fullName !== 'string') return 'Mpendwa';
+  let clean = fullName.trim();
+  const titles = ['mr.', 'mr', 'mrs.', 'mrs', 'dr.', 'dr', 'prof.', 'prof', 'eng.', 'eng', 'mhe.', 'mhe', 'ndugu', 'bi.', 'bi', 'mzee', 'mama', 'baba', 'mstr', 'miss', 'ms'];
+  let parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'Mpendwa';
+
+  while (parts.length > 1 && (titles.includes(parts[0].toLowerCase()) || parts[0] === '&' || parts[0].toLowerCase() === 'na')) {
+    parts.shift();
+  }
+  return parts[0] || 'Mpendwa';
 }
 
 function escapeHtml(text) {
@@ -3402,6 +3418,21 @@ async function deleteGalleryImage(filename) {
     alert('Hitilafu ya mtandao wakati wa kufuta picha.');
   }
 }
+
+// Expose modal and CRUD handlers on window for HTML onclick attributes
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.openAddTableModal = openAddTableModal;
+window.openEditTableModal = openEditTableModal;
+window.handleSaveTable = handleSaveTable;
+window.deleteTable = deleteTable;
+window.openAddDrinkModal = openAddDrinkModal;
+window.openEditDrinkModal = openEditDrinkModal;
+window.handleSaveDrink = handleSaveDrink;
+window.deleteDrink = deleteDrink;
+window.openAddGuestModal = openAddGuestModal;
+window.openEditGuestModal = openEditGuestModal;
+window.openPaymentModal = openPaymentModal;
 
 
 

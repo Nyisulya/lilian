@@ -305,17 +305,18 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 999999 !important;
   padding: 20px;
 }
 
 .modal-overlay.active {
-  display: flex;
+  display: flex !important;
 }
 
 .modal-box {

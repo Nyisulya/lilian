@@ -128,6 +128,20 @@ async function sendRawSMS(toPhone, messageText, messageType, guestName = '') {
   }
 }
 
+// Extract single first name (e.g. "Peter Joseph Mwita" -> "Peter", "Habari Peter")
+function getFirstName(fullName) {
+  if (!fullName || typeof fullName !== 'string') return 'Mpendwa';
+  let clean = fullName.trim();
+  const titles = ['mr.', 'mr', 'mrs.', 'mrs', 'dr.', 'dr', 'prof.', 'prof', 'eng.', 'eng', 'mhe.', 'mhe', 'ndugu', 'bi.', 'bi', 'mzee', 'mama', 'baba', 'mstr', 'miss', 'ms'];
+  let parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'Mpendwa';
+
+  while (parts.length > 1 && (titles.includes(parts[0].toLowerCase()) || parts[0] === '&' || parts[0].toLowerCase() === 'na')) {
+    parts.shift();
+  }
+  return parts[0] || 'Mpendwa';
+}
+
 /**
  * 1. Automatic SMS on Payment Entry:
  * Thank You SMS (Guaranteed strictly 1 SMS <= 160 chars, ends with website domain lilian.nyisu.com)
@@ -136,17 +150,18 @@ async function sendPaymentNotificationSMS(guest, amountPaidNewly, newBalance, to
   const db = readDB();
   const config = db.smsConfig || {};
   const domain = config.domainName || 'lilian.nyisu.com';
+  const firstName = getFirstName(guest.name);
 
-  // Customized template: Sendoff ya Lilian Marcus (two names), akuongezee zaidi! Amen, and clear link description
-  let message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: https://${domain}`;
+  // Single first name format: "Habari Peter, asante kwa mchango Sendoff ya Lilian Marcus..."
+  let message = `Habari ${firstName}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: https://${domain}`;
   if (message.replace(/\n/g, '\r\n').length > 160) {
-    message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: ${domain}`;
+    message = `Habari ${firstName}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa: https://${domain}`;
   }
   if (message.replace(/\n/g, '\r\n').length > 160) {
-    message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa: ${domain}`;
+    message = `Habari ${firstName}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa: ${domain}`;
   }
 
-  return await sendRawSMS(guest.phone, message, 'Shukrani za Mchango (1 SMS)', guest.name);
+  return await sendRawSMS(guest.phone, message, 'Shukrani za Mchango (1 SMS)', firstName);
 }
 
 /**
@@ -156,13 +171,15 @@ async function sendDebtReminderSMS(guest, remainingBalance, customTemplate) {
   const db = readDB();
   const config = db.smsConfig || {};
   const domain = config.domainName || 'lilian.nyisu.com';
+  const firstName = getFirstName(guest.name);
 
-  const defaultTemplate = `Ndugu {name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam. Mchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n8869724 M Pesa Lilian Sendoff\n0132009296900 CRDB Beatrice Kavita\n0716275451 Mixx Lilian Marcus\n\nMchango ufikishwe kabla ya 30 Sept 2026. Asante kwa upendo. Mungu akubariki.\n${domain}`;
+  const defaultTemplate = `Habari {name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam. Mchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n8869724 M Pesa Lilian Sendoff\n0132009296900 CRDB Beatrice Kavita\n0716275451 Mixx Lilian Marcus\n\nMchango ufikishwe kabla ya 30 Sept 2026. Asante kwa upendo. Mungu akubariki.\n${domain}`;
 
-  const template = customTemplate || config.reminderTemplate || defaultTemplate;
-  const message = template.replace(/{name}/g, guest.name);
+  let template = customTemplate || config.reminderTemplate || defaultTemplate;
+  template = template.replace(/{name}/g, firstName).replace(/Ndugu\s+/g, 'Habari ');
+  const message = template;
 
-  return await sendRawSMS(guest.phone, message, 'Kikumbusho cha Sendoff (SMS)', guest.name);
+  return await sendRawSMS(guest.phone, message, 'Kikumbusho cha Sendoff (SMS)', firstName);
 }
 
 /**
@@ -175,10 +192,11 @@ async function sendInvitationSMS(guest) {
   const baseUrl = config.systemUrl || `https://${domain}`;
   const seatType = Number(guest.seats) === 2 ? 'Double' : (Number(guest.seats) === 1 ? 'Single' : `Watu ${guest.seats}`);
   const cardUrl = `${baseUrl}/invite/${guest.id}`;
+  const firstName = getFirstName(guest.name);
 
-  const message = `Habari Ndugu ${guest.name}, unakaribishwa kwenye Send-off ya Lilian Marcus Nyahende tarehe 13/10/2026 ukumbi wa Mlimani City. Kodi yako: ${guest.code || '3001'} (${seatType}). Kadi: ${cardUrl} | ${domain}`;
+  const message = `Habari ${firstName}, unakaribishwa kwenye Send-off ya Lilian Marcus Nyahende tarehe 13/10/2026 ukumbi wa Mlimani City. Kodi yako: ${guest.code || '3001'} (${seatType}). Kadi: ${cardUrl} | ${domain}`;
 
-  return await sendRawSMS(guest.phone, message, 'Mwaliko & Pass Code', guest.name);
+  return await sendRawSMS(guest.phone, message, 'Mwaliko & Pass Code', firstName);
 }
 
 module.exports = {
@@ -186,5 +204,6 @@ module.exports = {
   sendPaymentNotificationSMS,
   sendDebtReminderSMS,
   sendInvitationSMS,
-  formatPhone
+  formatPhone,
+  getFirstName
 };

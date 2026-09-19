@@ -434,8 +434,9 @@ app.post('/api/sms/test', async (req, res) => {
     return res.status(400).json({ error: 'Tafadhali weka namba ya simu.' });
   }
 
-  const text = message || `Habari Ndugu ${name}, huu ni ujumbe wa majaribio kutoka Kamati ya Harusi ya Kelvin & Lilian kupitia jina jipya la SENDOFF. Mfumo wa SMS unafanya kazi kikamilifu!`;
-  const result = await smsService.sendRawSMS(phone, text, 'Majaribio ya SMS (Test)', name);
+  const firstName = smsService.getFirstName(name);
+  const text = message || `Habari ${firstName}, huu ni ujumbe wa majaribio kutoka Kamati ya Harusi ya Kelvin & Lilian kupitia jina jipya la SENDOFF. Mfumo wa SMS unafanya kazi kikamilifu!`;
+  const result = await smsService.sendRawSMS(phone, text, 'Majaribio ya SMS (Test)', firstName);
   res.json({
     success: result.success,
     result
