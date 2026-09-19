@@ -33,6 +33,7 @@
   <!-- Fonts & Meta -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/wedding.css">
 </head>
@@ -47,18 +48,6 @@
         <div class="wedding-date-tag">13 OKTOBA 2026 &bull; DAR ES SALAAM</div>
       </div>
     </a>
-
-    <!-- Center Nav Links -->
-    <nav class="wedding-nav-links">
-      <a href="#hero">Nyumbani</a>
-      <a href="#lookup">Kadi Yangu</a>
-      <a href="#story">Hadithi ya Lilian</a>
-      <a href="#gallery">Picha</a>
-      <a href="#timeline">Ratiba</a>
-      <a href="#venue">Ukumbi</a>
-      <a href="#dresscode">Dress Code</a>
-      <a href="#wishes">Pongezi</a>
-    </nav>
 
     <!-- Top Right Actions: Music Player & Discreet Committee Button -->
     <div class="wedding-nav-actions">
@@ -82,7 +71,7 @@
 
       <!-- Couple Photo Portrait Avatar -->
       <div class="hero-couple-avatar">
-        <img src="/images/lilian_sendoff.jpg" alt="Lilian Send-off">
+        <img src="/images/lilian_sendoff.jpg" alt="Lilian Send-off" fetchpriority="high" decoding="async">
       </div>
 
       <h1 class="hero-couple-title">Lilian & Kelvin</h1>
@@ -253,7 +242,7 @@
 
     <div class="gallery-grid">
       <div class="gallery-item">
-        <img src="/images/wedding_couple.jpg" alt="Lilian & Kelvin Royal Portrait">
+        <img src="/images/wedding_couple.jpg" alt="Lilian & Kelvin Royal Portrait" loading="lazy" decoding="async">
         <div class="gallery-overlay">
           <h4>Lilian & Kelvin</h4>
           <p>Royal Emerald & Gold Elegance</p>
@@ -261,7 +250,7 @@
       </div>
 
       <div class="gallery-item">
-        <img src="/images/lilian_sendoff.jpg" alt="Bibi Harusi Lilian">
+        <img src="/images/lilian_sendoff.jpg" alt="Bibi Harusi Lilian" loading="lazy" decoding="async">
         <div class="gallery-overlay">
           <h4>Bibi Harusi Mtarajiwa (Lilian)</h4>
           <p>Usiku wa Send-Off ya Kifalme</p>
@@ -269,7 +258,7 @@
       </div>
 
       <div class="gallery-item">
-        <img src="/images/wedding_venue.jpg" alt="Mlimani City Banquet Hall">
+        <img src="/images/wedding_venue.jpg" alt="Mlimani City Banquet Hall" loading="lazy" decoding="async">
         <div class="gallery-overlay">
           <h4>Mlimani City Conference Hall</h4>
           <p>Ukumbi wa Sherehe & Champagne Gala</p>
@@ -368,7 +357,7 @@
       </div>
 
       <div style="border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--gold-primary); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
-        <img src="/images/wedding_venue.jpg" alt="Venue Hall" style="width: 100%; height: 320px; object-fit: cover; display: block;">
+        <img src="/images/wedding_venue.jpg" alt="Venue Hall" loading="lazy" decoding="async" style="width: 100%; height: 320px; object-fit: cover; display: block;">
       </div>
     </div>
   </section>

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const QRCode = require('qrcode');
 const multer = require('multer');
+const compression = require('compression');
 const smsService = require('./services/smsService');
 const whatsappService = require('./services/whatsappService');
 
@@ -35,10 +36,15 @@ const upload = multer({
   limits: { fileSize: 25 * 1024 * 1024 } // 25MB max image upload
 });
 
+// Enable Gzip/Brotli Compression for ultra-fast load times
+app.use(compression());
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '7d',
+  etag: true
+}));
 
 // Helper functions for Database
 function readDB() {
