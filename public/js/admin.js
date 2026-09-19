@@ -544,7 +544,18 @@ function renderSeatingView() {
   if (!grid) return;
 
   if (!allTables || allTables.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">Bado hakuna meza zilizosajiliwa. Bofya "+ Ongeza Meza Mpya" hapo juu.</div>';
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 48px 20px; background: rgba(7, 21, 16, 0.6); border: 1.5px dashed var(--gold-primary); border-radius: 16px;">
+        <div style="font-size: 3rem; margin-bottom: 10px;">🪑</div>
+        <h4 class="font-serif gold-text" style="font-size: 1.25rem; margin-bottom: 8px;">Bado Hakuna Meza Zilizosajiliwa</h4>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 480px; margin: 0 auto 16px auto;">
+          Anza kwa kusajili meza za ukumbini (mfano: <em>Meza Kuu, Meza 1, Meza ya Wazazi, n.k.</em>) ili kuwapangia wageni viti na kutoa kadi za QR za mezani.
+        </p>
+        <button type="button" class="btn btn-gold" onclick="openAddTableModal()" style="font-size: 0.92rem; padding: 10px 22px;">
+          ➕ Ongeza Meza ya Kwanza Sasa
+        </button>
+      </div>
+    `;
     return;
   }
 
@@ -572,6 +583,19 @@ function renderSeatingView() {
             </li>
           `).join('') || '<li style="color: var(--text-muted); font-size: 0.8rem;">Bado haina wageni</li>'}
         </ul>
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(212, 175, 55, 0.15); display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+          <a href="/order/${t.id}" target="_blank" class="btn btn-sm btn-outline-gold" style="font-size: 0.74rem; padding: 3px 8px;" title="Jaribu Menyu ya Vinywaji ya meza hii">
+            🍸 QR Menyu ↗
+          </a>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn-action-edit" onclick="openEditTableModal('${t.id}')" title="Hariri Meza" style="padding: 3px 8px; font-size: 0.75rem;">
+              ✏️ Hariri
+            </button>
+            <button type="button" class="btn-action-delete" onclick="deleteTable('${t.id}')" title="Futa Meza" style="padding: 3px 8px; font-size: 0.75rem;">
+              🗑️ Futa
+            </button>
+          </div>
+        </div>
       </div>
     `;
   }).join('');
@@ -1958,9 +1982,127 @@ function setupEventListeners() {
   }
 }
 
+function openModal(modalId) {
+  const el = document.getElementById(modalId);
+  if (el) el.classList.add('active');
+}
+
 function closeModal(modalId) {
   const el = document.getElementById(modalId);
   if (el) el.classList.remove('active');
+}
+
+// -------------------------------------------------------------
+// Table Management Operations (CRUD)
+// -------------------------------------------------------------
+function openAddTableModal() {
+  const title = document.getElementById('table-modal-title');
+  const editId = document.getElementById('table-edit-id');
+  const nameInput = document.getElementById('table-input-name');
+  const capInput = document.getElementById('table-input-capacity');
+  const notesInput = document.getElementById('table-input-notes');
+
+  if (title) title.textContent = '➕ Ongeza Meza Mpya';
+  if (editId) editId.value = '';
+  if (nameInput) nameInput.value = '';
+  if (capInput) capInput.value = '10';
+  if (notesInput) notesInput.value = '';
+
+  openModal('table-modal');
+  if (nameInput) setTimeout(() => nameInput.focus(), 150);
+}
+
+function openEditTableModal(tableId) {
+  const table = (allTables || []).find(t => String(t.id) === String(tableId));
+  if (!table) return;
+
+  const title = document.getElementById('table-modal-title');
+  const editId = document.getElementById('table-edit-id');
+  const nameInput = document.getElementById('table-input-name');
+  const capInput = document.getElementById('table-input-capacity');
+  const notesInput = document.getElementById('table-input-notes');
+
+  if (title) title.textContent = `✏️ Hariri Meza: ${table.name}`;
+  if (editId) editId.value = table.id;
+  if (nameInput) nameInput.value = table.name || '';
+  if (capInput) capInput.value = table.capacity || 10;
+  if (notesInput) notesInput.value = table.notes || '';
+
+  openModal('table-modal');
+  if (nameInput) setTimeout(() => nameInput.focus(), 150);
+}
+
+async function handleSaveTable(e) {
+  if (e) e.preventDefault();
+
+  const editId = document.getElementById('table-edit-id')?.value;
+  const name = document.getElementById('table-input-name')?.value.trim();
+  const capacity = parseInt(document.getElementById('table-input-capacity')?.value, 10) || 10;
+  const notes = document.getElementById('table-input-notes')?.value.trim() || '';
+  const saveBtn = document.getElementById('btn-save-table');
+
+  if (!name) {
+    alert('Tafadhali weka jina la meza.');
+    return;
+  }
+
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Inahifadhi meza...';
+  }
+
+  try {
+    const url = editId ? `/api/tables/${editId}` : '/api/tables';
+    const method = editId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, capacity, notes })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert(editId ? `✅ Meza "${name}" imesasishwa kikamilifu!` : `✅ Meza mpya "${name}" imeongezwa kikamilifu!`);
+      closeModal('table-modal');
+      await loadEventData();
+      await loadGuests();
+    } else {
+      alert(`Hitilafu: ${data.error || 'Haikuweza kuhifadhi meza'}`);
+    }
+  } catch (err) {
+    console.error('Error saving table:', err);
+    alert('Hitilafu ya mtandao wakati wa kuhifadhi meza.');
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '💾 Hifadhi Meza';
+    }
+  }
+}
+
+async function deleteTable(tableId) {
+  const table = (allTables || []).find(t => String(t.id) === String(tableId));
+  const tableName = table ? table.name : tableId;
+
+  if (!confirm(`Je, una uhakika unataka kufuta meza hii "${tableName}"?\n\nWageni waliokuwa kwenye meza hii hawatafutwa, bali watakuwa "Hawajapangiwa meza".`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/tables/${tableId}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert(`🗑️ Meza "${tableName}" imefutwa kikamilifu.`);
+      await loadEventData();
+      await loadGuests();
+    } else {
+      alert(`Hitilafu: ${data.error || 'Haikuweza kufuta meza'}`);
+    }
+  } catch (err) {
+    console.error('Error deleting table:', err);
+    alert('Hitilafu ya mtandao wakati wa kufuta meza.');
+  }
 }
 
 function openWhatsAppWindow(phone, text) {

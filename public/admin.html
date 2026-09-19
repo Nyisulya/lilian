@@ -247,9 +247,14 @@
                 <div class="widget-main-stat" id="dash-seats-stat">0 / 0 Viti</div>
                 <p class="widget-subtext">Hali ya viti vilivyopangwa kulingana na uwezo wa ukumbi.</p>
               </div>
-              <a href="javascript:void(0)" onclick="switchToTab('tab-seating')" class="widget-action-link">
-                Panga Wageni Kwenye Meza ➔
-              </a>
+              <div style="display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap;">
+                <a href="javascript:void(0)" onclick="switchToTab('tab-seating')" class="widget-action-link" style="margin-top: 0;">
+                  Panga Wageni Kwenye Meza ➔
+                </a>
+                <button type="button" class="btn btn-sm btn-gold" onclick="openAddTableModal()" style="font-size: 0.78rem; padding: 4px 10px;">
+                  ➕ Ongeza Meza
+                </button>
+              </div>
             </div>
 
             <!-- SMS & Mwaliko Snapshot -->
@@ -736,6 +741,9 @@
           </p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-gold btn-sm" onclick="openAddTableModal()" title="Ongeza meza mpya ukumbini">
+            ➕ Ongeza Meza Mpya
+          </button>
           <button type="button" class="btn btn-emerald btn-sm" onclick="printAllTableQRCards()" title="Tengeneza na chapisha kadi za QR za kuweka juu ya kila meza ukumbini">
             🖨️ Chapisha QR za Meza Zote (Table Stands)
           </button>
@@ -1583,6 +1591,42 @@
         <br><br>
         Saini: ____________________
       </div>
+  <!-- MODAL: ADD / EDIT TABLE -->
+  <div class="modal-overlay" id="table-modal">
+    <div class="modal-box" style="max-width: 480px;">
+      <button class="modal-close" onclick="closeModal('table-modal')">&times;</button>
+      <h3 class="font-serif gold-text" id="table-modal-title" style="margin-bottom: 14px;">➕ Ongeza Meza Mpya</h3>
+      
+      <form id="table-form" onsubmit="handleSaveTable(event)">
+        <input type="hidden" id="table-edit-id">
+
+        <div class="form-group">
+          <label>Jina la Meza:</label>
+          <input type="text" id="table-input-name" class="form-control" placeholder="mfano: Meza Kuu (VIP), Meza 1, Meza ya Wazazi..." required>
+        </div>
+
+        <div class="form-group">
+          <label>Uwezo wa Viti (Capacity):</label>
+          <input type="number" id="table-input-capacity" class="form-control" value="10" min="1" max="100" required>
+        </div>
+
+        <div class="form-group">
+          <label>Maelezo / Vidokezo vya Meza (Hiari):</label>
+          <input type="text" id="table-input-notes" class="form-control" placeholder="mfano: Familia ya Bibi Harusi, Wageni Maalumu...">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="submit" class="btn btn-gold" id="btn-save-table" style="flex: 1;">
+            💾 Hifadhi Meza
+          </button>
+          <button type="button" class="btn btn-outline-gold" onclick="closeModal('table-modal')">
+            Ghairi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL: ADD / EDIT DRINK -->
   <div class="modal-overlay" id="drink-modal">
     <div class="modal-box" style="max-width: 520px;">

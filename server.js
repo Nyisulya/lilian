@@ -1217,16 +1217,45 @@ app.get('/api/tables', (req, res) => {
 app.post('/api/tables', (req, res) => {
   const db = readDB();
   const tables = db.tables || [];
+  const name = req.body.name ? req.body.name.trim() : `Meza ${tables.length + 1}`;
   const newTable = {
-    id: `meza-${tables.length + 1}`,
-    name: req.body.name || `Meza ${tables.length + 1}`,
+    id: `meza-${Date.now().toString().slice(-6)}`,
+    name,
     capacity: parseInt(req.body.capacity, 10) || 10,
-    notes: req.body.notes || ''
+    notes: req.body.notes ? req.body.notes.trim() : ''
   };
   tables.push(newTable);
   db.tables = tables;
   writeDB(db);
   res.status(201).json(newTable);
+});
+
+app.put('/api/tables/:id', (req, res) => {
+  const db = readDB();
+  const table = (db.tables || []).find(t => String(t.id).toLowerCase() === String(req.params.id).toLowerCase());
+  if (!table) return res.status(404).json({ error: 'Meza haikupatikana.' });
+  if (req.body.name) table.name = req.body.name.trim();
+  if (req.body.capacity) table.capacity = parseInt(req.body.capacity, 10) || 10;
+  if (req.body.notes !== undefined) table.notes = req.body.notes.trim();
+  writeDB(db);
+  res.json({ success: true, table });
+});
+
+app.delete('/api/tables/:id', (req, res) => {
+  const db = readDB();
+  const tableId = String(req.params.id).toLowerCase();
+  const initialCount = (db.tables || []).length;
+  db.tables = (db.tables || []).filter(t => String(t.id).toLowerCase() !== tableId);
+  
+  // Unassign any guests attached to this table
+  (db.guests || []).forEach(g => {
+    if (g.tableId && String(g.tableId).toLowerCase() === tableId) {
+      g.tableId = null;
+    }
+  });
+  
+  writeDB(db);
+  res.json({ success: true, message: 'Meza imefutwa kikamilifu.' });
 });
 
 // 9. Committee Management & Stats
