@@ -3,28 +3,7 @@
  * Supports: UltraMsg, Wasender, Meta Cloud API, Green-API, and Simulation Mode
  */
 
-const fs = require('fs');
-const path = require('path');
-
-const DB_FILE = path.join(__dirname, '..', 'data', 'db.json');
-
-function readDB() {
-  try {
-    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-  } catch (e) {
-    return { smsConfig: {}, whatsappConfig: {}, whatsappLogs: [], guests: [], event: {} };
-  }
-}
-
-function writeDB(data) {
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
-    return true;
-  } catch (e) {
-    console.error('Error writing DB in whatsappService:', e);
-    return false;
-  }
-}
+const { readDB, writeDB } = require('./db');
 
 function formatPhone(phone) {
   if (!phone) return '';

@@ -3,28 +3,7 @@
  * Messaging API: https://messaging-service.co.tz/api/sms/v1/text/single
  */
 
-const fs = require('fs');
-const path = require('path');
-
-const DB_FILE = path.join(__dirname, '..', 'data', 'db.json');
-
-function readDB() {
-  try {
-    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-  } catch (e) {
-    return { smsConfig: {}, smsLogs: [], guests: [], event: {} };
-  }
-}
-
-function writeDB(data) {
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
-    return true;
-  } catch (e) {
-    console.error('Error writing DB in smsService:', e);
-    return false;
-  }
-}
+const { readDB, writeDB } = require('./db');
 
 // Format phone number to Tanzanian standard 255XXXXXXXXX
 function formatPhone(phone) {

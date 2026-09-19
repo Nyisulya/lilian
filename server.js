@@ -5,12 +5,13 @@ const path = require('path');
 const QRCode = require('qrcode');
 const multer = require('multer');
 const compression = require('compression');
+const dbService = require('./services/db');
+const { readDB, writeDB, getDBFilePath } = dbService;
 const smsService = require('./services/smsService');
 const whatsappService = require('./services/whatsappService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_FILE = path.join(__dirname, 'data', 'db.json');
 const IMAGES_DIR = path.join(__dirname, 'public', 'images');
 
 // Ensure images directory exists
@@ -46,26 +47,12 @@ app.use(express.static(path.join(__dirname, 'public'), {
   etag: true
 }));
 
-// Helper functions for Database
-function readDB() {
-  try {
-    const raw = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error('Error reading db.json:', err);
-    return { event: {}, committeeMembers: [], tables: [], drinks: [], timeline: [], guests: [], wishes: [] };
-  }
-}
-
-function writeDB(data) {
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
-    return true;
-  } catch (err) {
-    console.error('Error writing db.json:', err);
-    return false;
-  }
-}
+// Database Backup Download Endpoint (One-click backup for Committee)
+app.get('/api/backup/download', (req, res) => {
+  const filePath = getDBFilePath();
+  const dateTag = new Date().toISOString().slice(0, 10);
+  res.download(filePath, `harusi_database_backup_${dateTag}.json`);
+});
 
 // -------------------------------------------------------------
 // API Endpoints

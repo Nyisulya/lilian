@@ -2079,6 +2079,26 @@
       "wishes": null,
       "createdAt": "2026-09-16T08:00:00.000Z",
       "code": "3092"
+    },
+    {
+      "id": "93",
+      "code": "5219",
+      "name": "Felician Joseph",
+      "title": "Rafiki",
+      "phone": "255787661560",
+      "committeeMember": "Kamati ya Harusi",
+      "tableId": "meza-1",
+      "seats": 2,
+      "pledgeAmount": 0,
+      "paidAmount": 0,
+      "rsvpStatus": "pending",
+      "guestCountAttending": 2,
+      "drinkPreference": null,
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 1,
+      "wishes": null,
+      "createdAt": "2026-09-19T15:30:22.867Z"
     }
   ],
   "wishes": [],

@@ -6,3 +6,6 @@ yarn-error.log*
 Thumbs.db
 *.log
 scratch/
+data/live_db.json
+data/backups/
+data/db.vps.backup.json
