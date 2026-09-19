@@ -137,14 +137,13 @@ async function sendPaymentNotificationSMS(guest, amountPaidNewly, newBalance, to
   const config = db.smsConfig || {};
   const domain = config.domainName || 'lilian.nyisu.com';
 
-  // Formatted to prioritize https:// when within 160 chars, otherwise lilian.nyisu.com, always strictly 1 SMS
-  let message = `Ndugu ${guest.name}, asante kwa mchango wako Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee. Asante kwa upendo! https://${domain}`;
-  if (message.length > 160) {
-    message = `Ndugu ${guest.name}, asante kwa mchango wako Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee. Asante kwa upendo! ${domain}`;
+  // Customized template: Sendoff ya Lilian Marcus (two names), akuongezee zaidi! Amen, and clear link description
+  let message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: https://${domain}`;
+  if (message.replace(/\n/g, '\r\n').length > 160) {
+    message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: ${domain}`;
   }
-  if (message.length > 160) {
-    // Failsafe for extra-long guest names (e.g. 25+ chars):
-    message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus Nyahende. Mungu akubariki na akuongezee! Asante. ${domain}`;
+  if (message.replace(/\n/g, '\r\n').length > 160) {
+    message = `Ndugu ${guest.name}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa: ${domain}`;
   }
 
   return await sendRawSMS(guest.phone, message, 'Shukrani za Mchango (1 SMS)', guest.name);
