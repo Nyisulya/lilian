@@ -184,8 +184,9 @@ async function sendFullWhatsAppInvitation(guest) {
   const interactiveCardUrl = `${systemUrl}/invite/${guest.id}`;
 
   // Message 1: Official Invitation + Photo Card + 4-Digit Pass Code
+  const famName = event.familyName || 'Mzee Marcus Nyahende';
   const seatTypeStr = Number(guest.seats) === 2 ? 'Double (Wewe na Mwenza wako)' : (Number(guest.seats) === 1 ? 'Single (Mtu 1)' : `Watu ${guest.seats}`);
-  const msg1 = `💍 *MWALIKO WA SHEREHE YA SEND-OFF YA ${bride.toUpperCase()}* 💍\n\nHabari Ndugu *${guest.name}*,\n\nFamilia ya Mzee Daniel Msaki inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}* (Send-off Party).\n\n🎟️ *Aina ya Kadi (Mwaliko):* ${seatTypeStr}\n📍 *Meza Yako:* ${table.name}\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *${guest.code || '4829'}*\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n🏛️ *Ukumbi:* ${venue}\n\n✨ Fungua Kadi Yako ya Kidijitali ya VIP hapa:\n👉 ${interactiveCardUrl}\n\nPicha ya kadi yako rasmi imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂`;
+  const msg1 = `💍 *MWALIKO WA SHEREHE YA SEND-OFF YA ${bride.toUpperCase()}* 💍\n\nHabari Ndugu *${guest.name}*,\n\nFamilia ya ${famName} inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}* (Send-off Party).\n\n🎟️ *Aina ya Kadi (Mwaliko):* ${seatTypeStr}\n📍 *Meza Yako:* ${table.name}\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *${guest.code || '4829'}*\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n🏛️ *Ukumbi:* ${venue}\n\n✨ Fungua Kadi Yako ya Kidijitali ya VIP hapa:\n👉 ${interactiveCardUrl}\n\nPicha ya kadi yako rasmi imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂`;
 
   // Message 2: Venue Location
   const msg2 = `📍 *UKUMBI & MAHALI ILIPO (LOCATION)* 📍\n\nSherehe itafanyika:\n🏛️ *Ukumbi:* ${venue}\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n\nBonyeza link hii ya Google Maps itakuongoza moja kwa moja hadi ukumbini bila kupotea:\n👉 ${mapsUrl}\n\nKaribu sana!`;

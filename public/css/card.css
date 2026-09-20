@@ -4,9 +4,9 @@
    ================================================================ */
 
 .card-viewport {
-  max-width: 480px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: 12px 12px 85px 12px; /* Bottom padding for sticky bottom navigation bar */
+  padding: 16px 12px 36px 12px;
   position: relative;
 }
 
@@ -812,5 +812,442 @@
 @keyframes musicRotate {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* ================================================================
+   ROYAL SEND-OFF CARD - E-PASS DESIGN (MATCHES IMAGE 2 PRECISELY)
+   ================================================================ */
+.wedding-card.royal-sendoff-card {
+  background: radial-gradient(circle at 50% 20%, #0f3825 0%, #082518 40%, #04150e 80%, #020b07 100%);
+  border: 3px solid #d4af37;
+  border-radius: 24px;
+  padding: 26px 18px 24px 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(212, 175, 55, 0.25);
+  min-height: auto;
+}
+
+/* Subtle Golden Stardust Layer */
+.wedding-card.royal-sendoff-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 40px 60px, rgba(250, 225, 156, 0.4), transparent),
+    radial-gradient(2px 2px at 120px 180px, rgba(250, 225, 156, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 280px 90px, rgba(250, 225, 156, 0.4), transparent),
+    radial-gradient(2.5px 2.5px at 420px 220px, rgba(250, 225, 156, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 80px 480px, rgba(250, 225, 156, 0.4), transparent),
+    radial-gradient(2px 2px at 390px 450px, rgba(250, 225, 156, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 220px 620px, rgba(250, 225, 156, 0.35), transparent),
+    radial-gradient(2px 2px at 150px 800px, rgba(250, 225, 156, 0.45), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Inner Thin Gold Frame */
+.inner-border-frame {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  border-radius: 18px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 4 Corner Flourishes (L-shaped gold lines with corner diamond) */
+.corner-flourish {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+  z-index: 5;
+}
+.corner-top-left {
+  top: 16px;
+  left: 16px;
+  border-top: 3px solid #fae19c;
+  border-left: 3px solid #fae19c;
+}
+.corner-top-left::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 5px;
+  height: 5px;
+  background: #d4af37;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #fae19c;
+}
+
+.corner-top-right {
+  top: 16px;
+  right: 16px;
+  border-top: 3px solid #fae19c;
+  border-right: 3px solid #fae19c;
+}
+.corner-top-right::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 5px;
+  height: 5px;
+  background: #d4af37;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #fae19c;
+}
+
+.corner-bottom-left {
+  bottom: 16px;
+  left: 16px;
+  border-bottom: 3px solid #fae19c;
+  border-left: 3px solid #fae19c;
+}
+.corner-bottom-left::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 5px;
+  height: 5px;
+  background: #d4af37;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #fae19c;
+}
+
+.corner-bottom-right {
+  bottom: 16px;
+  right: 16px;
+  border-bottom: 3px solid #fae19c;
+  border-right: 3px solid #fae19c;
+}
+.corner-bottom-right::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 5px;
+  height: 5px;
+  background: #d4af37;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #fae19c;
+}
+
+.royal-card-body {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+}
+
+/* Header Elements */
+.royal-card-header {
+  padding: 10px 8px 4px 8px;
+}
+.royal-emblem {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+}
+.royal-family-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #a7f3d0;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.royal-invitation-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.royal-title {
+  font-family: 'Playfair Display', 'Cinzel', serif;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #fae19c;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 4px 0 6px 0;
+  line-height: 1.15;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 2px 4px rgba(0,0,0,0.8);
+}
+.royal-tagline {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+.royal-divider {
+  color: #d4af37;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
+
+/* Bride Photo */
+.royal-bride-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 6px auto 14px auto;
+}
+.royal-bride-frame {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid #fae19c;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.55), 0 10px 25px rgba(0,0,0,0.6);
+  background: #05140e;
+}
+.royal-bride-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.royal-bride-badge {
+  background: linear-gradient(135deg, #d4af37 0%, #f9e79f 50%, #b8860b 100%);
+  color: #051910;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  padding: 4px 18px;
+  border-radius: 20px;
+  margin-top: -12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  position: relative;
+  z-index: 3;
+  text-transform: uppercase;
+}
+
+/* Personalized Guest Box */
+.royal-guest-box {
+  background: rgba(3, 18, 12, 0.76);
+  border: 1.5px solid rgba(212, 175, 55, 0.45);
+  border-radius: 18px;
+  padding: 16px 14px;
+  margin: 14px 0 16px 0;
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+.royal-guest-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.royal-guest-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 2px 0 4px 0;
+  line-height: 1.25;
+}
+.royal-guest-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  color: #a7f3d0;
+  margin-bottom: 8px;
+}
+.royal-badges-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 10px 0;
+  flex-wrap: wrap;
+}
+.royal-pill {
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+}
+.pill-seat {
+  background: rgba(212, 175, 55, 0.15);
+  border: 1.2px solid rgba(212, 175, 55, 0.55);
+  color: #fae19c;
+}
+.pill-table {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1.2px solid rgba(16, 185, 129, 0.55);
+  color: #a7f3d0;
+}
+.royal-event-details {
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  margin-top: 12px;
+  padding-top: 10px;
+}
+.royal-event-datetime {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fae19c;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.royal-event-venue {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Bottom Grid: Dress Code & Code Pass + QR */
+.royal-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+  text-align: left;
+}
+@media (max-width: 420px) {
+  .royal-bottom-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 14px;
+  }
+}
+.royal-dress-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #d4af37;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.royal-dress-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 2px 0 4px 0;
+}
+.royal-quote {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+.royal-pass-code-box {
+  background: rgba(212, 175, 55, 0.12);
+  border: 1.5px solid #d4af37;
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin-top: 6px;
+}
+.royal-pass-code-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fae19c;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+.royal-pass-code-content {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.royal-code-digits {
+  font-family: monospace;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.royal-guest-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+/* QR Card */
+.royal-qr-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 8px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+  max-width: 140px;
+  margin: 0 auto;
+}
+.royal-qr-img {
+  width: 120px;
+  height: 120px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+.royal-qr-pass-text {
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #071510;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* Clean Actions Below Card */
+.royal-card-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn-visit-website {
+  background: rgba(7, 24, 18, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #fae19c;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+.btn-visit-website:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #fae19c;
+  color: #ffffff;
 }
 

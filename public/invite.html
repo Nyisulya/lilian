@@ -68,294 +68,106 @@
 
   <div class="card-viewport" id="card-viewport">
 
-    <!-- Main Luxury Mobile Frame -->
-    <div class="wedding-card">
+    <!-- Main Royal Invitation Card (Matches Image 2) -->
+    <div class="wedding-card royal-sendoff-card">
 
-      <!-- Gold Foil Ornaments -->
-      <div class="gold-ornament-top"></div>
-      <div class="gold-ornament-bottom"></div>
+      <!-- Luxury Double Gold Borders & 4 Corner Flourishes -->
+      <div class="corner-flourish corner-top-left"></div>
+      <div class="corner-flourish corner-top-right"></div>
+      <div class="corner-flourish corner-bottom-left"></div>
+      <div class="corner-flourish corner-bottom-right"></div>
+      <div class="inner-border-frame"></div>
 
-      <!-- =======================================================
-           TAB 1: KADI KUU (MAIN VIP CARD & QR PASS)
-           ======================================================= -->
-      <div class="card-tab-panel active" id="panel-card">
+      <!-- Card Content Container -->
+      <div class="royal-card-body">
 
-        <!-- Header & Monogram -->
-        <div class="card-hero">
-          <div class="bride-hero-frame">
-            <img src="/images/lilian_sendoff.jpg" alt="Lilian" class="bride-hero-photo">
-          </div>
-
-          <div class="card-intro-script">Send-off ya Lilian</div>
-          <div class="card-intro-sub">FAMILIA YA MZEE DANIEL MSAKI INAKUALIKA</div>
-
-          <h1 class="couple-names gold-text" id="couple-names-display">
-            Lilian <span class="couple-ampersand">&</span> James
-          </h1>
-
-          <p class="wedding-quote">
-            "Kutoka Tarime hadi Dar es Salaam — Usiku wa heshima na furaha ya kumuaga binti yetu mpendwa Lilian."
-            <small style="color: var(--gold-light);">— Karibu Sana</small>
-          </p>
+        <!-- Header: Ring, Family, Subtitle, Grand Title, Tagline, Divider -->
+        <div class="royal-card-header">
+          <div class="royal-emblem">💍</div>
+          <div class="royal-family-sub" id="card-family-name">FAMILIA YA MZEE MARCUS NYAHENDE</div>
+          <div class="royal-invitation-sub">KWA HESHIMA INAKUALIKA KWENYE USIKU WA</div>
+          <h1 class="royal-title gold-text" id="card-title-display">SEND-OFF YA LILIAN</h1>
+          <div class="royal-tagline">A Night of Celebration, Love &amp; Elegance</div>
+          <div class="royal-divider">─────── ◆ ───────</div>
         </div>
 
-        <!-- Personalized Guest Honor Badge -->
-        <div class="guest-honor-badge">
-          <div class="guest-honor-label">MWALIKO MAALUMU WA VIP KWA:</div>
-          <div class="guest-honor-name" id="guest-honor-name">Mheshimiwa Mualikwa</div>
-          <div class="guest-honor-meta">
-            <span class="guest-meta-pill" id="guest-table-badge">📍 Meza: Inapangwa</span>
-            <span class="guest-meta-pill" id="guest-seats-badge">🎟️ Mwaliko: Double (Watu 2)</span>
-            <span class="guest-meta-pill" id="guest-code-badge">Namba #1</span>
+        <!-- Bride Photo with Glowing Gold Frame and Badge -->
+        <div class="royal-bride-container">
+          <div class="royal-bride-frame">
+            <img src="/images/lilian_sendoff.jpg" alt="Bibi Harusi Mtarajiwa" id="bride-hero-img" class="royal-bride-img">
           </div>
+          <div class="royal-bride-badge">BIBI HARUSI MTARAJIWA</div>
         </div>
 
-        <!-- Compact Countdown -->
-        <div class="countdown-section">
-          <div class="countdown-title" id="countdown-title">ZIMEBAKI SIKU KUELEKEA HARUSI YETU:</div>
-          <div class="countdown-grid">
-            <div class="countdown-box">
-              <div class="countdown-num" id="cd-days">00</div>
-              <div class="countdown-label">Siku</div>
+        <!-- Personalized Guest Honor Box -->
+        <div class="royal-guest-box">
+          <div class="royal-guest-label">MWALIKO MAALUMU KWA:</div>
+          <div class="royal-guest-name" id="guest-honor-name">Mheshimiwa Mualikwa</div>
+          <div class="royal-guest-title" id="guest-honor-title" style="display: none;"></div>
+
+          <!-- Badges: Seat (Single / Double) -->
+          <div class="royal-badges-row">
+            <div class="royal-pill pill-seat" id="guest-seats-badge">
+              <span>🎟️</span> <span id="guest-seat-text">MWALIKO: SINGLE</span>
             </div>
-            <div class="countdown-box">
-              <div class="countdown-num" id="cd-hours">00</div>
-              <div class="countdown-label">Masaa</div>
+          </div>
+
+          <!-- Event Date & Time & Venue inside Guest Box -->
+          <div class="royal-event-details">
+            <div class="royal-event-datetime" id="event-datetime-display">
+              📅 JUMAMOSI, 13 OKTOBA 2026 &bull; ⏰ SAA 12:30 JIONI
             </div>
-            <div class="countdown-box">
-              <div class="countdown-num" id="cd-mins">00</div>
-              <div class="countdown-label">Dakika</div>
-            </div>
-            <div class="countdown-box">
-              <div class="countdown-num" id="cd-secs">00</div>
-              <div class="countdown-label">Sekunde</div>
+            <div class="royal-event-venue" id="event-venue-display">
+              🏛️ BRAGGING SOCIAL HALL, GOBA, DAR ES SALAAM
             </div>
           </div>
         </div>
 
-        <!-- VIP QR Gate Pass -->
-        <div class="qr-gate-pass">
-          <h3 class="qr-badge-header">KADI YA KUINGILIA UKUMBINI</h3>
-          <p class="qr-badge-sub">Onyesha QR hii mlangoni kwa Walinzi au taja Kodi yako ya tarakimu 4</p>
-
-          <div class="qr-frame">
-            <img id="qr-pass-img" src="/api/qr/1" alt="QR Pass">
-          </div>
-
-          <div class="qr-code-text" id="qr-pass-code">KODI YA MLANGONI: 4829 (Namba #1)</div>
-        </div>
-
-        <!-- Story Teaser Card on Mobile Invite -->
-        <div class="glass-card" style="margin: 16px 0; padding: 14px 16px; border: 1px solid rgba(212, 175, 55, 0.4); text-align: left; background: rgba(5, 25, 17, 0.85); border-radius: 14px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 1.25rem;">🌄</span>
-              <span style="font-family: var(--font-serif); font-size: 0.95rem; font-weight: 700; color: var(--gold-light);">Hadithi ya Lilian: Tarime hadi Dar</span>
+        <!-- Bottom Section: Dress code & Gate Pass with QR Code -->
+        <div class="royal-bottom-grid">
+          <!-- Left: Dress code, quote, security code -->
+          <div class="royal-bottom-left">
+            <div class="royal-dress-section">
+              <div class="royal-dress-label">👗 RANGI ZA SHEREHE (DRESS CODE):</div>
+              <div class="royal-dress-val" id="card-dress-code">Emerald Green &amp; Touch of Gold</div>
+              <div class="royal-quote">✨ &ldquo;Uwepo wako utaleta nakshi na furaha tele!&rdquo;</div>
             </div>
-            <span style="font-size: 0.68rem; background: rgba(212, 175, 55, 0.15); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.3); padding: 2px 8px; border-radius: 10px; font-weight: 700;">13 OKTOBA</span>
+
+            <div class="royal-pass-code-box">
+              <div class="royal-pass-code-label">🔑 KODI YA KUINGILIA MLANGONI:</div>
+              <div class="royal-pass-code-content">
+                <span class="royal-code-digits" id="guest-code-digits">4829</span>
+                <span class="royal-guest-num" id="guest-num-tag">&bull; Namba ya Mgeni: #1</span>
+              </div>
+            </div>
           </div>
-          <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px;">
-            Kutoka utotoni Tarime mkoani Mara, safari ya kujiendeleza jijini Dar es Salaam, kupata kazi kwa uadilifu, hadi kukutana na mchumba wake James kuelekea usiku wa Send-off!
-          </p>
-          <a href="/#story" class="btn btn-outline-gold btn-sm" style="display: inline-block; font-size: 0.76rem; padding: 5px 12px; text-decoration: none;">
-            📖 Soma Hadithi Yote Kamili ➔
-          </a>
-        </div>
 
-        <!-- Quick Jump Buttons to other sections -->
-        <div class="quick-card-actions">
-          <button class="btn btn-gold btn-sm" onclick="switchCardTab('rsvp')">
-            🥂 Chagua Kinywaji
-          </button>
-          <button class="btn btn-outline-gold btn-sm" onclick="switchCardTab('venue')">
-            📍 Ukumbi & Ramani
-          </button>
-        </div>
-
-        <!-- WhatsApp Quick Share with Spouse / Plus One -->
-        <button type="button" class="btn-whatsapp-share" onclick="shareCardViaWhatsApp()">
-          <span>📲</span>
-          <span>Tuma Kadi hii kwa Mwenza wako WhatsApp</span>
-        </button>
-
-      </div>
-
-      <!-- =======================================================
-           TAB 2: UKUMBI ULIPO & RAMANI YA GOOGLE
-           ======================================================= -->
-      <div class="card-tab-panel" id="panel-venue">
-        <div class="section-heading">UKUMBI & MAHALI (LOCATION)</div>
-
-        <!-- Tarehe -->
-        <div class="event-info-box">
-          <div class="event-info-icon">📅</div>
-          <div>
-            <div class="event-info-title">Tarehe ya Sherehe</div>
-            <div class="event-info-text" id="wedding-date-display">13 Oktoba 2026</div>
-          </div>
-        </div>
-
-        <!-- Ibada ya Ndoa -->
-        <div class="event-info-box">
-          <div class="event-info-icon">⛪</div>
-          <div>
-            <div class="event-info-title">Ibada ya Ndoa</div>
-            <div class="event-info-text" id="church-venue-display">St. Peters Catholic Church, Oysterbay (Saa 14:00 -
-              16:00)</div>
-          </div>
-        </div>
-
-        <!-- Ukumbi wa Sherehe -->
-        <div class="event-info-box">
-          <div class="event-info-icon">🎉</div>
-          <div>
-            <div class="event-info-title">Ukumbi wa Sherehe (Reception)</div>
-            <div class="event-info-text" id="reception-venue-display">Bragging Social Hall, Goba (Saa 18:30 Jioni)
+          <!-- Right: QR Code & Pass Tag -->
+          <div class="royal-bottom-right">
+            <div class="royal-qr-card">
+              <img id="qr-pass-img" src="/api/qr/1" alt="QR Pass" class="royal-qr-img">
+              <div class="royal-qr-pass-text" id="qr-pass-label">PASS: 4829</div>
             </div>
           </div>
         </div>
 
-        <!-- Mavazi -->
-        <div class="event-info-box" style="flex-direction: column; align-items: stretch; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="event-info-icon">👗</div>
-            <div>
-              <div class="event-info-title">Mavazi (Dress Code)</div>
-              <div class="event-info-text" id="dress-code-display">Shades of Blue & Sterling Silver</div>
-            </div>
-          </div>
-
-          <!-- Interactive Color Swatch Bar -->
-          <div style="padding: 8px 10px; background: rgba(10, 27, 51, 0.45); border-radius: 10px; border: 1px solid rgba(176, 183, 195, 0.3);">
-            <div style="font-size: 0.7rem; color: #b0b7c3; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; text-align: center; font-weight: 600;">
-              ✨ Paleti ya Rangi Rasmi za Wageni ✨
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; border-radius: 6px; overflow: hidden; height: 24px; border: 1px solid rgba(255,255,255,0.2);">
-              <div style="background: #0A1B33;" title="Midnight Blue (#0A1B33)"></div>
-              <div style="background: #102A54;" title="Navy Blue (#102A54)"></div>
-              <div style="background: #1B3F8A;" title="Royal Blue (#1B3F8A)"></div>
-              <div style="background: #2563EB;" title="Cerulean Blue (#2563EB)"></div>
-              <div style="background: #5596E6;" title="Cornflower Blue (#5596E6)"></div>
-              <div style="background: #7EB6E9;" title="Sky Blue (#7EB6E9)"></div>
-              <div style="background: #D6E6F5;" title="Ice Blue (#D6E6F5)"></div>
-              <div style="background: #ECF2FA;" title="Powder Blue (#ECF2FA)"></div>
-              <div style="background: linear-gradient(135deg, #d8dde6 0%, #b0b7c3 50%, #8a93a0 100%);" title="Sterling Silver (#B0B7C3)"></div>
-            </div>
-            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 5px; text-align: center;">
-              Vivuli vya Bluu na Fedha ya Sterling Silver
-            </div>
-          </div>
-        </div>
-
-        <!-- Google Map Iframe -->
-        <div
-          style="border-radius: 14px; overflow: hidden; border: 1px solid var(--bg-glass-border); margin: 12px 0 10px 0; height: 180px;">
-          <iframe id="map-embed-iframe"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.944208034083!2d39.217316775797375!3d-6.776632466270639!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4939b6b7a2bb%3A0x6fb7eb08c4cb2407!2sMlimani%20City%20Conference%20Centre!5e0!3m2!1sen!2stz!4v1700000000000!5m2!1sen!2stz"
-            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-        </div>
-
-        <a id="google-map-btn" href="#" target="_blank" class="btn btn-gold btn-sm" style="width: 100%;">
-          🗺️ Elekea Ukumbini (Google Navigation)
-        </a>
-      </div>
-
-      <!-- =======================================================
-           TAB 4: RATIBA YA SHUGHULI (TIMETABLE)
-           ======================================================= -->
-      <div class="card-tab-panel" id="panel-timeline">
-        <div class="section-heading">RATIBA YA SHUGHULI (TIMETABLE)</div>
-        <p style="font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-bottom: 12px;">
-          Mpangilio kamili wa matukio ya siku ya harusi saa kwa saa:
-        </p>
-
-        <div class="timeline-list" id="timeline-container">
-          <!-- Populated by card.js -->
-        </div>
-      </div>
-
-      <!-- =======================================================
-           TAB 5: PONGEZI, MEDIA & SHUKRANI
-           ======================================================= -->
-      <div class="card-tab-panel" id="panel-wishes">
-        <div class="section-heading">MATUKIO & PONGEZI</div>
-
-        <!-- Quick Media Links -->
-        <div class="media-links-grid">
-          <a id="youtube-live-btn" href="#" target="_blank" class="media-link-card">
-            <div class="media-link-icon">🔴</div>
-            <div class="media-link-text">YouTube Live</div>
-          </a>
-          <a id="picture-gallery-btn" href="#" target="_blank" class="media-link-card">
-            <div class="media-link-icon">📸</div>
-            <div class="media-link-text">Picture Link</div>
-          </a>
-          <a href="#shukrani-box" class="media-link-card">
-            <div class="media-link-icon">🎬</div>
-            <div class="media-link-text">Shukrani Video</div>
-          </a>
-        </div>
-
-        <!-- Shukrani box -->
-        <div class="glass-card" id="shukrani-box" style="text-align: center; padding: 14px; margin-bottom: 16px;">
-          <div style="font-size: 1.8rem; margin-bottom: 4px;">🙏</div>
-          <h4 class="font-serif gold-text" style="font-size: 1.05rem; margin-bottom: 4px;">Ujumbe wa Shukrani</h4>
-          <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
-            Tunatoa shukrani za dhati kwa upendo, michango, sala na uwepo wenu katika siku yetu hii kuu. Mungu awabariki
-            sana!
-          </p>
-          <div style="font-family: var(--font-script); font-size: 1.6rem; color: var(--gold-light); margin-top: 6px;">
-            Lilian & James
-          </div>
-        </div>
-
-        <!-- Wishes Submission Form -->
-        <div class="glass-card" style="padding: 16px; margin-bottom: 16px;">
-          <form id="wishes-form">
-            <div class="form-group" style="margin-bottom: 10px;">
-              <label for="wishes-input-text" style="font-size: 0.85rem; font-weight: 600; color: var(--gold-light);">Andika Ujumbe wa Pongezi:</label>
-              <textarea id="wishes-input-text" class="form-control" rows="3" placeholder="Andika ujumbe mzuri wa heri na baraka hapa..." required></textarea>
-            </div>
-            <button type="submit" id="wishes-submit-btn" class="btn btn-gold btn-sm" style="width: 100%;">
-              💌 Tuma Ujumbe wa Pongezi
-            </button>
-            <div id="wishes-success-msg" style="display: none; margin-top: 10px; padding: 8px; background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; border-radius: 8px; text-align: center; color: #a7f3d0; font-size: 0.8rem;">
-              🎉 Ahsante sana! Ujumbe wako umetumwa kikamilifu.
-            </div>
-          </form>
-        </div>
-
-        <!-- Guestbook / Wishes feed -->
-        <div style="font-size: 0.85rem; font-weight: 600; color: var(--gold-light); margin-bottom: 6px;">
-          💌 Pongezi za Waalikwa:
-        </div>
-        <div class="wishes-list" id="wishes-list">
-          <!-- Populated by card.js -->
-        </div>
       </div>
 
     </div>
-  </div>
 
-  <!-- Sticky Bottom Navigation Bar for Mobile Smartphone Experience -->
-  <nav class="card-bottom-nav">
-    <button class="nav-tab-item active" data-tab="card" onclick="switchCardTab('card')">
-      <span class="nav-tab-icon">🎟️</span>
-      <span class="nav-tab-label">Kadi</span>
-    </button>
-    <button class="nav-tab-item" data-tab="venue" onclick="switchCardTab('venue')">
-      <span class="nav-tab-icon">📍</span>
-      <span class="nav-tab-label">Ukumbi</span>
-    </button>
-    <button class="nav-tab-item" data-tab="timeline" onclick="switchCardTab('timeline')">
-      <span class="nav-tab-icon">⏰</span>
-      <span class="nav-tab-label">Ratiba</span>
-    </button>
-    <button class="nav-tab-item" data-tab="wishes" onclick="switchCardTab('wishes')">
-      <span class="nav-tab-icon">💬</span>
-      <span class="nav-tab-label">Pongezi</span>
-    </button>
-  </nav>
+    <!-- Clean Actions Below Card -->
+    <div class="royal-card-actions">
+      <button type="button" class="btn-whatsapp-share" onclick="shareCardViaWhatsApp()">
+        <span>📲</span>
+        <span>Tuma Kadi hii WhatsApp</span>
+      </button>
+      <a href="/" class="btn-visit-website">
+        <span>🌐</span>
+        <span>Tembelea Tovuti Kamili ya Harusi (Hadithi, Ratiba &amp; Picha) ➔</span>
+      </a>
+    </div>
+
+  </div>
 
   <script src="/js/card.js"></script>
 </body>

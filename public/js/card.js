@@ -1,5 +1,6 @@
 /* ================================================================
    NYAHENDE SMART DIGITAL INVITATION CARD LOGIC (CARD.JS)
+   Clean, luxury royal invitation card (matches Image 2)
    ================================================================ */
 
 let currentGuest = null;
@@ -22,7 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const guestId = getGuestIdFromUrl();
   await loadGuestCard(guestId);
   setupMusicPlayer();
-  setupWishesForm();
 });
 
 // Load Guest & Event Data
@@ -31,9 +31,9 @@ async function loadGuestCard(guestId) {
     const res = await fetch(`/api/guests/${encodeURIComponent(guestId)}`);
     if (!res.ok) {
       document.getElementById('card-viewport').innerHTML = `
-        <div class="glass-card text-center" style="margin-top: 50px;">
+        <div class="glass-card text-center" style="margin-top: 50px; padding: 24px;">
           <h2 class="font-serif gold-text">Mualikwa Hakupatikana</h2>
-          <p style="margin: 15px 0;">Msimbo wa kadi <strong>${guestId}</strong> haukutambuliwa kwenye mfumo.</p>
+          <p style="margin: 15px 0;">Msimbo wa kadi <strong>${escapeHtml(guestId)}</strong> haukutambuliwa kwenye mfumo.</p>
           <a href="/" class="btn btn-gold btn-sm">Rudi Mwanzo</a>
         </div>
       `;
@@ -44,309 +44,115 @@ async function loadGuestCard(guestId) {
     currentGuest = data.guest;
     currentEvent = data.event;
 
-    renderCardHeader(data);
-    renderGuestDetails(data);
-    renderCountdown(data.event.weddingDate, data.event.weddingTime);
-    renderQRPass(data.guest);
-    renderEventDetails(data);
-    renderTimeline(data.timeline);
-    renderWishes();
+    renderRoyalCard(data);
   } catch (err) {
     console.error('Error loading card:', err);
   }
 }
 
-// Render Couple & Header
-function renderCardHeader(data) {
-  const { event, guest } = data;
-  document.title = `Kadi ya Mwaliko: Harusi ya ${event.groomName} & ${event.brideName} - ${guest.name}`;
+// Render Royal Card (matching Image 2 layout & user specifications)
+function renderRoyalCard(data) {
+  const { event, guest, table } = data;
+  const brideName = event.brideName || 'Lilian';
 
-  // Monogram letters
-  const gLetter = (event.groomName || 'K')[0];
-  const bLetter = (event.brideName || 'L')[0];
-  const monoEl = document.getElementById('monogram-letters');
-  if (monoEl) monoEl.textContent = `${gLetter}&${bLetter}`;
+  // 1. Page Title & Envelope Info
+  document.title = `👑 Kadi Rasmi ya Mwaliko: Send-off ya ${brideName} - ${guest.name}`;
 
-  // Names
-  const coupleEl = document.getElementById('couple-names-display');
-  if (coupleEl) {
-    coupleEl.innerHTML = `${event.groomName} <span class="couple-ampersand">&</span> ${event.brideName}`;
+  const envNames = document.getElementById('envelope-couple-names');
+  if (envNames) envNames.textContent = `Send-off ya ${brideName}`;
+
+  const envGuest = document.getElementById('envelope-guest-name');
+  if (envGuest) envGuest.textContent = guest.name;
+
+  // 2. Card Header
+  const titleDisplay = document.getElementById('card-title-display');
+  if (titleDisplay) titleDisplay.textContent = `SEND-OFF YA ${brideName.toUpperCase()}`;
+
+  const familyDisplay = document.getElementById('card-family-name');
+  if (familyDisplay) {
+    const fam = event.familyName || 'FAMILIA YA MZEE MARCUS NYAHENDE';
+    familyDisplay.textContent = fam.toUpperCase();
   }
 
-  const envelopeCouple = document.getElementById('envelope-couple-names');
-  if (envelopeCouple) {
-    envelopeCouple.textContent = `${event.groomName} & ${event.brideName}`;
+  // 3. Bride Image
+  const brideImg = document.getElementById('bride-hero-img');
+  if (brideImg && event.bridePhoto) {
+    brideImg.src = event.bridePhoto;
+    brideImg.alt = `Send-off ya ${brideName}`;
   }
 
-  const fullNamesEl = document.getElementById('couple-fullnames');
-  if (fullNamesEl) {
-    fullNamesEl.textContent = `${event.groomFullName} & ${event.brideFullName}`;
-  }
-}
+  // 4. Guest Details Box
+  const guestNameEl = document.getElementById('guest-honor-name');
+  if (guestNameEl) guestNameEl.textContent = guest.name;
 
-// Render Guest Honor Box
-function renderGuestDetails(data) {
-  const { guest, table } = data;
-  
-  const nameEl = document.getElementById('guest-honor-name');
-  if (nameEl) nameEl.textContent = guest.name;
-
-  const envGuestName = document.getElementById('envelope-guest-name');
-  if (envGuestName) envGuestName.textContent = guest.name;
-
-  const tableEl = document.getElementById('guest-table-badge');
-  if (tableEl) tableEl.textContent = `📍 ${table.name || 'Meza Imepangwa'}`;
-
-  const seatsEl = document.getElementById('guest-seats-badge');
-  if (seatsEl) {
-    const seatType = Number(guest.seats) === 2 ? 'Double (Wewe & Mwenza)' : (Number(guest.seats) === 1 ? 'Single (Mtu 1)' : `Watu ${guest.seats}`);
-    seatsEl.textContent = `🎟️ Mwaliko: ${seatType}`;
-  }
-
-  const codeEl = document.getElementById('guest-code-badge');
-  if (codeEl) codeEl.textContent = `Namba #${guest.id} • Kodi: ${guest.code || '4829'}`;
-}
-
-// Render Live Countdown
-function renderCountdown(dateStr, timeStr) {
-  const weddingDateTime = new Date(`${dateStr}T${timeStr || '18:00:00'}`).getTime();
-
-  function update() {
-    const now = new Date().getTime();
-    const distance = weddingDateTime - now;
-
-    if (distance < 0) {
-      document.getElementById('countdown-title').textContent = '🎉 LEO NI SIKU YA HARUSI YETU! KARIBUNI SANA!';
-      document.getElementById('cd-days').textContent = '00';
-      document.getElementById('cd-hours').textContent = '00';
-      document.getElementById('cd-mins').textContent = '00';
-      document.getElementById('cd-secs').textContent = '00';
-      return;
+  const guestTitleEl = document.getElementById('guest-honor-title');
+  if (guestTitleEl) {
+    if (guest.title && guest.title.trim() && guest.title !== 'Mualikwa') {
+      guestTitleEl.textContent = guest.title;
+      guestTitleEl.style.display = 'block';
+    } else {
+      guestTitleEl.style.display = 'none';
     }
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
-    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
-    document.getElementById('cd-mins').textContent = String(minutes).padStart(2, '0');
-    document.getElementById('cd-secs').textContent = String(seconds).padStart(2, '0');
   }
 
-  update();
-  setInterval(update, 1000);
-}
+  // 5. Seat Pill: "ondoa viti sijui, weka single au double"
+  const seatCount = Number(guest.seats) || 1;
+  const seatLabel = seatCount === 2 ? 'MWALIKO: DOUBLE' : (seatCount === 1 ? 'MWALIKO: SINGLE' : `MWALIKO: WATU ${seatCount}`);
+  const seatTextEl = document.getElementById('guest-seat-text');
+  if (seatTextEl) seatTextEl.textContent = seatLabel;
 
-// Render QR Gate Pass
-function renderQRPass(guest) {
+  // 6. Event Date & Time & Venue: "angalia ukumbi na kila kitu iwe tu hivyo bila kua na vitu vingi"
+  let dateFormatted = '13 OKTOBA 2026';
+  if (event.weddingDate) {
+    const dateObj = new Date(event.weddingDate);
+    const days = ['JUMAPILI', 'JUMATATU', 'JUMANNE', 'JUMATANO', 'ALHAMISI', 'IJUMAA', 'JUMAMOSI'];
+    const months = ['JANUARI', 'FEBRUARI', 'MACHI', 'APRILI', 'MEI', 'JUNI', 'JULAI', 'AGOSTI', 'SEPTEMBA', 'OKTOBA', 'NOVEMBA', 'DESEMBA'];
+    const dayName = days[dateObj.getDay()] || 'JUMAMOSI';
+    const day = dateObj.getDate();
+    const monthName = months[dateObj.getMonth()] || 'OKTOBA';
+    const year = dateObj.getFullYear();
+    dateFormatted = `${dayName}, ${day} ${monthName} ${year}`;
+  }
+
+  const timeFormatted = (event.receptionTime || 'Kuanzia Saa 12:30 Jioni').toUpperCase();
+  const dtEl = document.getElementById('event-datetime-display');
+  if (dtEl) {
+    dtEl.innerHTML = `📅 ${dateFormatted} &bull; ⏰ ${timeFormatted}`;
+  }
+
+  const venueEl = document.getElementById('event-venue-display');
+  if (venueEl) {
+    const venueName = (event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam').toUpperCase();
+    venueEl.textContent = `🏛️ ${venueName}`;
+  }
+
+  // 8. Dress Code
+  const dressCodeEl = document.getElementById('card-dress-code');
+  if (dressCodeEl) {
+    dressCodeEl.textContent = event.themeColor || event.dressCode || 'Emerald Green & Touch of Gold';
+  }
+
+  // 9. Security Pass Code & Guest Number
+  const codeDigitsEl = document.getElementById('guest-code-digits');
+  if (codeDigitsEl) codeDigitsEl.textContent = guest.code || '4829';
+
+  const guestNumEl = document.getElementById('guest-num-tag');
+  if (guestNumEl) guestNumEl.textContent = `• Namba ya Mgeni: #${guest.id}`;
+
+  // 10. QR Pass Image & Label
   const qrImg = document.getElementById('qr-pass-img');
   if (qrImg) {
-    qrImg.src = `/api/qr/${guest.id}`;
+    qrImg.src = `/api/qr/${encodeURIComponent(guest.id)}`;
     qrImg.alt = `QR Pass ya ${guest.name}`;
   }
 
-  const codeEl = document.getElementById('qr-pass-code');
-  if (codeEl) codeEl.innerHTML = `<span style="color: var(--gold-light); font-weight: 700;">KODI YA MLANGONI: ${guest.code || '4829'}</span> (Namba #${guest.id})`;
-}
-
-// Render Church, Reception & Map Info
-function renderEventDetails(data) {
-  const { event } = data;
-
-  const dateDisplay = new Date(event.weddingDate).toLocaleDateString('sw-TZ', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const dateEl = document.getElementById('wedding-date-display');
-  if (dateEl) dateEl.textContent = dateDisplay;
-
-  const churchEl = document.getElementById('church-venue-display');
-  if (churchEl) churchEl.textContent = `${event.churchVenue} (${event.churchTime})`;
-
-  const receptionEl = document.getElementById('reception-venue-display');
-  if (receptionEl) receptionEl.textContent = `${event.receptionVenue} (${event.receptionTime})`;
-
-  const dressEl = document.getElementById('dress-code-display');
-  if (dressEl) dressEl.textContent = event.dressCode;
-
-  // Google Maps buttons
-  const mapBtn = document.getElementById('google-map-btn');
-  if (mapBtn) mapBtn.href = event.googleMapsUrl;
-
-  const mapEmbed = document.getElementById('map-embed-iframe');
-  if (mapEmbed && event.googleMapsEmbed) {
-    mapEmbed.src = event.googleMapsEmbed;
+  const qrPassLabel = document.getElementById('qr-pass-label');
+  if (qrPassLabel) {
+    qrPassLabel.textContent = `PASS: ${guest.code || '4829'}`;
   }
-
-  // Media buttons
-  const liveBtn = document.getElementById('youtube-live-btn');
-  if (liveBtn) liveBtn.href = event.youtubeLiveUrl || '#';
-
-  const galleryBtn = document.getElementById('picture-gallery-btn');
-  if (galleryBtn) galleryBtn.href = event.pictureGalleryUrl || '#';
-}
-
-// Render Timetable (Ratiba)
-function renderTimeline(timeline) {
-  const container = document.getElementById('timeline-container');
-  if (!container || !timeline) return;
-
-  container.innerHTML = timeline.map(item => `
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-time">${item.time}</div>
-      <div class="timeline-title">${item.icon || '✨'} ${item.title}</div>
-      <div class="timeline-venue">${item.venue}</div>
-    </div>
-  `).join('');
-}
-
-// Render Wishes Guestbook
-async function renderWishes() {
-  const listEl = document.getElementById('wishes-list');
-  if (!listEl) return;
-
-  try {
-    const res = await fetch('/api/wishes');
-    const wishes = await res.json();
-
-    if (wishes.length === 0) {
-      listEl.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.88rem;">Kuwa wa kwanza kuacha ujumbe wa pongezi kwa maharusi!</p>`;
-      return;
-    }
-
-    listEl.innerHTML = wishes.map(w => `
-      <div class="wish-bubble">
-        <div class="wish-author">💌 ${escapeHtml(w.guestName)}</div>
-        <div class="wish-text">"${escapeHtml(w.message)}"</div>
-        <div class="wish-time">${new Date(w.time).toLocaleDateString('sw-TZ')}</div>
-      </div>
-    `).join('');
-  } catch (err) {
-    console.error('Error loading wishes:', err);
-  }
-}
-
-// Setup Wishes Submission Form
-function setupWishesForm() {
-  const wishesForm = document.getElementById('wishes-form');
-  if (!wishesForm) return;
-
-  wishesForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const inputEl = document.getElementById('wishes-input-text');
-    const wishesText = inputEl ? inputEl.value.trim() : '';
-    if (!wishesText) return;
-
-    const submitBtn = document.getElementById('wishes-submit-btn');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `Inatuma...`;
-
-    try {
-      const res = await fetch('/api/wishes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          guestName: currentGuest ? currentGuest.name : 'Mualikwa',
-          message: wishesText
-        })
-      });
-
-      if (res.ok) {
-        inputEl.value = '';
-        const successMsg = document.getElementById('wishes-success-msg');
-        if (successMsg) successMsg.style.display = 'block';
-        submitBtn.innerHTML = `✅ Imetumwa!`;
-        setTimeout(() => {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalText;
-          if (successMsg) successMsg.style.display = 'none';
-        }, 3000);
-        renderWishes();
-      } else {
-        alert('Kulitokea hitilafu wakati wa kutuma ujumbe.');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Hitilafu ya mtandao');
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
-    }
-  });
 }
 
 // Background Music Player
-function setupMusicPlayer() {
-  const toggleBtn = document.getElementById('music-toggle-btn');
-  if (!toggleBtn) return;
-
-  audioPlayer = new Audio();
-  // Romantic royalty-free harp/strings wedding music
-  audioPlayer.src = 'https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-harp-and-strings-1002.mp3';
-  audioPlayer.loop = true;
-
-  toggleBtn.addEventListener('click', () => {
-    if (isAudioPlaying) {
-      audioPlayer.pause();
-      isAudioPlaying = false;
-      toggleBtn.classList.remove('playing');
-      toggleBtn.innerHTML = '🎵';
-      toggleBtn.title = 'Washa Muziki';
-    } else {
-      audioPlayer.play().then(() => {
-        isAudioPlaying = true;
-        toggleBtn.classList.add('playing');
-        toggleBtn.innerHTML = '🎶';
-        toggleBtn.title = 'Zima Muziki';
-      }).catch(err => {
-        console.log('Audio autoplay prevented:', err);
-      });
-    }
-  });
-
-  // Attempt gentle autoplay on first user interaction with screen
-  document.body.addEventListener('click', function autoPlayOnce() {
-    if (!isAudioPlaying) {
-      audioPlayer.play().then(() => {
-        isAudioPlaying = true;
-        toggleBtn.classList.add('playing');
-        toggleBtn.innerHTML = '🎶';
-      }).catch(() => {});
-    }
-    document.body.removeEventListener('click', autoPlayOnce);
-  }, { once: true });
-}
-
-function switchCardTab(tabId) {
-  // Hide all panels
-  document.querySelectorAll('.card-tab-panel').forEach(p => {
-    p.classList.remove('active');
-  });
-
-  // Deactivate all bottom nav buttons
-  document.querySelectorAll('.nav-tab-item').forEach(btn => {
-    btn.classList.remove('active');
-    if (btn.dataset.tab === tabId) {
-      btn.classList.add('active');
-    }
-  });
-
-  // Activate target panel
-  const target = document.getElementById('panel-' + tabId);
-  if (target) {
-    target.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-}
-
 function setupMusicPlayer() {
   const musicUrl = currentEvent?.musicUrl || '/music/harusi_song.mp3';
   if (!audioPlayer) {
@@ -379,7 +185,6 @@ function setupMusicPlayer() {
     });
   }
 
-  // Also enable on first interaction if envelope is skipped or already open
   const startOnInteraction = () => {
     if (audioPlayer && !isAudioPlaying) {
       audioPlayer.play().then(() => {
@@ -388,8 +193,16 @@ function setupMusicPlayer() {
       }).catch(() => {});
     }
   };
-  document.addEventListener('click', startOnInteraction, { once: true });
-  document.addEventListener('touchstart', startOnInteraction, { once: true });
+  // Attempt immediate playback if permitted
+  if (!isAudioPlaying) {
+    audioPlayer.play().then(() => {
+      isAudioPlaying = true;
+      updateCardMusicUI(true);
+    }).catch(() => {});
+  }
+  ['click', 'touchstart', 'pointerdown', 'keydown', 'scroll'].forEach(evt => {
+    window.addEventListener(evt, startOnInteraction, { once: true, passive: true });
+  });
 }
 
 function updateCardMusicUI(playing) {
@@ -429,7 +242,7 @@ function openEnvelope() {
     overlay.classList.add('opened');
   }
 
-  // Start playing real wedding music upon opening envelope
+  // Start music upon envelope opening
   if (!audioPlayer) setupMusicPlayer();
   if (audioPlayer) {
     audioPlayer.play().then(() => {
@@ -441,36 +254,25 @@ function openEnvelope() {
   }
 }
 
+// WhatsApp Share
 function shareCardViaWhatsApp() {
   if (!currentGuest || !currentEvent) return;
   const currentUrl = window.location.href;
-  const groom = currentEvent.groomName || 'James';
   const bride = currentEvent.brideName || 'Lilian';
 
-  const seatType = Number(currentGuest.seats) === 2 ? 'Double (Wewe na Mimi)' : (Number(currentGuest.seats) === 1 ? 'Single' : `Watu ${currentGuest.seats}`);
-  const text = `Habari mpenzi wangu,\n\nHii hapa kadi yetu rasmi ya mwaliko wa Send-off ya *${bride} & ${groom}*:\n👉 ${currentUrl}\n\nMwaliko wetu ni wa *${seatType}* na kadi yetu ya QR ya kuingilia mlangoni ipo hapo. Fungua uione! 💍`;
+  const seatCount = Number(currentGuest.seats) || 1;
+  const seatLabel = seatCount === 2 ? 'Double' : (seatCount === 1 ? 'Single' : `Watu ${seatCount}`);
+  const text = `Habari mpenzi wangu,\n\nHii hapa kadi yetu rasmi ya mwaliko wa Send-off ya *${bride}*:\n👉 ${currentUrl}\n\nMwaliko wetu ni wa *${seatLabel}* na kadi yetu ya QR ya kuingilia mlangoni ipo hapo. Fungua uione! 💍`;
 
   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
 }
 
-function sendRsvpDirectToWhatsApp() {
-  if (!currentGuest || !currentEvent) return;
-  const groom = currentEvent.groomName || 'James';
-  const bride = currentEvent.brideName || 'Lilian';
-  const committeePhone = '255742999194'; // Committee number
-
-  const text = `Habari Kamati ya Send-off ya *${bride} & ${groom}*,\n\nMimi *${currentGuest.name}* (Msimbo: *${currentGuest.id}*), nimewasilisha chaguo langu la kinywaji cha usiku wa tafrija (${selectedDrink || 'Chaguo Maalumu'}).\n\nHongereni sana na Mungu awabariki! 🥂`;
-
-  window.open(`https://api.whatsapp.com/send?phone=${committeePhone}&text=${encodeURIComponent(text)}`, '_blank');
-}
-
 function escapeHtml(text) {
   if (!text) return '';
-  return text
+  return String(text)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-

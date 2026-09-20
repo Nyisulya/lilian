@@ -678,7 +678,8 @@ function openSendoffWhatsAppModal(guestId) {
   }
 
   // Message 1: Invitation + Photo Card + 4-Digit Gate Pass Code
-  const msg1 = `💍 *MWALIKO WA SHEREHE YA SEND-OFF YA ${bride.toUpperCase()}* 💍\n\nHabari Ndugu *${guest.name}*,\n\nFamilia ya Mzee Daniel Msaki inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}* (Send-off Party).\n\n🎟️ *Aina ya Kadi (Mwaliko):* ${seatLabel}\n📍 *Meza Yako:* ${table.name}\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *${guest.code || '4829'}*\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n🏛️ *Ukumbi:* ${venue}\n\nPicha ya kadi yako rasmi yenye Kodi yako ya siri ya kuingilia (${guest.code || '4829'}) na QR Code imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂`;
+  const famName = eventDetails?.familyName || 'Mzee Marcus Nyahende';
+  const msg1 = `💍 *MWALIKO WA SHEREHE YA SEND-OFF YA ${bride.toUpperCase()}* 💍\n\nHabari Ndugu *${guest.name}*,\n\nFamilia ya ${famName} inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}* (Send-off Party).\n\n🎟️ *Aina ya Kadi (Mwaliko):* ${seatLabel}\n📍 *Meza Yako:* ${table.name}\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *${guest.code || '4829'}*\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n🏛️ *Ukumbi:* ${venue}\n\nPicha ya kadi yako rasmi yenye Kodi yako ya siri ya kuingilia (${guest.code || '4829'}) na QR Code imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂`;
 
   // Message 2: Venue Location
   const msg2 = `📍 *UKUMBI & MAHALI ILIPO (LOCATION)* 📍\n\nSherehe itafanyika:\n🏛️ *Ukumbi:* ${venue}\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n\nBonyeza link hii ya Google Maps itakuongoza moja kwa moja hadi ukumbini bila kupotea:\n👉 ${mapsUrl}\n\nKaribu sana!`;
@@ -906,7 +907,8 @@ async function renderSendoffCardCanvas(guest, table) {
 
   ctx.fillStyle = '#a7f3d0';
   ctx.font = '600 21px "Outfit", sans-serif';
-  ctx.fillText('FAMILIA YA MZEE DANIEL MSAKI', W / 2, 140);
+  const canvasFam = (eventDetails?.familyName || 'FAMILIA YA MZEE MARCUS NYAHENDE').toUpperCase();
+  ctx.fillText(canvasFam, W / 2, 140);
 
   ctx.fillStyle = '#cbd5e1';
   ctx.font = '400 17px "Outfit", sans-serif';
@@ -1021,15 +1023,14 @@ async function renderSendoffCardCanvas(guest, table) {
     ctx.fillText(guest.title, W / 2, gBoxY + 130);
   }
 
-  // 2 Badges for Seats & Table
+  // Single Centered Badge: Mwaliko (Single / Double)
   const badgeY = guest.title ? gBoxY + 155 : gBoxY + 135;
-  const bW = 340;
+  const bW = 380;
   const bH = 50;
 
-  // Left Badge: Seats
   ctx.fillStyle = 'rgba(212, 175, 55, 0.15)';
   ctx.beginPath();
-  ctx.roundRect(W / 2 - bW - 15, badgeY, bW, bH, 12);
+  ctx.roundRect(W / 2 - bW / 2, badgeY, bW, bH, 12);
   ctx.fill();
   ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
   ctx.lineWidth = 1.5;
@@ -1038,31 +1039,26 @@ async function renderSendoffCardCanvas(guest, table) {
   ctx.fillStyle = '#fae19c';
   ctx.font = 'bold 20px "Outfit", sans-serif';
   ctx.textAlign = 'center';
-  const canvasSeatLabel = Number(guest.seats) === 2 ? 'DOUBLE (WATU 2)' : (Number(guest.seats) === 1 ? 'SINGLE (MTU 1)' : `WATU ${guest.seats}`);
-  ctx.fillText(`🎟️ MWALIKO: ${canvasSeatLabel}`, W / 2 - bW / 2 - 15, badgeY + 32);
-
-  // Right Badge: Table
-  ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
-  ctx.beginPath();
-  ctx.roundRect(W / 2 + 15, badgeY, bW, bH, 12);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  ctx.fillStyle = '#a7f3d0';
-  ctx.font = 'bold 19px "Outfit", sans-serif';
-  ctx.fillText(`📍 MEZA: ${table.name}`, W / 2 + bW / 2 + 15, badgeY + 32);
+  const canvasSeatLabel = Number(guest.seats) === 2 ? 'DOUBLE' : (Number(guest.seats) === 1 ? 'SINGLE' : `WATU ${guest.seats}`);
+  ctx.fillText(`🎟️ MWALIKO: ${canvasSeatLabel}`, W / 2, badgeY + 32);
 
   // Event Details Inside Box
   const detY = badgeY + 85;
   ctx.fillStyle = '#fae19c';
   ctx.font = 'bold 24px "Outfit", sans-serif';
-  ctx.fillText('📅 13 OKTOBA 2026  •  ⏰ SAA 12:30 JIONI', W / 2, detY);
+  let canvasDateStr = '13 OKTOBA 2026';
+  if (eventDetails?.weddingDate) {
+    const d = new Date(eventDetails.weddingDate);
+    const months = ['JANUARI', 'FEBRUARI', 'MACHI', 'APRILI', 'MEI', 'JUNI', 'JULAI', 'AGOSTI', 'SEPTEMBA', 'OKTOBA', 'NOVEMBA', 'DESEMBA'];
+    canvasDateStr = `${d.getDate()} ${months[d.getMonth()] || 'OKTOBA'} ${d.getFullYear()}`;
+  }
+  const canvasTimeStr = (eventDetails?.receptionTime || 'Saa 12:30 Jioni').toUpperCase();
+  ctx.fillText(`📅 ${canvasDateStr}  •  ⏰ ${canvasTimeStr}`, W / 2, detY);
 
   ctx.fillStyle = '#ffffff';
   ctx.font = '500 21px "Outfit", sans-serif';
-  ctx.fillText('🏛️ MLIMANI CITY CONFERENCE HALL, DAR ES SALAAM', W / 2, detY + 36);
+  const canvasVenueStr = (eventDetails?.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam').toUpperCase();
+  ctx.fillText(`🏛️ ${canvasVenueStr}`, W / 2, detY + 36);
 
   ctx.restore();
 
@@ -1075,7 +1071,8 @@ async function renderSendoffCardCanvas(guest, table) {
 
   ctx.fillStyle = '#ffffff';
   ctx.font = '600 24px "Outfit", sans-serif';
-  ctx.fillText('Emerald Green & Touch of Gold', 110, 1180);
+  const canvasDressStr = eventDetails?.themeColor || eventDetails?.dressCode || 'Emerald Green & Touch of Gold';
+  ctx.fillText(canvasDressStr, 110, 1180);
 
   ctx.fillStyle = '#94a3b8';
   ctx.font = 'italic 21px "Playfair Display", serif';

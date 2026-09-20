@@ -311,20 +311,32 @@ function toggleWeddingMusic() {
   }
 }
 
+function attemptImmediateAutoplay() {
+  initWeddingAudio();
+  if (!isPlaying && weddingAudio) {
+    weddingAudio.play().then(() => {
+      isPlaying = true;
+      updateWeddingMusicUI(true);
+    }).catch(() => {
+      // Browser policy requires user gesture; interaction listeners below handle it
+    });
+  }
+}
+
 function setupAudioFirstTouch() {
-  const playOnTouch = () => {
+  attemptImmediateAutoplay();
+  const playOnInteraction = () => {
     initWeddingAudio();
     if (!isPlaying && weddingAudio) {
       weddingAudio.play().then(() => {
         isPlaying = true;
         updateWeddingMusicUI(true);
-      }).catch(() => {
-        // Autoplay may still be restricted until explicit button click
-      });
+      }).catch(() => {});
     }
   };
-  document.addEventListener('click', playOnTouch, { once: true });
-  document.addEventListener('touchstart', playOnTouch, { once: true });
+  ['click', 'touchstart', 'pointerdown', 'keydown', 'scroll'].forEach(evt => {
+    window.addEventListener(evt, playOnInteraction, { once: true, passive: true });
+  });
 }
 
 
