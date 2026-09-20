@@ -96,9 +96,9 @@
             <span class="tab-icon">🍾</span>
             <span class="tab-text">Menyu ya Vinywaji</span>
           </button>
-          <button type="button" class="tab-btn" data-target="tab-orders" data-title="🍸 Oda za Vinywaji (Live Bar)">
+          <button type="button" class="tab-btn" data-target="tab-orders" data-title="🍸 Oda za Vinywaji Mezani">
             <span class="tab-icon">🍸</span>
-            <span class="tab-text">Oda za Vinywaji (Bar)</span>
+            <span class="tab-text">Oda za Vinywaji Mezani</span>
             <span class="badge badge-gold" id="sidebar-orders-count-badge" style="margin-left: auto; font-size: 0.72rem; padding: 2px 7px; display: none;">0</span>
           </button>
           <button type="button" class="tab-btn" data-target="tab-gallery" data-title="📸 Picha za Bibi Harusi (Galari)">
@@ -761,11 +761,42 @@
 
     <!-- TAB: TABLE DRINK ORDERS (LIVE BAR MONITOR) -->
     <div class="tab-panel" id="tab-orders">
+      <!-- Telegram Bot Integration Banner -->
+      <div class="glass-card" style="margin-bottom: 20px; padding: 16px 20px; border: 1.5px solid rgba(0, 136, 204, 0.4); background: rgba(5, 25, 35, 0.85); border-radius: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="font-size: 2.2rem; line-height: 1;">✈️</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h4 style="font-size: 1rem; color: #38bdf8; margin: 0; font-weight: 700;">Bot ya Telegram: @Lilian_sendoff_bot</h4>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981;">🟢 Inafanya Kazi</span>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 4px 0 0 0;">
+                Oda zote za vinywaji zinazowekwa mezani kupitia QR Code zinatumwa papo hapo kwenye Telegram Bot hii.
+                Wapokeaji: <strong id="telegram-subscribers-count" style="color: #fae19c;">0 Watu/Magroup</strong>.
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="https://t.me/Lilian_sendoff_bot" target="_blank" class="btn btn-sm btn-outline-gold" style="display: inline-flex; align-items: center; gap: 6px;">
+              <span>🤖 Fungua Bot Telegram</span> <span>↗</span>
+            </a>
+            <button type="button" class="btn btn-sm btn-emerald" onclick="testTelegramNotification()">
+              🔔 Tuma Jaribio Telegram
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-gold" onclick="syncTelegramSubscribers()">
+              🔄 Sasisha Wasajiliwa
+            </button>
+          </div>
+        </div>
+        <div id="telegram-test-result" style="display: none; margin-top: 10px; font-size: 0.82rem; padding: 6px 12px; border-radius: 8px;"></div>
+      </div>
+
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
         <div>
-          <h3 class="font-serif gold-text">🍸 Oda za Vinywaji Mezani (Live Bar Service)</h3>
+          <h3 class="font-serif gold-text">🍸 Oda za Vinywaji Mezani</h3>
           <p style="font-size: 0.85rem; color: var(--text-secondary);">
-            Orodha ya moja kwa moja ya vinywaji vinavyoagizwa mezani na wageni kupitia QR Code. Taarifa zinatumwa pia WhatsApp <strong>0787661560</strong>.
+            Orodha ya moja kwa moja ya vinywaji vinavyoagizwa mezani na wageni kupitia QR Code. Taarifa zinatumwa pia moja kwa moja kwenye Telegram <strong>@Lilian_sendoff_bot</strong>.
           </p>
         </div>
         <div style="display: flex; gap: 10px;">
@@ -918,7 +949,7 @@
           </div>
           <h4 class="font-serif gold-text" style="font-size: 1.15rem; margin-bottom: 4px;">🏛️ Picha ya Ukumbi & Mapambo</h4>
           <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">
-            Inaonyesha muonekano wa ukumbi wa Mlimani City na mandhari ya sherehe.
+            Inaonyesha muonekano wa ukumbi wa Bragging Social Hall, Goba na mandhari ya sherehe.
           </p>
           <div style="width: 100%; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.4); margin-bottom: 14px; background: #020b07;">
             <img id="preview-venue-img" src="/images/wedding_venue.jpg" alt="Picha ya Ukumbi" style="width: 100%; height: 100%; object-fit: cover; display: block;">
@@ -1526,7 +1557,7 @@
           Hakikisho la Ujumbe wa SMS Utakaotumwa (Sample Preview):
         </label>
         <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--bg-glass-border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 0.82rem; line-height: 1.4; color: #d1fae5;" id="bulk-sms-preview-sample">
-          Habari Ndugu [Jina la Mgeni], unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 13/10/2026 ukumbi wa Mlimani City kuanzia saa 12:30 jioni. Meza yako ni: [Meza] (Viti [Viti]). Kodi yako ya kuingilia mlangoni ni: [4829]. Karibu sana!
+          Habari Ndugu [Jina la Mgeni], unakaribishwa kwa heshima kwenye Send-off ya Lilian tarehe 13/10/2026 ukumbi wa Bragging Social Hall, Goba kuanzia saa 12:30 jioni. Meza yako ni: [Meza] (Viti [Viti]). Kodi yako ya kuingilia mlangoni ni: [4829]. Karibu sana!
         </div>
       </div>
 

@@ -9,6 +9,7 @@ const dbService = require('./services/db');
 const { readDB, writeDB, getDBFilePath } = dbService;
 const smsService = require('./services/smsService');
 const whatsappService = require('./services/whatsappService');
+const telegramService = require('./services/telegramService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -807,19 +808,20 @@ app.get('/api/orders', (req, res) => {
 });
 
 app.post('/api/orders', async (req, res) => {
-  const { tableId, guestName, items, notes } = req.body;
+  const { tableId, tableName: inputTableName, guestName, items, notes } = req.body;
   if (!tableId || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Tafadhali chagua vinywaji na meza yako.' });
   }
 
   const db = readDB();
-  const table = (db.tables || []).find(t => String(t.id).toLowerCase() === String(tableId).toLowerCase()) || { id: tableId, name: tableId };
+  const foundTable = (db.tables || []).find(t => String(t.id).toLowerCase() === String(tableId).toLowerCase());
+  const resolvedTableName = inputTableName ? inputTableName.trim() : (foundTable ? foundTable.name : tableId.replace(/-/g, ' ').toUpperCase());
   
   const orderId = `ORD-${Date.now().toString().slice(-6)}`;
   const newOrder = {
     id: orderId,
-    tableId: table.id,
-    tableName: table.name,
+    tableId: tableId,
+    tableName: resolvedTableName,
     guestName: guestName ? guestName.trim() : 'Mgeni wa Meza',
     items: items.map(it => ({
       id: it.id,
@@ -837,6 +839,14 @@ app.post('/api/orders', async (req, res) => {
   db.orders.unshift(newOrder);
   writeDB(db);
 
+  // Auto-dispatch notification to Telegram Bot (@Lilian_sendoff_bot)
+  let tgResult = null;
+  try {
+    tgResult = await telegramService.sendDrinkOrderNotification(newOrder);
+  } catch (e) {
+    console.error('Error dispatching Telegram order notification:', e);
+  }
+
   // Auto-dispatch WhatsApp notification directly to 0787661560 in background
   let waResult = null;
   const BAR_WA_NUMBER = '0787661560';
@@ -849,9 +859,34 @@ app.post('/api/orders', async (req, res) => {
   res.status(201).json({
     success: true,
     order: newOrder,
-    message: `Oda yako ya kinywaji imepokelewa na kupelekwa kwa mhudumu wa baa!`,
+    message: `Oda yako ya kinywaji imepokelewa na mhudumu wetu atakuletea moja kwa moja kwenye meza yako!`,
+    telegramNotification: tgResult,
     waNotification: waResult
   });
+});
+
+// 7.3 Telegram Bot API & Management
+app.get('/api/telegram/status', async (req, res) => {
+  const sync = await telegramService.syncTelegramUpdates();
+  const db = readDB();
+  res.json({
+    ok: true,
+    botUsername: telegramService.BOT_USERNAME,
+    botUrl: `https://t.me/${telegramService.BOT_USERNAME}`,
+    subscribersCount: db.telegramConfig?.chatIds?.length || 0,
+    subscribers: db.telegramConfig?.chats || [],
+    sync
+  });
+});
+
+app.post('/api/telegram/test', async (req, res) => {
+  const result = await telegramService.sendTestNotification();
+  res.json(result);
+});
+
+app.post('/api/telegram/sync', async (req, res) => {
+  const result = await telegramService.syncTelegramUpdates();
+  res.json(result);
 });
 
 app.put('/api/orders/:id/status', (req, res) => {
@@ -1370,7 +1405,7 @@ app.get('/invite/:id', (req, res) => {
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Send-off ya Lilian Marcus Nyahende">
   <meta property="og:title" content="👑 Kadi Rasmi ya Mwaliko: Send-off ya Lilian - ${guestName}">
-  <meta property="og:description" content="Mwaliko Maalumu kwa ${guestName} (${tableName}). Tarehe 13/10/2026 Mlimani City, Dar es Salaam. Bofya kufungua Kadi ya VIP na Kodi ya Kuingilia.">
+  <meta property="og:description" content="Mwaliko Maalumu kwa ${guestName} (${tableName}). Tarehe 13/10/2026 Bragging Social Hall, Goba, Dar es Salaam. Bofya kufungua Kadi ya VIP na Kodi ya Kuingilia.">
   <meta property="og:url" content="${baseUrl}/invite/${guestId}">
   <meta property="og:image" content="${ogImage}">
   <meta property="og:image:secure_url" content="${ogImage}">
@@ -1439,5 +1474,9 @@ app.listen(PORT, () => {
   console.log(`💌 Kadi ya Mwaliko:   http://localhost:${PORT}/invite/1`);
   console.log(`🛡️ Scanner ya Walinzi: http://localhost:${PORT}/security`);
   console.log(`📊 Dashibodi ya Kamati: http://localhost:${PORT}/admin`);
+  console.log(`🤖 Telegram Bot:      https://t.me/${telegramService.BOT_USERNAME}`);
   console.log(`====================================================`);
+
+  // Start background Telegram poller for subscriber discovery
+  telegramService.startPolling(30000);
 });

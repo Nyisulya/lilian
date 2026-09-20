@@ -655,8 +655,8 @@ function openSendoffWhatsAppModal(guestId) {
   const bride = eventDetails.brideName || 'Lilian';
   const dateStr = eventDetails.weddingDate || '13 Oktoba 2026';
   const timeStr = 'Kuanzia Saa 12:30 Jioni';
-  const venue = eventDetails.receptionVenue || 'Mlimani City Conference Hall, Dar es Salaam';
-  const mapsUrl = eventDetails.googleMapsUrl || 'https://maps.google.com/?q=Mlimani+City+Conference+Centre+Dar+es+Salaam';
+  const venue = eventDetails.receptionVenue && !eventDetails.receptionVenue.includes('Mlimani') ? eventDetails.receptionVenue : 'Bragging Social Hall, Goba, Dar es Salaam';
+  const mapsUrl = eventDetails.googleMapsUrl && !eventDetails.googleMapsUrl.includes('Mlimani') ? eventDetails.googleMapsUrl : 'https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam';
 
   // Update modal header info
   const nameEl = document.getElementById('wa-card-guest-name');
@@ -2629,7 +2629,7 @@ async function sendQuickTestSMS() {
 function printGateGuestList() {
   const sorted = [...allGuests].sort((a, b) => a.name.localeCompare(b.name));
   const bride = eventDetails.brideName || 'Lilian';
-  const venue = eventDetails.receptionVenue || 'Mlimani City Conference Hall, Dar es Salaam';
+  const venue = eventDetails.receptionVenue && !eventDetails.receptionVenue.includes('Mlimani') ? eventDetails.receptionVenue : 'Bragging Social Hall, Goba, Dar es Salaam';
   const dateStr = eventDetails?.weddingDate || '13 Oktoba 2026';
 
   const rows = sorted.map((g, idx) => {
@@ -2714,7 +2714,7 @@ function printGateGuestList() {
 }
 
 // -------------------------------------------------------------
-// LIVE BAR ORDERS MANAGEMENT & PRINTABLE TABLE QR STAND CARDS
+// LIVE TABLE DRINK ORDERS MANAGEMENT & PRINTABLE TABLE QR STAND CARDS
 // -------------------------------------------------------------
 
 async function loadDrinkOrders(isSilent = false) {
@@ -2722,6 +2722,7 @@ async function loadDrinkOrders(isSilent = false) {
     const res = await fetch('/api/orders');
     allOrders = await res.json();
     renderOrdersTable();
+    updateTelegramStatusUI();
 
     // Update sidebar badge for pending orders
     const pendingOrders = allOrders.filter(o => o.status === 'pending');
@@ -2732,6 +2733,78 @@ async function loadDrinkOrders(isSilent = false) {
     }
   } catch (err) {
     if (!isSilent) console.error('Error loading drink orders:', err);
+  }
+}
+
+async function updateTelegramStatusUI() {
+  try {
+    const res = await fetch('/api/telegram/status');
+    const data = await res.json();
+    const countEl = document.getElementById('telegram-subscribers-count');
+    if (countEl) {
+      countEl.textContent = `${data.subscribersCount || 0} Watu/Magroup`;
+    }
+  } catch (e) {}
+}
+
+async function syncTelegramSubscribers() {
+  const resultEl = document.getElementById('telegram-test-result');
+  try {
+    const res = await fetch('/api/telegram/sync', { method: 'POST' });
+    const data = await res.json();
+    await updateTelegramStatusUI();
+    if (resultEl) {
+      resultEl.style.display = 'block';
+      resultEl.style.background = 'rgba(16, 185, 129, 0.2)';
+      resultEl.style.color = '#34d399';
+      resultEl.style.border = '1px solid #10b981';
+      resultEl.innerHTML = `✅ Umesasisha: Jumla ya wasajiliwa ${data.totalSubscribers || 0}. Wateja wapya: ${data.newSubscribers || 0}.`;
+      setTimeout(() => { resultEl.style.display = 'none'; }, 5000);
+    }
+  } catch (err) {
+    if (resultEl) {
+      resultEl.style.display = 'block';
+      resultEl.style.background = 'rgba(239, 68, 68, 0.2)';
+      resultEl.style.color = '#f87171';
+      resultEl.style.border = '1px solid #ef4444';
+      resultEl.innerHTML = `Hitilafu ya kusasisha: ${err.message}`;
+    }
+  }
+}
+
+async function testTelegramNotification() {
+  const resultEl = document.getElementById('telegram-test-result');
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.style.background = 'rgba(56, 189, 248, 0.15)';
+    resultEl.style.color = '#7dd3fc';
+    resultEl.style.border = '1px solid #38bdf8';
+    resultEl.innerHTML = '⏳ Inatuma ujumbe wa majaribio kwenye Telegram...';
+  }
+
+  try {
+    const res = await fetch('/api/telegram/test', { method: 'POST' });
+    const data = await res.json();
+    if (resultEl) {
+      if (data.success) {
+        resultEl.style.background = 'rgba(16, 185, 129, 0.2)';
+        resultEl.style.color = '#34d399';
+        resultEl.style.border = '1px solid #10b981';
+        resultEl.innerHTML = `✅ Ujumbe wa majaribio umetumwa kwa mafanikio kwa wapokeaji ${data.sentCount} / ${data.totalChats}!`;
+      } else {
+        resultEl.style.background = 'rgba(245, 158, 11, 0.2)';
+        resultEl.style.color = '#fbbf24';
+        resultEl.style.border = '1px solid #f59e0b';
+        resultEl.innerHTML = `⚠️ ${data.message || 'Hakuna aliyejiunga na bot bado. Bofya "Fungua Bot Telegram" kisha bonyeza Start.'}`;
+      }
+    }
+  } catch (err) {
+    if (resultEl) {
+      resultEl.style.background = 'rgba(239, 68, 68, 0.2)';
+      resultEl.style.color = '#f87171';
+      resultEl.style.border = '1px solid #ef4444';
+      resultEl.innerHTML = `Hitilafu ya mtandao: ${err.message}`;
+    }
   }
 }
 
@@ -2830,8 +2903,10 @@ async function updateOrderStatus(orderId, newStatus) {
 // -------------------------------------------------------------
 function printAllTableQRCards() {
   const bride = eventDetails.brideName || 'Lilian';
-  const groom = eventDetails.groomName || 'James';
-  const venue = eventDetails.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
+  let venue = eventDetails.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
+  if (!venue || venue.includes('Mlimani')) {
+    venue = 'Bragging Social Hall, Goba, Dar es Salaam';
+  }
   const dateStr = eventDetails?.weddingDate || '13 Oktoba 2026';
   const origin = window.location.origin;
 
@@ -2842,7 +2917,7 @@ function printAllTableQRCards() {
     return `
       <div class="table-tent-card">
         <div class="card-inner">
-          <div class="card-brand-top">✨ SEND-OFF YA ${bride.toUpperCase()} & ${groom.toUpperCase()} ✨</div>
+          <div class="card-brand-top">✨ SEND-OFF YA ${bride.toUpperCase()} ✨</div>
           
           <div class="card-table-title">
             📍 ${escapeHtml(t.name.toUpperCase())}
@@ -2854,13 +2929,13 @@ function printAllTableQRCards() {
           </div>
 
           <div class="card-cta-headline">
-            📱 SCAN HAPA KUAGIZA KINYAWAJI CHAKO
+            📱 SCAN HAPA KUAGIZA KINYWAJI CHAKO
           </div>
 
           <div class="card-steps-box">
             <div><strong>1.</strong> Fungua Kamera ya simu yako na ielekeze kwenye QR Code hii.</div>
             <div><strong>2.</strong> Chagua kinywaji chako unachopenda kwenye menyu ya kidijitali.</div>
-            <div><strong>3.</strong> Tuma oda, mhudumu wa baa atakileta moja kwa moja kwenye meza yako!</div>
+            <div><strong>3.</strong> Tuma oda, mhudumu wetu atakuletea moja kwa moja kwenye meza yako!</div>
           </div>
 
           <div class="card-footer-info">

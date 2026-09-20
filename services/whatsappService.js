@@ -178,8 +178,8 @@ async function sendFullWhatsAppInvitation(guest) {
   
   const dateStr = '13 Oktoba 2026';
   const timeStr = 'Kuanzia Saa 12:30 Jioni';
-  const venue = event.receptionVenue || 'Mlimani City Conference Hall, Dar es Salaam';
-  const mapsUrl = event.googleMapsUrl || 'https://maps.google.com/?q=Mlimani+City+Conference+Centre+Dar+es+Salaam';
+  const venue = event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
+  const mapsUrl = event.googleMapsUrl || 'https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam';
   const cardImageUrl = `${systemUrl}${event.bridePhoto || '/images/lilian_sendoff.jpg'}`;
   const interactiveCardUrl = `${systemUrl}/invite/${guest.id}`;
 
@@ -212,19 +212,18 @@ async function sendFullWhatsAppInvitation(guest) {
 
 /**
  * 2. Automated WhatsApp Dispatch for Table Drink Orders
- * Sends instant order ticket to the assigned bar waiter / bartender number (e.g. 0787661560)
+ * Sends instant order ticket to the assigned service phone (e.g. 0787661560)
  */
 async function sendTableDrinkOrderWhatsApp(order, targetPhone = '0787661560') {
   const db = readDB();
   const event = db.event || {};
-  const groom = event.groomName || 'James';
   const bride = event.brideName || 'Lilian';
 
   const itemsList = (order.items || []).map(it => `• *${it.qty || 1}x* ${it.name} ${it.icon || '🍹'}`).join('\n');
   const now = new Date().toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' });
 
-  const msg = `🍾 *ODA MPYA YA KINYAWAJI (BAR ORDER)* 🍾
-💍 *Sherehe:* Send-off ya ${bride.toUpperCase()} & ${groom.toUpperCase()}
+  const msg = `🍾 *ODA MPYA YA KINYWAJI MEZANI* 🍾
+💍 *Sherehe:* Send-off ya ${bride.toUpperCase()}
 📍 *Meza:* *${(order.tableName || 'Meza ya Wageni').toUpperCase()}*
 👤 *Mualikwa / Mteja:* ${order.guestName ? order.guestName : 'Mgeni wa Meza'}
 
@@ -234,7 +233,7 @@ ${itemsList || '• Kinywaji hakikutajwa'}
 ${order.notes ? `📝 *Maelekezo:* ${order.notes}\n` : ''}⏰ *Muda:* Saa ${now}
 🔢 *Namba ya Oda:* #${order.id || Date.now()}
 
-_Mhudumu wa baa tafadhali fikisha vinywaji hivi kwenye meza husika mara moja!_ 🥂`;
+_Mhudumu wetu atafikisha vinywaji hivi moja kwa moja kwenye meza husika mara moja!_ 🥂`;
 
   return await sendRawWhatsApp(targetPhone, msg, '', 'Oda ya Kinywaji cha Meza', order.guestName || order.tableName);
 }

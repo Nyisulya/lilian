@@ -173,7 +173,7 @@ async function sendInvitationSMS(guest) {
   const cardUrl = `${baseUrl}/invite/${guest.id}`;
   const firstName = getFirstName(guest.name);
 
-  const message = `Habari ${firstName}, unakaribishwa kwenye Send-off ya Lilian Marcus Nyahende tarehe 13/10/2026 ukumbi wa Mlimani City. Kodi yako: ${guest.code || '3001'} (${seatType}). Kadi: ${cardUrl} | ${domain}`;
+  const message = `Habari ${firstName}, unakaribishwa kwenye Send-off ya Lilian Marcus Nyahende tarehe 13/10/2026 ukumbi wa Bragging Social Hall, Goba. Kodi yako: ${guest.code || '3001'} (${seatType}). Kadi: ${cardUrl} | ${domain}`;
 
   return await sendRawSMS(guest.phone, message, 'Mwaliko & Pass Code', firstName);
 }

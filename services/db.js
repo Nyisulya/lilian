@@ -62,7 +62,23 @@ function readDB() {
   const target = getDBFilePath();
   try {
     const raw = fs.readFileSync(target, 'utf8');
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+
+    // Auto-migrate legacy venue if still present in database
+    if (parsed.event) {
+      let changed = false;
+      if (!parsed.event.receptionVenue || parsed.event.receptionVenue.includes('Mlimani')) {
+        parsed.event.receptionVenue = 'Bragging Social Hall, Goba, Dar es Salaam';
+        parsed.event.googleMapsUrl = 'https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam';
+        parsed.event.googleMapsEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15848.7!2d39.18!3d-6.75!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sBragging+Social+Hall+Goba!5e0!3m2!1sen!2stz!4v1700000000000!5m2!1sen!2stz';
+        changed = true;
+      }
+      if (changed) {
+        fs.writeFileSync(target, JSON.stringify(parsed, null, 2), 'utf8');
+      }
+    }
+
+    return parsed;
   } catch (err) {
     console.error('Error reading primary database:', err);
     // Fallback attempt to latest backup
