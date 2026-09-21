@@ -44,8 +44,19 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '7d',
-  etag: true
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    // Disable aggressive browser caching for code & data files so updates appear immediately
+    if (/\.(html|css|js|json)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    } else {
+      // Media files (jpg, png, mp3) cached with revalidation
+      res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    }
+  }
 }));
 
 // Database Backup Download Endpoint (One-click backup for Committee)
@@ -1452,6 +1463,9 @@ app.get('/invite/:id', (req, res) => {
     `;
 
     const modified = html.replace(/<title>.*?<\/title>/i, ogTags);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.send(modified);
   });
 });
@@ -1490,6 +1504,9 @@ function handleOrderPage(req, res) {
     `;
 
     const modified = html.replace(/<title>.*?<\/title>/i, ogTags);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.send(modified);
   });
 }
