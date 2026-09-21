@@ -159,14 +159,18 @@
       <p class="story-lead-quote">
         "Kila hatua ya safari ya maisha yangu imekuwa ushuhuda wa neema ya Mungu, malezi ya wazazi wangu wenye upendo kutoka Tarime, na baraka ya kukutana na mtu anayeithamini na kuipenda roho yangu kwa dhati."
       </p>
-      <div class="story-lead-author">✨ LILIAN — BIBI HARUSI MTARAJIWA ✨</div>
+      <div class="story-lead-author">✨ LILIAN ✨</div>
     </div>
 
     <div class="story-grid">
       <!-- Chapter 1 -->
       <div class="story-card">
+        <div class="story-card-img-box">
+          <img src="/images/gallery/photo_17_roots.jpg" alt="Lilian — Utotoni &amp; Asili Tarime" loading="lazy" decoding="async">
+          <div class="story-card-img-overlay"></div>
+        </div>
         <div class="story-card-header">
-          <span class="story-badge">Utotoni & Asili</span>
+          <span class="story-badge">Utotoni &amp; Asili</span>
           <span class="story-step-num">01</span>
         </div>
         <div class="story-icon">🌄</div>
@@ -178,8 +182,12 @@
 
       <!-- Chapter 2 -->
       <div class="story-card">
+        <div class="story-card-img-box">
+          <img src="/images/gallery/photo_44_roots.jpg" alt="Lilian — Safari ya Kuelekea Dar es Salaam" loading="lazy" decoding="async">
+          <div class="story-card-img-overlay"></div>
+        </div>
         <div class="story-card-header">
-          <span class="story-badge">Ndoto & Safari</span>
+          <span class="story-badge">Ndoto &amp; Safari</span>
           <span class="story-step-num">02</span>
         </div>
         <div class="story-icon">🏙️</div>
@@ -191,8 +199,12 @@
 
       <!-- Chapter 3 -->
       <div class="story-card">
+        <div class="story-card-img-box">
+          <img src="/images/gallery/photo_41_bride.jpg" alt="Lilian — Kazi &amp; Weledi Jijini Dar" loading="lazy" decoding="async">
+          <div class="story-card-img-overlay"></div>
+        </div>
         <div class="story-card-header">
-          <span class="story-badge">Kazi & Weledi</span>
+          <span class="story-badge">Kazi &amp; Weledi</span>
           <span class="story-step-num">03</span>
         </div>
         <div class="story-icon">💼</div>
@@ -204,6 +216,10 @@
 
       <!-- Chapter 4 -->
       <div class="story-card">
+        <div class="story-card-img-box">
+          <img src="/images/gallery/photo_12_engagement.jpg" alt="Lilian &amp; James — Uchumba na Agano la Upendo" loading="lazy" decoding="async">
+          <div class="story-card-img-overlay"></div>
+        </div>
         <div class="story-card-header">
           <span class="story-badge">Upendo wa Dhati</span>
           <span class="story-step-num">04</span>
@@ -217,6 +233,10 @@
 
       <!-- Chapter 5 (Featured) -->
       <div class="story-card featured">
+        <div class="story-card-img-box">
+          <img src="/images/gallery/photo_54_gala.jpg" alt="Lilian &amp; James — Usiku wa Kifalme" loading="lazy" decoding="async">
+          <div class="story-card-img-overlay"></div>
+        </div>
         <div class="story-card-header">
           <span class="story-badge">Send-Off ya Kifalme</span>
           <span class="story-step-num">05</span>
@@ -231,39 +251,48 @@
   </section>
 
   <!-- Photo Gallery Section -->
-  <section class="wedding-section" id="gallery" style="background: rgba(3, 14, 9, 0.5); border-radius: 28px; margin-bottom: 60px;">
+  <section class="wedding-section" id="gallery" style="background: rgba(3, 14, 9, 0.6); border-radius: 28px; margin-bottom: 60px; padding: 48px 24px;">
     <div class="section-header">
-      <span class="section-tag">MATUNZIO YA SHEREHE</span>
-      <h2 class="section-title">Picha za Maharusi & Ukumbi</h2>
+      <span class="section-tag">👑 ALBAMU YA PICHA</span>
+      <h2 class="section-title">Safari ya Upendo: Lilian &amp; James</h2>
       <p class="section-desc">
-        Kumbukumbu nzuri za safari ya maandalizi ya usiku wetu wa kihistoria.
+        Kumbukumbu halisi za maandalizi, agano la uchumba, baraka za kiroho, na nyakati za furaha kutoka Tarime hadi Dar es Salaam.
       </p>
     </div>
 
-    <div class="gallery-grid">
-      <div class="gallery-item">
-        <img src="/images/wedding_couple.jpg" alt="Lilian & James Royal Portrait" loading="lazy" decoding="async">
-        <div class="gallery-overlay">
-          <h4>Lilian & James</h4>
-          <p>Royal Elegance & Agano la Upendo</p>
-        </div>
-      </div>
+    <!-- Category Filter Tabs (No Numbers, Natural Labels) -->
+    <div class="gallery-filter-container" id="gallery-filters" role="tablist" aria-label="Kategoria za Picha">
+      <button class="gallery-filter-btn active" data-category="all" onclick="filterGallery('all')">
+        <span>✨ Zote</span>
+      </button>
+      <button class="gallery-filter-btn" data-category="couple" onclick="filterGallery('couple')">
+        <span>💍 Lilian &amp; James</span>
+      </button>
+      <button class="gallery-filter-btn" data-category="engagement" onclick="filterGallery('engagement')">
+        <span>💐 Uchumba &amp; Agano</span>
+      </button>
+      <button class="gallery-filter-btn" data-category="blessing" onclick="filterGallery('blessing')">
+        <span>⛪ Baraka &amp; Sala</span>
+      </button>
+      <button class="gallery-filter-btn" data-category="lilian" onclick="filterGallery('lilian')">
+        <span>🌸 Lilian</span>
+      </button>
+      <button class="gallery-filter-btn" data-category="roots" onclick="filterGallery('roots')">
+        <span>🌿 Ziara &amp; Tarime</span>
+      </button>
+    </div>
 
-      <div class="gallery-item">
-        <img src="/images/lilian_sendoff.jpg" alt="Bibi Harusi Lilian" loading="lazy" decoding="async">
-        <div class="gallery-overlay">
-          <h4>Bibi Harusi Mtarajiwa (Lilian)</h4>
-          <p>Usiku wa Send-Off ya Kifalme</p>
-        </div>
-      </div>
+    <!-- Dynamic Photo Grid -->
+    <div class="gallery-grid" id="wedding-gallery-grid">
+      <!-- Dynamic cards rendered via JavaScript without headers -->
+    </div>
 
-      <div class="gallery-item">
-        <img src="/images/wedding_venue.jpg" alt="Bragging Social Hall Goba" loading="lazy" decoding="async">
-        <div class="gallery-overlay">
-          <h4>Bragging Social Hall, Goba</h4>
-          <p>Ukumbi wa Sherehe & Mazingira ya Kifalme</p>
-        </div>
-      </div>
+    <!-- Load More / Expand Button -->
+    <div class="gallery-toggle-wrapper" id="gallery-toggle-box">
+      <button class="btn-gallery-toggle" id="btn-gallery-toggle" onclick="toggleGalleryExpand()">
+        <span>📸</span>
+        <span id="btn-gallery-text">Tazama Picha Zote</span>
+      </button>
     </div>
   </section>
 
@@ -289,8 +318,8 @@
       <div class="timeline-item">
         <div class="timeline-time-badge">SAA 1:30 USIKU</div>
         <div class="timeline-content">
-          <h4>Kuingia kwa Kishindo kwa Bibi Harusi (Lilian)</h4>
-          <p>Kuingia rasmi kwa Bibi Harusi akiwa na wasindikizaji wake kwa shangwe, vigelegele na shamrashamra za kifalme.</p>
+          <h4>Kuingia kwa Kishindo kwa Lilian</h4>
+          <p>Kuingia rasmi kwa Lilian akiwa na wasindikizaji wake kwa shangwe, vigelegele na shamrashamra za kifalme.</p>
         </div>
       </div>
 
@@ -306,7 +335,7 @@
         <div class="timeline-time-badge">SAA 2:45 USIKU</div>
         <div class="timeline-content">
           <h4>Chakula cha Usiku (Buffet Banquet) & Toast</h4>
-          <p>Kufungua meza kuu ya chakula cha kifalme, vinywaji baridi na toast ya champagne ya kuwatakia maisha marefu maharusi.</p>
+          <p>Kufungua meza kuu ya chakula cha kifalme, vinywaji baridi na toast ya champagne ya kuwatakia maisha marefu Lilian na James.</p>
         </div>
       </div>
 
@@ -314,15 +343,15 @@
         <div class="timeline-time-badge">SAA 3:45 USIKU</div>
         <div class="timeline-content">
           <h4>Kukata Keki, Zawadi & Pongezi za Wageni</h4>
-          <p>Tukio la kukata keki ya kifahari, kutoa zawadi maalumu na wageni kupata fursa ya kupiga picha na maharusi.</p>
+          <p>Tukio la kukata keki ya kifahari, kutoa zawadi maalumu na wageni kupata fursa ya kupiga picha na Lilian & James.</p>
         </div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-time-badge">SAA 5:00 USIKU</div>
         <div class="timeline-content">
-          <h4>Dansi Kuu ya Maharusi & Muziki Mwanana</h4>
-          <p>Maharusi wanafungua uwanja wa dansi, kufuatiwa na burudani safi ya muziki hadi mwisho wa sherehe.</p>
+          <h4>Dansi Maalumu ya Lilian & James & Muziki Mwanana</h4>
+          <p>Lilian na James wanafungua uwanja wa dansi, kufuatiwa na burudani safi ya muziki hadi mwisho wa sherehe.</p>
         </div>
       </div>
     </div>
@@ -551,7 +580,7 @@
 
           <div class="form-group" style="margin-bottom: 20px;">
             <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Ujumbe wa Pongezi:</label>
-            <textarea id="wish-msg-input" class="form-control" rows="4" placeholder="Andika baraka zako kwa maharusi hapa..." required style="width: 100%; background: rgba(3, 15, 10, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); color: #fff; padding: 12px 16px; border-radius: 10px; resize: vertical;"></textarea>
+            <textarea id="wish-msg-input" class="form-control" rows="4" placeholder="Andika baraka zako kwa Lilian & James hapa..." required style="width: 100%; background: rgba(3, 15, 10, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); color: #fff; padding: 12px 16px; border-radius: 10px; resize: vertical;"></textarea>
           </div>
 
           <button type="submit" id="wish-submit-btn" class="btn btn-gold" style="width: 100%;">
@@ -627,6 +656,23 @@
 
   <!-- Floating Music Toggle Button -->
   <button id="floating-music-btn" class="floating-music-btn" onclick="toggleWeddingMusic()" title="Washa / Sitisha Muziki wa Harusi">🎵</button>
+
+  <!-- Interactive Lightbox Modal -->
+  <div class="gallery-lightbox" id="gallery-lightbox" role="dialog" aria-modal="true" aria-label="Mtazamo wa Picha">
+    <button class="lightbox-close-btn" id="lightbox-close-btn" onclick="closeLightbox()" aria-label="Funga Galari">&times;</button>
+    <button class="lightbox-nav-btn lightbox-nav-prev" id="lightbox-prev-btn" onclick="prevLightboxImage()" aria-label="Picha Iliyopita">&#10094;</button>
+    <button class="lightbox-nav-btn lightbox-nav-next" id="lightbox-next-btn" onclick="nextLightboxImage()" aria-label="Picha Ifuatayo">&#10095;</button>
+    <div class="lightbox-content-box">
+      <div class="lightbox-img-wrapper" id="lightbox-img-wrapper">
+        <img id="lightbox-img" src="" alt="Picha ya Galari ya Harusi">
+      </div>
+      <div class="lightbox-caption-bar">
+        <div class="lightbox-counter-pill" id="lightbox-counter">Picha 1 kati ya 65</div>
+        <div class="lightbox-title" id="lightbox-title">Lilian &amp; James</div>
+        <div class="lightbox-desc" id="lightbox-desc">Maelezo ya picha</div>
+      </div>
+    </div>
+  </div>
 
   <script src="/js/wedding.js"></script>
 </body>

@@ -101,20 +101,26 @@ function renderRoyalCard(data) {
   const seatTextEl = document.getElementById('guest-seat-text');
   if (seatTextEl) seatTextEl.textContent = seatLabel;
 
-  // 6. Event Date & Time & Venue: "angalia ukumbi na kila kitu iwe tu hivyo bila kua na vitu vingi"
-  let dateFormatted = '13 OKTOBA 2026';
+  // 6. Event Date & Time & Venue (Robust timezone parsing for Jumanne 13 Oktoba 2026)
+  let dateFormatted = 'Jumanne, 13 Oktoba 2026';
   if (event.weddingDate) {
-    const dateObj = new Date(event.weddingDate);
-    const days = ['JUMAPILI', 'JUMATATU', 'JUMANNE', 'JUMATANO', 'ALHAMISI', 'IJUMAA', 'JUMAMOSI'];
-    const months = ['JANUARI', 'FEBRUARI', 'MACHI', 'APRILI', 'MEI', 'JUNI', 'JULAI', 'AGOSTI', 'SEPTEMBA', 'OKTOBA', 'NOVEMBA', 'DESEMBA'];
-    const dayName = days[dateObj.getDay()] || 'JUMAMOSI';
+    const rawParts = String(event.weddingDate).split('T')[0].split('-');
+    let dateObj;
+    if (rawParts.length === 3) {
+      dateObj = new Date(Number(rawParts[0]), Number(rawParts[1]) - 1, Number(rawParts[2]), 12, 0, 0);
+    } else {
+      dateObj = new Date(event.weddingDate);
+    }
+    const days = ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'];
+    const months = ['Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni', 'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba'];
+    const dayName = days[dateObj.getDay()] || 'Jumanne';
     const day = dateObj.getDate();
-    const monthName = months[dateObj.getMonth()] || 'OKTOBA';
+    const monthName = months[dateObj.getMonth()] || 'Oktoba';
     const year = dateObj.getFullYear();
     dateFormatted = `${dayName}, ${day} ${monthName} ${year}`;
   }
 
-  const timeFormatted = (event.receptionTime || 'Kuanzia Saa 12:30 Jioni').toUpperCase();
+  const timeFormatted = event.receptionTime || 'Saa 12:30 Jioni';
   const dtEl = document.getElementById('event-datetime-display');
   if (dtEl) {
     dtEl.innerHTML = `📅 ${dateFormatted} &bull; ⏰ ${timeFormatted}`;
@@ -122,14 +128,13 @@ function renderRoyalCard(data) {
 
   const venueEl = document.getElementById('event-venue-display');
   if (venueEl) {
-    const venueName = (event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam').toUpperCase();
-    venueEl.textContent = `🏛️ ${venueName}`;
+    venueEl.textContent = event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
   }
 
   // 8. Dress Code
   const dressCodeEl = document.getElementById('card-dress-code');
   if (dressCodeEl) {
-    dressCodeEl.textContent = event.themeColor || event.dressCode || 'Emerald Green & Touch of Gold';
+    dressCodeEl.textContent = event.dressCode || event.themeColor || 'Emerald Green & Touch of Gold (Kijani cha Kifalme na Mguso wa Dhahabu)';
   }
 
   // 9. Security Pass Code & Guest Number

@@ -14,8 +14,8 @@
     "receptionTime": "Kuanzia Saa 18:30 Jioni",
     "googleMapsUrl": "https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam",
     "googleMapsEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15848.7!2d39.18!3d-6.75!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sBragging+Social+Hall+Goba!5e0!3m2!1sen!2stz!4v1700000000000!5m2!1sen!2stz",
-    "themeColor": "Shades of Blue & Sterling Silver",
-    "dressCode": "Shades of Blue & Sterling Silver (Midnight Blue, Navy, Royal, Cerulean, Sky Blue & Sterling Silver)",
+    "themeColor": "Emerald Green & Touch of Gold",
+    "dressCode": "Emerald Green & Touch of Gold (Kijani cha Kifalme na Mguso wa Dhahabu)",
     "youtubeLiveUrl": "https://www.youtube.com/watch?v=live_stream_placeholder",
     "pictureGalleryUrl": "https://photos.google.com/share/harusi-james-lilian",
     "thankYouVideoUrl": "https://www.youtube.com/watch?v=thank_you_placeholder",
@@ -23,6 +23,8 @@
     "package": "VIP PACKAGE",
     "musicUrl": "/music/harusi_song.mp3",
     "bridePhoto": "/images/lilian_sendoff.jpg",
+    "couplePhoto": "/images/wedding_couple.jpg",
+    "venuePhoto": "/images/wedding_venue.jpg",
     "story": {
       "title": "Kutoka Tarime Hadi Dar es Salaam — Hadithi ya Lilian",
       "chapters": [
@@ -30,30 +32,35 @@
           "badge": "Utotoni & Asili",
           "title": "Mwanzo Wenye Baraka — Tarime, Mara",
           "icon": "🌄",
+          "image": "/images/gallery/photo_17_roots.jpg",
           "text": "Lilian alizaliwa na kulelewa katika mji wa Tarime, Mkoa wa Mara — ardhi yenye mandhari tulivu, heshima na mila imara. Tangu utotoni, Lilian alikuwa mtoto mwenye furaha, mnyenyekevu, mwenye tabasamu la upendo na mwenye bidii ya kipekee katika masomo na malezi ya wazazi wake."
         },
         {
           "badge": "Ndoto & Hatua Mpya",
           "title": "Safari ya Kuelekea Dar es Salaam",
           "icon": "🏙️",
+          "image": "/images/gallery/photo_44_roots.jpg",
           "text": "Kipindi kilipofika cha kujiendeleza kimaisha, safari yake ilimleta jijini Dar es Salaam. Akiwa na heshima, maadili na sala za familia yake kutoka Tarime, Lilian alikabiliana na maisha ya jiji kwa ujasiri na bidii kubwa ya kufanikisha ndoto zake."
         },
         {
           "badge": "Kazi & Mafanikio",
           "title": "Kazi na Kujituma Jijini Dar",
           "icon": "💼",
+          "image": "/images/gallery/photo_41_bride.jpg",
           "text": "Kwa uadilifu na uchapakazi hodari, Lilian alifanikiwa kupata kazi nzuri jijini Dar es Salaam. Alijituma kwa weledi wa hali ya juu na kuaminika sana, akiwa kielelezo cha binti mwenye nidhamu na anayeleta fahari kwa wazazi na jamii yake."
         },
         {
           "badge": "Upendo wa Dhati",
           "title": "Kupata Mchumba (James)",
           "icon": "💍",
+          "image": "/images/gallery/photo_12_engagement.jpg",
           "text": "Akiwa jijini Dar es Salaam, Mungu aliunganisha hatua zake na James — mchumba mwenye upendo, staha na maono ya maisha. Upendo wao ulichanua kwa heshima, ucheshi na sala, hadi siku James alipoweka agano la uchumba kwa ahadi ya kuanza safari ya milele pamoja."
         },
         {
           "badge": "Usiku wa Send-Off",
           "title": "Send-Off ya Kifahari — 13 Oktoba",
           "icon": "👑",
+          "image": "/images/gallery/photo_54_gala.jpg",
           "text": "Na sasa, tarehe 13 mwezi wa 10 (13 Oktoba 2026), katika ukumbi wa kifahari wa Bragging Social Hall uliopo Goba, Dar es Salaam, familia, ndugu na Kamati yote wanakusanyika kwa furaha na vigelegele kumuaga binti yao mpendwa Lilian kuelekea maisha mapya ya ndoa!"
         }
       ]

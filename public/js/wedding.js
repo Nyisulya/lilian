@@ -1,5 +1,5 @@
 /* ================================================================
-   LILIAN & KELVIN ROYAL SEND-OFF JAVASCRIPT (WEDDING.JS)
+   LILIAN & JAMES ROYAL SEND-OFF JAVASCRIPT (WEDDING.JS)
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLookupForm();
   initWeddingAudio();
   setupAudioFirstTouch();
+  initPhotoGallery();
 });
 
 // -------------------------------------------------------------
@@ -183,7 +184,7 @@ async function loadWishes() {
     if (!Array.isArray(wishes) || wishes.length === 0) {
       stream.innerHTML = `
         <div class="wish-bubble" style="text-align: center; color: var(--text-muted);">
-          ✨ Kuwa wa kwanza kutoa pongezi kwa Bibi Harusi Lilian & James!
+          ✨ Kuwa wa kwanza kutoa pongezi kwa Lilian & James!
         </div>
       `;
       return;
@@ -369,4 +370,218 @@ function copyHexCode(hex, btn) {
     prompt('Kodi ya Rangi (Hex):', hex);
   }
 }
+
+// -------------------------------------------------------------
+// 7. ROYAL PHOTO GALLERY & INTERACTIVE LIGHTBOX
+// -------------------------------------------------------------
+let allGalleryPhotos = [];
+let filteredGalleryPhotos = [];
+let currentCategory = 'all';
+let isGalleryExpanded = false;
+let currentLightboxIndex = 0;
+const INITIAL_GALLERY_LIMIT = 12;
+
+async function initPhotoGallery() {
+  const grid = document.getElementById('wedding-gallery-grid');
+  if (!grid) return;
+
+  try {
+    const res = await fetch('/data/gallery.json');
+    if (!res.ok) throw new Error('Failed to load gallery.json');
+    allGalleryPhotos = await res.json();
+  } catch (err) {
+    console.warn('Could not fetch gallery.json, trying /api/gallery fallback:', err);
+    try {
+      const apiRes = await fetch('/api/gallery');
+      const apiData = await apiRes.json();
+      allGalleryPhotos = (apiData.images || []).map((img, idx) => ({
+        id: idx + 1,
+        filename: img.filename,
+        src: img.url,
+        category: 'couple',
+        categoryName: 'Lilian & James',
+        title: 'Lilian & James',
+        desc: img.role || 'Kumbukumbu ya safari ya mapenzi.',
+        featured: idx < 12
+      }));
+    } catch (e) {
+      console.error('Gallery fallback failed:', e);
+      return;
+    }
+  }
+
+  updateCategoryCounts();
+  applyGalleryFilter('all');
+  setupLightboxKeyboardAndTouch();
+}
+
+function updateCategoryCounts() {
+  // Counts removed per request - clean tab buttons without numbers
+}
+
+function filterGallery(category) {
+  currentCategory = category;
+  isGalleryExpanded = false;
+
+  document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+    if (btn.getAttribute('data-category') === category) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  applyGalleryFilter(category);
+}
+
+function applyGalleryFilter(category) {
+  if (category === 'all') {
+    filteredGalleryPhotos = [...allGalleryPhotos];
+  } else {
+    filteredGalleryPhotos = allGalleryPhotos.filter(p => p.category === category);
+  }
+
+  renderGalleryGrid();
+}
+
+function renderGalleryGrid() {
+  const grid = document.getElementById('wedding-gallery-grid');
+  const toggleBox = document.getElementById('gallery-toggle-box');
+  const toggleText = document.getElementById('btn-gallery-text');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+
+  const total = filteredGalleryPhotos.length;
+  const showAll = isGalleryExpanded || total <= INITIAL_GALLERY_LIMIT;
+  const displayPhotos = showAll ? filteredGalleryPhotos : filteredGalleryPhotos.slice(0, INITIAL_GALLERY_LIMIT);
+
+  displayPhotos.forEach((photo, idx) => {
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `${photo.title}: ${photo.desc}`);
+    card.onclick = () => openLightbox(idx);
+    card.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(idx);
+      }
+    };
+
+    card.innerHTML = `
+      <div class="gallery-card-zoom-icon" title="Kuza Picha">🔍</div>
+      <img src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.title)}" loading="lazy" decoding="async">
+      <div class="gallery-card-overlay">
+        <div class="gallery-card-title">${escapeHtml(photo.title)}</div>
+        <div class="gallery-card-desc">${escapeHtml(photo.desc)}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  if (toggleBox && toggleText) {
+    if (total <= INITIAL_GALLERY_LIMIT) {
+      toggleBox.style.display = 'none';
+    } else {
+      toggleBox.style.display = 'block';
+      if (isGalleryExpanded) {
+        toggleText.textContent = 'Onyesha Chache 🔼';
+      } else {
+        toggleText.textContent = 'Tazama Picha Zote 📸';
+      }
+    }
+  }
+}
+
+function toggleGalleryExpand() {
+  isGalleryExpanded = !isGalleryExpanded;
+  renderGalleryGrid();
+  if (!isGalleryExpanded) {
+    const galSection = document.getElementById('gallery');
+    if (galSection) galSection.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// Lightbox Controls
+function openLightbox(index) {
+  if (index < 0 || index >= filteredGalleryPhotos.length) return;
+  currentLightboxIndex = index;
+  const photo = filteredGalleryPhotos[currentLightboxIndex];
+  if (!photo) return;
+
+  const lightbox = document.getElementById('gallery-lightbox');
+  const img = document.getElementById('lightbox-img');
+  const counter = document.getElementById('lightbox-counter');
+  const title = document.getElementById('lightbox-title');
+  const desc = document.getElementById('lightbox-desc');
+
+  if (img) img.src = photo.src;
+  if (counter) counter.textContent = `Picha ${currentLightboxIndex + 1} kati ya ${filteredGalleryPhotos.length} • ${photo.categoryName || ''}`;
+  if (title) title.textContent = photo.title;
+  if (desc) desc.textContent = photo.desc;
+
+  if (lightbox) {
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('gallery-lightbox');
+  if (lightbox) {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function nextLightboxImage() {
+  if (!filteredGalleryPhotos.length) return;
+  currentLightboxIndex = (currentLightboxIndex + 1) % filteredGalleryPhotos.length;
+  openLightbox(currentLightboxIndex);
+}
+
+function prevLightboxImage() {
+  if (!filteredGalleryPhotos.length) return;
+  currentLightboxIndex = (currentLightboxIndex - 1 + filteredGalleryPhotos.length) % filteredGalleryPhotos.length;
+  openLightbox(currentLightboxIndex);
+}
+
+function setupLightboxKeyboardAndTouch() {
+  window.addEventListener('keydown', (e) => {
+    const lightbox = document.getElementById('gallery-lightbox');
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') nextLightboxImage();
+    else if (e.key === 'ArrowLeft') prevLightboxImage();
+  });
+
+  const lightbox = document.getElementById('gallery-lightbox');
+  if (!lightbox) return;
+
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  lightbox.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  lightbox.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff < 0) nextLightboxImage();
+      else prevLightboxImage();
+    }
+  }, { passive: true });
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      closeLightbox();
+    }
+  });
+}
+
 

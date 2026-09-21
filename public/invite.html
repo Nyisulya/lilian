@@ -3,20 +3,20 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>👑 Kadi ya Mwaliko wa Send-off ya Lilian Marcus Nyahende</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>👑 Kadi Rasmi ya Mwaliko wa Kifalme: Send-off ya Lilian Marcus Nyahende</title>
   
   <!-- Favicon & Mobile App Icons -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="alternate icon" type="image/jpeg" href="/og-image.jpg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <meta name="theme-color" content="#071510">
+  <meta name="theme-color" content="#03150d">
 
   <!-- Open Graph / WhatsApp / SMS Rich Link Previews -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Send-off ya Lilian Marcus Nyahende">
   <meta property="og:title" content="👑 Kadi Rasmi ya Mwaliko: Send-off ya Lilian Marcus Nyahende">
-  <meta property="og:description" content="Mwaliko Maalumu: Tarehe 13/10/2026 ukumbi wa Bragging Social Hall, Goba, Dar es Salaam. Bofya hapa kufungua kadi yako rasmi ya VIP na kodi ya kuingilia mlangoni.">
+  <meta property="og:description" content="Mwaliko Maalumu: Jumanne 13/10/2026 Bragging Social Hall, Goba, Dar es Salaam. Bofya hapa kufungua kadi yako rasmi ya VIP na kodi ya kuingilia mlangoni.">
   <meta property="og:image" content="https://lilian.nyisu.com/images/lilian_sendoff.jpg">
   <meta property="og:image:secure_url" content="https://lilian.nyisu.com/images/lilian_sendoff.jpg">
   <meta property="og:image:type" content="image/jpeg">
@@ -26,17 +26,29 @@
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="👑 Kadi Rasmi ya Mwaliko: Send-off ya Lilian Marcus Nyahende">
-  <meta name="twitter:description" content="Mwaliko Maalumu: Tarehe 13/10/2026 Bragging Social Hall, Goba, Dar es Salaam. Bofya kufungua kadi yako ya VIP.">
+  <meta name="twitter:description" content="Mwaliko Maalumu: Jumanne 13/10/2026 Bragging Social Hall, Goba, Dar es Salaam. Bofya kufungua kadi yako ya VIP.">
   <meta name="twitter:image" content="https://lilian.nyisu.com/images/lilian_sendoff.jpg">
 
+  <!-- Google Fonts: Luxury Calligraphy, Royal Roman Serif, and Modern Luxury Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel+Decorative:wght@700&family=Cinzel:wght@600;700;800&family=Great+Vibes&family=Montserrat:wght@500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/card.css">
 </head>
 
-<body>
+<body class="royal-invite-body">
+
+  <!-- Ambient Floating Golden Stardust Particles -->
+  <div class="stardust-container" aria-hidden="true">
+    <div class="star-particle star-1"></div>
+    <div class="star-particle star-2"></div>
+    <div class="star-particle star-3"></div>
+    <div class="star-particle star-4"></div>
+    <div class="star-particle star-5"></div>
+    <div class="star-particle star-6"></div>
+  </div>
 
   <!-- Floating Ambient Wedding Music Player -->
   <button id="music-toggle-btn" class="music-toggle" title="Washa Muziki">🎵</button>
@@ -44,126 +56,227 @@
   <!-- WhatsApp Luxury Envelope Tap-to-Open Intro -->
   <div id="envelope-overlay" class="envelope-overlay" onclick="openEnvelope()">
     <div class="envelope-box">
-      <div class="wax-seal">💌</div>
+      <div class="wax-seal">
+        <span>💌</span>
+      </div>
       <div class="envelope-tagline">Mwaliko Rasmi wa Send-off</div>
-      <div class="envelope-names" id="envelope-couple-names">Lilian & James</div>
+      <div class="envelope-names" id="envelope-couple-names">Send-off ya Lilian</div>
 
       <div class="envelope-guest-name">
-        <div
-          style="font-size: 0.72rem; color: var(--gold-light); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">
-          MWALIKO MAALUMU KWA:</div>
-        <div style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: #ffffff;"
-          id="envelope-guest-name">Mheshimiwa Mualikwa</div>
+        <div class="envelope-guest-label">MWALIKO MAALUMU WA HESHIMA KWA:</div>
+        <div class="envelope-guest-title-val" id="envelope-guest-name">Mheshimiwa Mualikwa</div>
       </div>
 
       <div class="envelope-open-btn">
-        <span>Bofya Hapa Kufungua Kadi</span>
-        <span>✨</span>
+        <span>✨ Fungua Kadi Yako ya Kifalme</span>
+        <span class="envelope-sparkle-arrow">➔</span>
       </div>
-      <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 12px;">
-        🎵 Muziki wa harusi utaanza kiotomatiki
+      <div class="envelope-subtext">
+        🎵 Muziki mwanana wa harusi utaanza ukifungua
       </div>
     </div>
   </div>
 
   <div class="card-viewport" id="card-viewport">
 
-    <!-- Main Royal Invitation Card (Matches Image 2) -->
+    <!-- Grand Royal Invitation Card (Compact Mobile Proportion) -->
     <div class="wedding-card royal-sendoff-card">
 
-      <!-- Luxury Double Gold Borders & 4 Corner Flourishes -->
-      <div class="corner-flourish corner-top-left"></div>
-      <div class="corner-flourish corner-top-right"></div>
-      <div class="corner-flourish corner-bottom-left"></div>
-      <div class="corner-flourish corner-bottom-right"></div>
+      <!-- Metallic Double Gold Frame with Corner Ornamental Filigrees -->
+      <div class="corner-filigree corner-top-left">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 46 V15 C3 8.373 8.373 3 15 3 H46" stroke="url(#cornerGold)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="15" cy="15" r="3.5" fill="url(#cornerGold)"/>
+          <circle cx="15" cy="15" r="1.5" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <div class="corner-filigree corner-top-right">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M47 46 V15 C47 8.373 41.627 3 35 3 H4" stroke="url(#cornerGold)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="35" cy="15" r="3.5" fill="url(#cornerGold)"/>
+          <circle cx="35" cy="15" r="1.5" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <div class="corner-filigree corner-bottom-left">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 4 V35 C3 41.627 8.373 47 15 47 H46" stroke="url(#cornerGold)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="15" cy="35" r="3.5" fill="url(#cornerGold)"/>
+          <circle cx="15" cy="35" r="1.5" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <div class="corner-filigree corner-bottom-right">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M47 4 V35 C47 41.627 41.627 47 35 47 H4" stroke="url(#cornerGold)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="35" cy="35" r="3.5" fill="url(#cornerGold)"/>
+          <circle cx="35" cy="35" r="1.5" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <!-- Shared Gold Gradient Definition for SVGs -->
+      <svg width="0" height="0" style="position: absolute;">
+        <defs>
+          <linearGradient id="cornerGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fff5cc"/>
+            <stop offset="35%" stop-color="#d4af37"/>
+            <stop offset="70%" stop-color="#b8860b"/>
+            <stop offset="100%" stop-color="#fae19c"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
       <div class="inner-border-frame"></div>
 
       <!-- Card Content Container -->
       <div class="royal-card-body">
 
-        <!-- Header: Ring, Family, Subtitle, Grand Title, Tagline, Divider -->
-        <div class="royal-card-header">
-          <div class="royal-emblem">💍</div>
-          <div class="royal-family-sub" id="card-family-name">FAMILIA YA MZEE MARCUS NYAHENDE</div>
-          <div class="royal-invitation-sub">KWA HESHIMA INAKUALIKA KWENYE USIKU WA</div>
-          <h1 class="royal-title gold-text" id="card-title-display">SEND-OFF YA LILIAN</h1>
-          <div class="royal-tagline">A Night of Celebration, Love &amp; Elegance</div>
-          <div class="royal-divider">─────── ◆ ───────</div>
-        </div>
-
-        <!-- Bride Photo with Glowing Gold Frame and Badge -->
-        <div class="royal-bride-container">
-          <div class="royal-bride-frame">
-            <img src="/images/lilian_sendoff.jpg" alt="Bibi Harusi Mtarajiwa" id="bride-hero-img" class="royal-bride-img">
+        <!-- 1. Header: Royal Crest Emblem, Family Name, Cursive Invitation, Grand Title -->
+        <header class="royal-card-header">
+          
+          <!-- Compact Royal Monogram Crest -->
+          <div class="royal-crest-wrap">
+            <svg class="royal-crest-svg" viewBox="0 0 100 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Crown Jewels -->
+              <path d="M32 26 L38 12 L50 20 L62 12 L68 26 Z" fill="url(#cornerGold)" stroke="#ffd700" stroke-width="1"/>
+              <circle cx="50" cy="9" r="3.2" fill="#ffffff" filter="drop-shadow(0 0 5px #ffd700)"/>
+              <circle cx="38" cy="11" r="2.2" fill="#ffffff"/>
+              <circle cx="62" cy="11" r="2.2" fill="#ffffff"/>
+              <rect x="30" y="26" width="40" height="4.5" rx="1.5" fill="url(#cornerGold)" stroke="#b8860b" stroke-width="0.8"/>
+              <!-- Laurel Wreaths -->
+              <path d="M22 36 C18 48 30 60 50 62 C70 60 82 48 78 36" stroke="url(#cornerGold)" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <!-- Center Initial Monogram -->
+              <text x="50" y="50" font-family="'Cinzel Decorative', 'Cinzel', serif" font-size="18" font-weight="900" fill="url(#cornerGold)" text-anchor="middle" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.8))">L</text>
+            </svg>
           </div>
-          <div class="royal-bride-badge">BIBI HARUSI MTARAJIWA</div>
+
+          <!-- Family Name (Heraldic Small Caps) -->
+          <div class="royal-family-sub" id="card-family-name">FAMILIA YA MZEE MARCUS NYAHENDE</div>
+
+          <!-- Luxury Cursive Script Subtitle -->
+          <div class="royal-script-invitation">Kwa heshima kubwa inakualika kwenye usiku wa</div>
+
+          <!-- Grand Event Title with Gold Embossed Shimmer -->
+          <div class="royal-title-container">
+            <h1 class="royal-title" id="card-title-display">SEND-OFF YA LILIAN</h1>
+            <div class="royal-tagline">&ldquo;A Night of Celebration, Love &amp; Elegance&rdquo;</div>
+          </div>
+
+          <!-- Fine Ornamental Golden Divider -->
+          <div class="royal-filigree-divider" aria-hidden="true">
+            <svg viewBox="0 0 260 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="10" y1="8" x2="95" y2="8" stroke="url(#goldLineGrad)" stroke-width="1.2"/>
+              <circle cx="103" cy="8" r="2" fill="#d4af37"/>
+              <polygon points="130,3 135,8 130,13 125,8" fill="url(#cornerGold)"/>
+              <circle cx="157" cy="8" r="2" fill="#d4af37"/>
+              <line x1="165" y1="8" x2="250" y2="8" stroke="url(#goldLineGrad)" stroke-width="1.2"/>
+              <defs>
+                <linearGradient id="goldLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="transparent"/>
+                  <stop offset="50%" stop-color="#fae19c"/>
+                  <stop offset="100%" stop-color="transparent"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </header>
+
+        <!-- 2. Lilian's Royal Cameo Frame (Proportional Compact Size) -->
+        <div class="royal-cameo-section">
+          <div class="royal-cameo-frame">
+            <div class="royal-cameo-outer-ring">
+              <div class="royal-cameo-inner-ring">
+                <img src="/images/lilian_sendoff.jpg" alt="Lilian" id="bride-hero-img" class="royal-cameo-img">
+              </div>
+            </div>
+          </div>
+          <div class="royal-cameo-banner">
+            <span class="banner-star">✦</span>
+            <span>LILIAN</span>
+            <span class="banner-star">✦</span>
+          </div>
         </div>
 
-        <!-- Personalized Guest Honor Box -->
+        <!-- 3. Personalized VIP Guest Honor Plaque (Compact Royal Scroll) -->
         <div class="royal-guest-box">
-          <div class="royal-guest-label">MWALIKO MAALUMU KWA:</div>
-          <div class="royal-guest-name" id="guest-honor-name">Mheshimiwa Mualikwa</div>
+          <div class="vip-scroll-header">
+            <span class="fleur">⚜️</span>
+            <span class="royal-guest-label">MWALIKO MAALUMU WA HESHIMA KWA:</span>
+            <span class="fleur">⚜️</span>
+          </div>
+
+          <h2 class="royal-guest-name" id="guest-honor-name">Ally Kasongo</h2>
           <div class="royal-guest-title" id="guest-honor-title" style="display: none;"></div>
 
-          <!-- Badges: Seat (Single / Double) -->
+          <!-- VIP Seating Pill Ribbon -->
           <div class="royal-badges-row">
             <div class="royal-pill pill-seat" id="guest-seats-badge">
-              <span>🎟️</span> <span id="guest-seat-text">MWALIKO: SINGLE</span>
+              <span class="seat-badge-icon">🎟️</span>
+              <span id="guest-seat-text">MWALIKO: SINGLE (KITI 1)</span>
+              <span class="seat-vip-tag">★ VIP ★</span>
             </div>
           </div>
 
-          <!-- Event Date & Time & Venue inside Guest Box -->
-          <div class="royal-event-details">
-            <div class="royal-event-datetime" id="event-datetime-display">
-              📅 JUMAMOSI, 13 OKTOBA 2026 &bull; ⏰ SAA 12:30 JIONI
+          <!-- Compact Unified Event Details (Date, Time, Venue) -->
+          <div class="royal-compact-event-info">
+            <div class="event-row event-datetime-row" id="event-datetime-display">
+              📅 Jumanne, 13 Oktoba 2026 &bull; ⏰ Saa 12:30 Jioni
             </div>
-            <div class="royal-event-venue" id="event-venue-display">
-              🏛️ BRAGGING SOCIAL HALL, GOBA, DAR ES SALAAM
+            <div class="event-row event-venue-row">
+              <span class="venue-icon">🏛️</span>
+              <span class="venue-text" id="event-venue-display">Bragging Social Hall, Goba, Dar es Salaam</span>
             </div>
+            <div class="royal-quote">&ldquo;Uwepo wako utaleta nakshi, heshima na furaha tele!&rdquo;</div>
           </div>
         </div>
 
-        <!-- Bottom Section: Dress code & Gate Pass with QR Code -->
+        <!-- Security Gate Pass & QR Code (Compact Horizontal Ticket) -->
         <div class="royal-bottom-grid">
-          <!-- Left: Dress code, quote, security code -->
+          
+          <!-- Left: Gate Pass Security Credentials -->
           <div class="royal-bottom-left">
-            <div class="royal-dress-section">
-              <div class="royal-dress-label">👗 RANGI ZA SHEREHE (DRESS CODE):</div>
-              <div class="royal-dress-val" id="card-dress-code">Emerald Green &amp; Touch of Gold</div>
-              <div class="royal-quote">✨ &ldquo;Uwepo wako utaleta nakshi na furaha tele!&rdquo;</div>
-            </div>
-
             <div class="royal-pass-code-box">
-              <div class="royal-pass-code-label">🔑 KODI YA KUINGILIA MLANGONI:</div>
+              <div class="pass-security-header">
+                <span class="security-shield">🔑</span>
+                <span class="royal-pass-code-label">KODI YA KUINGILIA:</span>
+              </div>
               <div class="royal-pass-code-content">
                 <span class="royal-code-digits" id="guest-code-digits">4829</span>
-                <span class="royal-guest-num" id="guest-num-tag">&bull; Namba ya Mgeni: #1</span>
+                <span class="royal-guest-num" id="guest-num-tag">• Mgeni #1</span>
+              </div>
+              <div class="pass-security-note">
+                Onyesha getini kwa walinzi.
               </div>
             </div>
           </div>
 
-          <!-- Right: QR Code & Pass Tag -->
+          <!-- Right: Gold-Framed QR Pass Card -->
           <div class="royal-bottom-right">
             <div class="royal-qr-card">
-              <img id="qr-pass-img" src="/api/qr/1" alt="QR Pass" class="royal-qr-img">
+              <div class="qr-img-wrapper">
+                <img id="qr-pass-img" src="/api/qr/1" alt="QR Pass" class="royal-qr-img">
+              </div>
               <div class="royal-qr-pass-text" id="qr-pass-label">PASS: 4829</div>
             </div>
           </div>
+
         </div>
 
       </div>
 
     </div>
 
-    <!-- Clean Actions Below Card -->
+    <!-- Action Buttons Below Card -->
     <div class="royal-card-actions">
       <button type="button" class="btn-whatsapp-share" onclick="shareCardViaWhatsApp()">
         <span>📲</span>
         <span>Tuma Kadi hii WhatsApp</span>
       </button>
+
       <a href="/" class="btn-visit-website">
         <span>🌐</span>
-        <span>Tembelea Tovuti Kamili ya Harusi (Hadithi, Ratiba &amp; Picha) ➔</span>
+        <span>Tembelea Tovuti Kamili ya Harusi ➔</span>
       </a>
     </div>
 

@@ -1009,28 +1009,40 @@ app.delete('/api/drinks/:id', (req, res) => {
 // 7.4 Photo Gallery & Bride / Couple Image Upload API
 app.get('/api/gallery', (req, res) => {
   try {
-    const files = fs.readdirSync(IMAGES_DIR);
     const db = readDB();
     const event = db.event || {};
+    const imageList = [];
 
-    const imageList = files.map(filename => {
-      const filePath = path.join(IMAGES_DIR, filename);
-      const stats = fs.statSync(filePath);
-      const url = `/images/${filename}`;
+    const scanDir = (dir, prefix = '') => {
+      if (!fs.existsSync(dir)) return;
+      const files = fs.readdirSync(dir);
+      files.forEach(filename => {
+        const filePath = path.join(dir, filename);
+        const stats = fs.statSync(filePath);
+        if (stats.isDirectory()) {
+          if (filename === 'gallery') scanDir(filePath, 'gallery/');
+          return;
+        }
+        const ext = path.extname(filename).toLowerCase();
+        if (!['.jpg', '.jpeg', '.png', '.webp', '.svg'].includes(ext)) return;
 
-      let role = 'Galari ya Picha';
-      if (filename === 'lilian_sendoff.jpg' || filename === 'brenda_sendoff.jpg' || url === event.bridePhoto) role = '👰 Picha Kuu ya Bibi Harusi';
-      else if (filename === 'wedding_couple.jpg' || url === event.couplePhoto) role = '💍 Picha Kuu ya Maharusi';
-      else if (filename === 'wedding_venue.jpg' || url === event.venuePhoto) role = '🏛️ Picha ya Ukumbi';
+        const relUrl = `/images/${prefix}${filename}`;
+        let role = 'Galari ya Picha';
+        if (filename === 'lilian_sendoff.jpg' || filename === 'brenda_sendoff.jpg' || relUrl === event.bridePhoto) role = '👰 Picha Kuu ya Bibi Harusi';
+        else if (filename === 'wedding_couple.jpg' || relUrl === event.couplePhoto) role = '💍 Picha Kuu ya Maharusi';
+        else if (filename === 'wedding_venue.jpg' || relUrl === event.venuePhoto) role = '🏛️ Picha ya Ukumbi';
 
-      return {
-        filename,
-        url,
-        sizeBytes: stats.size,
-        modifiedAt: stats.mtime.toISOString(),
-        role
-      };
-    });
+        imageList.push({
+          filename: `${prefix}${filename}`,
+          url: relUrl,
+          sizeBytes: stats.size,
+          modifiedAt: stats.mtime.toISOString(),
+          role
+        });
+      });
+    };
+
+    scanDir(IMAGES_DIR);
 
     // Sort newest first
     imageList.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt));
@@ -1212,15 +1224,34 @@ app.post('/api/upload/venue', upload.single('file'), (req, res) => {
 
 // Delete Image from Gallery
 app.delete('/api/gallery/:filename', (req, res) => {
-  const filename = path.basename(req.params.filename);
+  const filename = req.params.filename || '';
+  const baseName = path.basename(filename);
   // Protect core defaults from accidental delete
   const protectedNames = ['lilian_sendoff.jpg', 'brenda_sendoff.jpg', 'wedding_couple.jpg', 'wedding_venue.jpg'];
-  if (protectedNames.includes(filename)) {
+  if (protectedNames.includes(baseName)) {
     return res.status(400).json({ error: 'Picha hii ya msingi haiwezi kufutwa, lakini unaweza kuibadilisha kwa kupakia picha mpya juu yake.' });
   }
 
-  const filePath = path.join(IMAGES_DIR, filename);
-  if (fs.existsSync(filePath)) {
+  let filePath = path.join(IMAGES_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    filePath = path.join(IMAGES_DIR, 'gallery', baseName);
+  }
+
+  if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
+    try {
+      fs.unlinkSync(filePath);
+      return res.json({ success: true, message: 'Picha imefutwa kwenye galari.' });
+    } catch (e) {
+      return res.status(500).json({ error: 'Hitilafu ya kufuta faili.' });
+    }
+  }
+  res.status(404).json({ error: 'Faili halikupatikana.' });
+});
+
+app.delete('/api/gallery/gallery/:filename', (req, res) => {
+  const baseName = path.basename(req.params.filename || '');
+  const filePath = path.join(IMAGES_DIR, 'gallery', baseName);
+  if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
     try {
       fs.unlinkSync(filePath);
       return res.json({ success: true, message: 'Picha imefutwa kwenye galari.' });
