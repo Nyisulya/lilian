@@ -1430,7 +1430,7 @@ app.get('/invite/:id', (req, res) => {
   const host = req.get('host') || 'lilian.nyisu.com';
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const baseUrl = `${protocol}://${host}`;
-  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg?v=20261013b`;
+  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg?v=20261013c`;
 
   const filePath = path.join(__dirname, 'public', 'invite.html');
   fs.readFile(filePath, 'utf8', (err, html) => {
@@ -1438,10 +1438,10 @@ app.get('/invite/:id', (req, res) => {
 
     const ogTags = `
   <title>👑 Kadi ya Mwaliko: Send-off ya Lilian - ${guestName}</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261013b">
-  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261013b">
-  <link rel="shortcut icon" href="/favicon.ico?v=20261013b">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013b">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261013c">
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261013c">
+  <link rel="shortcut icon" href="/favicon.ico?v=20261013c">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013c">
   <meta name="theme-color" content="#071510">
 
   <!-- Open Graph / WhatsApp / SMS Rich Previews -->
