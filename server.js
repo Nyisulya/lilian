@@ -1416,7 +1416,7 @@ app.get('/api/committee/stats', (req, res) => {
 // HTML Page Routes (WhatsApp Open Graph Optimized)
 // -------------------------------------------------------------
 app.get('/favicon.ico', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
+  res.sendFile(path.join(__dirname, 'public', 'favicon.ico'));
 });
 
 app.get('/invite/:id', (req, res) => {
@@ -1430,7 +1430,7 @@ app.get('/invite/:id', (req, res) => {
   const host = req.get('host') || 'lilian.nyisu.com';
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const baseUrl = `${protocol}://${host}`;
-  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg`;
+  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg?v=20261013b`;
 
   const filePath = path.join(__dirname, 'public', 'invite.html');
   fs.readFile(filePath, 'utf8', (err, html) => {
@@ -1438,9 +1438,10 @@ app.get('/invite/:id', (req, res) => {
 
     const ogTags = `
   <title>👑 Kadi ya Mwaliko: Send-off ya Lilian - ${guestName}</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" type="image/jpeg" href="/og-image.jpg">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261013b">
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261013b">
+  <link rel="shortcut icon" href="/favicon.ico?v=20261013b">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013b">
   <meta name="theme-color" content="#071510">
 
   <!-- Open Graph / WhatsApp / SMS Rich Previews -->
@@ -1452,8 +1453,8 @@ app.get('/invite/:id', (req, res) => {
   <meta property="og:image" content="${ogImage}">
   <meta property="og:image:secure_url" content="${ogImage}">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="1024">
-  <meta property="og:image:height" content="1024">
+  <meta property="og:image:width" content="720">
+  <meta property="og:image:height" content="720">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
