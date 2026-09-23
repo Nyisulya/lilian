@@ -1207,7 +1207,7 @@ function selectReminderStage(stageNum) {
   let msg = '';
   switch (stageNum) {
     case 1:
-      msg = `Ndugu *${g.name}*, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam. Mchango wako ni muhimu sana.\n\n*Mchango utumwe kwa:*\n0713980004 Mixx Peter Nyahende\n8869724 M Pesa Lilian Sendoff\n0132009296900 CRDB Beatrice Kavita\n0716275451 Mixx Lilian Marcus\n\nTunaomba mchango wako ufikishwe kabla ya 30 September 2026. Asante kwa upendo na ushirikiano wako. Mungu akubariki.`;
+      msg = `Habari ${g.name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam.\nMchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n0716553494 Beatrice Kavita\n0132009296900 CRDB Beatrice Kavita\n8869724 M Pesa Lilian Sendoff\n\nTutashukuru tukipata mchango kabla ya 30 Sept 2026. Asante kwa upendo.\nMungu akubariki.\nlilian.nyisu.com`;
       break;
     case 2:
       msg = `Habari Ndugu *${g.name}*,\n\nKamati ya harusi ya *${groom} & ${bride}* inapenda kukujulisha kuwa maandalizi yanaendelea vizuri sana. Tunatambua mchango wako uliokwishatoa wa *Tsh ${paid}*.\n\nSalio lako lililobaki ni *Tsh ${balance}*. Tunashukuru sana kwa ushirikiano wako wa dhati!`;
@@ -3500,6 +3500,39 @@ async function deleteGalleryImage(filename) {
   }
 }
 
+// Sync Database from Git (useful on VPS after git pull)
+async function syncGitDatabase() {
+  if (!confirm('Je, una uhakika unataka kusawazisha database na faili jipya la data/db.json kutoka Git?\n\nTaarifa za sasa zitasasishwa na orodha rasmi ya wageni 139.')) {
+    return;
+  }
+
+  const btn = document.getElementById('btn-sync-git');
+  const originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = 'Inasawazisha...';
+  }
+
+  try {
+    const res = await fetch('/api/backup/sync-git', { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`✅ ${data.message}`);
+      await initDashboard();
+    } else {
+      alert(`Hitilafu: ${data.error || 'Haikuweza kusawazisha'}`);
+    }
+  } catch (err) {
+    console.error('Error syncing git database:', err);
+    alert('Hitilafu ya mtandao wakati wa kusawazisha database.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+}
+
 // Expose modal and CRUD handlers on window for HTML onclick attributes
 window.openModal = openModal;
 window.closeModal = closeModal;
@@ -3514,6 +3547,7 @@ window.deleteDrink = deleteDrink;
 window.openAddGuestModal = openAddGuestModal;
 window.openEditGuestModal = openEditGuestModal;
 window.openPaymentModal = openPaymentModal;
+window.syncGitDatabase = syncGitDatabase;
 
 
 

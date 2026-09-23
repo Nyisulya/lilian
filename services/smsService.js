@@ -27,13 +27,15 @@ async function sendRawSMS(toPhone, messageText, messageType, guestName = '') {
   const config = db.smsConfig || {};
   const formattedPhone = formatPhone(toPhone);
 
+  const cleanMessageText = (messageText || '').replace(/\*/g, '');
+
   const logEntry = {
     id: `sms-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     timestamp: new Date().toISOString(),
     recipientName: guestName,
     recipientPhone: formattedPhone,
     messageType: messageType,
-    messageText: messageText,
+    messageText: cleanMessageText,
     provider: 'NextSMS',
     senderId: config.senderId || 'NEXTSMS',
     status: 'pending',
@@ -51,8 +53,20 @@ async function sendRawSMS(toPhone, messageText, messageType, guestName = '') {
     db.smsLogs.unshift(logEntry);
     writeDB(db);
 
-    console.log(`[SMS SIMULATION] To: ${formattedPhone} | Type: ${messageType}\nMessage: ${messageText}`);
+    console.log(`[SMS SIMULATION] To: ${formattedPhone} | Type: ${messageType}\nMessage: ${cleanMessageText}`);
     return { success: true, mode: 'simulation', log: logEntry };
+  }
+
+  // STRICT SAFETY ENFORCEMENT: Only allow sending live SMS to user's phone (0787661560 / 255787661560)
+  const ALLOWED_LIVE_PHONE = '255787661560';
+  if (formattedPhone !== ALLOWED_LIVE_PHONE) {
+    logEntry.status = 'blocked_safety';
+    logEntry.responseMessage = 'Ujumbe umezuiwa kiusalama (Ujumbe unaruhusiwa kutumwa kwa 0787661560 pekee)';
+    db.smsLogs = db.smsLogs || [];
+    db.smsLogs.unshift(logEntry);
+    writeDB(db);
+    console.log(`[SMS BLOCKED FOR SAFETY] Dispatched to ${formattedPhone} blocked. Allowed phone: 0787661560 only.`);
+    return { success: false, blocked: true, message: 'Ujumbe umezuiwa: Ni namba 0787661560 pekee inayoruhusiwa kupokea SMS kwa sasa.', log: logEntry };
   }
 
   // Real NextSMS API Call
@@ -62,7 +76,7 @@ async function sendRawSMS(toPhone, messageText, messageType, guestName = '') {
     const payload = {
       from: config.senderId || 'NEXTSMS',
       to: formattedPhone,
-      text: messageText
+      text: cleanMessageText
     };
 
     const response = await fetch('https://messaging-service.co.tz/api/sms/v1/text/single', {
@@ -131,7 +145,7 @@ async function sendPaymentNotificationSMS(guest, amountPaidNewly, newBalance, to
   const domain = config.domainName || 'lilian.nyisu.com';
   const firstName = getFirstName(guest.name);
 
-  // Single first name format: "Habari Peter, asante kwa mchango Sendoff ya Lilian Marcus..."
+  // Keep single first name for Thank You SMS to guarantee strictly 1 SMS <= 160 characters
   let message = `Habari ${firstName}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa za harusi: https://${domain}`;
   if (message.replace(/\n/g, '\r\n').length > 160) {
     message = `Habari ${firstName}, asante kwa mchango Sendoff ya Lilian Marcus. Mungu akubariki na akuongezee zaidi!\nAmen.\nKuona taarifa: https://${domain}`;
@@ -150,15 +164,16 @@ async function sendDebtReminderSMS(guest, remainingBalance, customTemplate) {
   const db = readDB();
   const config = db.smsConfig || {};
   const domain = config.domainName || 'lilian.nyisu.com';
-  const firstName = getFirstName(guest.name);
+  // Use full name directly as stored in the database for reminder SMS
+  const fullName = (guest.name || 'Mpendwa').trim();
 
-  const defaultTemplate = `Habari {name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam. Mchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n8869724 M Pesa Lilian Sendoff\n0132009296900 CRDB Beatrice Kavita\n0716275451 Mixx Lilian Marcus\n\nMchango ufikishwe kabla ya 30 Sept 2026. Asante kwa upendo. Mungu akubariki.\n${domain}`;
+  const defaultTemplate = `Habari {name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam.\nMchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n0716553494 Beatrice Kavita\n0132009296900 CRDB Beatrice Kavita\n8869724 M Pesa Lilian Sendoff\n\nTutashukuru tukipata mchango kabla ya 30 Sept 2026. Asante kwa upendo.\nMungu akubariki.\n${domain}`;
 
   let template = customTemplate || config.reminderTemplate || defaultTemplate;
-  template = template.replace(/{name}/g, firstName).replace(/Ndugu\s+/g, 'Habari ');
+  template = template.replace(/{name}/g, fullName).replace(/Ndugu\s+/g, 'Habari ').replace(/\*/g, '');
   const message = template;
 
-  return await sendRawSMS(guest.phone, message, 'Kikumbusho cha Sendoff (SMS)', firstName);
+  return await sendRawSMS(guest.phone, message, 'Kikumbusho cha Sendoff (SMS)', fullName);
 }
 
 /**

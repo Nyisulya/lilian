@@ -66,6 +66,26 @@ app.get('/api/backup/download', (req, res) => {
   res.download(filePath, `harusi_database_backup_${dateTag}.json`);
 });
 
+// Database Sync from Git Endpoint (One-click sync on VPS after git pull)
+app.post('/api/backup/sync-git', (req, res) => {
+  try {
+    const legacyFile = path.join(__dirname, 'data', 'db.json');
+    if (!fs.existsSync(legacyFile)) {
+      return res.status(404).json({ error: 'Faili la data/db.json halikupatikana.' });
+    }
+    const freshData = JSON.parse(fs.readFileSync(legacyFile, 'utf8'));
+    writeDB(freshData);
+    res.json({
+      success: true,
+      message: `Database imesawazishwa kikamilifu kutoka Git! Wageni wote ${freshData.guests?.length || 0} wamewekwa.`,
+      guestCount: freshData.guests?.length || 0
+    });
+  } catch (err) {
+    console.error('Error syncing database from git:', err);
+    res.status(500).json({ error: 'Hitilafu ya kusawazisha database: ' + err.message });
+  }
+});
+
 // -------------------------------------------------------------
 // API Endpoints
 // -------------------------------------------------------------
