@@ -167,12 +167,12 @@ async function sendDebtReminderSMS(guest, remainingBalance, customTemplate) {
   // Use full name directly as stored in the database for reminder SMS
   const fullName = (guest.name || 'Mpendwa').trim();
 
-  const defaultTemplate = `Habari {name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam.\nMchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n0716553494 Beatrice Kavita\n0132009296900 CRDB Beatrice Kavita\n8869724 M Pesa Lilian Sendoff\n\nTutashukuru tukipata mchango kabla ya 30 Sept 2026. Asante kwa upendo.\nMungu akubariki.\nhttps://${domain}`;
+  const defaultTemplate = `Habari {name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam.\nMchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n0716553494 Beatrice Kavita\n0132009296900 CRDB Beatrice Kavita\n8869724 M Pesa Lilian Sendoff\n\nTutashukuru tukipata mchango kabla ya 30 Sept 2026. Asante kwa upendo.\nMungu akubariki.\n${domain}`;
 
   let template = customTemplate || config.reminderTemplate || defaultTemplate;
   template = template.replace(/{name}/g, fullName).replace(/Ndugu\s+/g, 'Habari ').replace(/\*/g, '');
-  if (template.includes('lilian.nyisu.com') && !template.includes('https://lilian.nyisu.com') && !template.includes('http://lilian.nyisu.com')) {
-    template = template.replace('lilian.nyisu.com', 'https://lilian.nyisu.com');
+  if (template.includes('https://lilian.nyisu.com')) {
+    template = template.replace('https://lilian.nyisu.com', 'lilian.nyisu.com');
   }
   const message = template;
 

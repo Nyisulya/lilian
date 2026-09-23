@@ -1474,7 +1474,7 @@ app.get('/invite/:id', (req, res) => {
   const host = req.get('host') || 'lilian.nyisu.com';
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const baseUrl = `${protocol}://${host}`;
-  const ogImage = `${baseUrl}/og-image.jpg`;
+  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg?v=20261013c`;
 
   const filePath = path.join(__dirname, 'public', 'invite.html');
   fs.readFile(filePath, 'utf8', (err, html) => {
@@ -1499,6 +1499,7 @@ app.get('/invite/:id', (req, res) => {
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="720">
   <meta property="og:image:height" content="720">
+  <link rel="image_src" href="${ogImage}">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
