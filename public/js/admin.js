@@ -1207,7 +1207,7 @@ function selectReminderStage(stageNum) {
   let msg = '';
   switch (stageNum) {
     case 1:
-      msg = `Habari ${g.name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam.\nMchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n0716553494 Beatrice Kavita\n0132009296900 CRDB Beatrice Kavita\n8869724 M Pesa Lilian Sendoff\n\nTutashukuru tukipata mchango kabla ya 30 Sept 2026. Asante kwa upendo.\nMungu akubariki.\nlilian.nyisu.com`;
+      msg = `Habari ${g.name}, naomba ushiriki katika maandalizi ya Sendoff ya Lilian Marcus Nyahende itakayofanyika 13/10/2026 Dar es Salaam.\nMchango wako ni muhimu sana.\n\nMchango utumwe kwa:\n0713980004 Mixx Peter Nyahende\n0716553494 Beatrice Kavita\n0132009296900 CRDB Beatrice Kavita\n8869724 M Pesa Lilian Sendoff\n\nTutashukuru tukipata mchango kabla ya 30 Sept 2026. Asante kwa upendo.\nMungu akubariki.\nhttps://lilian.nyisu.com`;
       break;
     case 2:
       msg = `Habari Ndugu *${g.name}*,\n\nKamati ya harusi ya *${groom} & ${bride}* inapenda kukujulisha kuwa maandalizi yanaendelea vizuri sana. Tunatambua mchango wako uliokwishatoa wa *Tsh ${paid}*.\n\nSalio lako lililobaki ni *Tsh ${balance}*. Tunashukuru sana kwa ushirikiano wako wa dhati!`;

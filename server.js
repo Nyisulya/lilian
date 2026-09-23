@@ -1435,8 +1435,32 @@ app.get('/api/committee/stats', (req, res) => {
 // -------------------------------------------------------------
 // HTML Page Routes (WhatsApp Open Graph Optimized)
 // -------------------------------------------------------------
+app.get(['/', '/index.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.get('/favicon.ico', (req, res) => {
+  res.setHeader('Content-Type', 'image/x-icon');
+  res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
   res.sendFile(path.join(__dirname, 'public', 'favicon.ico'));
+});
+
+app.get('/favicon.png', (req, res) => {
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+  res.sendFile(path.join(__dirname, 'public', 'favicon.png'));
+});
+
+app.get('/favicon.svg', (req, res) => {
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+  res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
+});
+
+app.get('/og-image.jpg', (req, res) => {
+  res.setHeader('Content-Type', 'image/jpeg');
+  res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+  res.sendFile(path.join(__dirname, 'public', 'og-image.jpg'));
 });
 
 app.get('/invite/:id', (req, res) => {
@@ -1450,7 +1474,7 @@ app.get('/invite/:id', (req, res) => {
   const host = req.get('host') || 'lilian.nyisu.com';
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const baseUrl = `${protocol}://${host}`;
-  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg?v=20261013c`;
+  const ogImage = `${baseUrl}/og-image.jpg`;
 
   const filePath = path.join(__dirname, 'public', 'invite.html');
   fs.readFile(filePath, 'utf8', (err, html) => {
@@ -1458,10 +1482,10 @@ app.get('/invite/:id', (req, res) => {
 
     const ogTags = `
   <title>👑 Kadi ya Mwaliko: Send-off ya Lilian - ${guestName}</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261013c">
-  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261013c">
-  <link rel="shortcut icon" href="/favicon.ico?v=20261013c">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013c">
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261013e">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261013e">
+  <link rel="shortcut icon" href="/favicon.ico?v=20261013e">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013e">
   <meta name="theme-color" content="#071510">
 
   <!-- Open Graph / WhatsApp / SMS Rich Previews -->
