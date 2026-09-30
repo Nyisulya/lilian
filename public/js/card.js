@@ -131,6 +131,12 @@ function renderRoyalCard(data) {
     venueEl.textContent = event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
   }
 
+  const contactEl = document.getElementById('event-contact-display');
+  if (contactEl) {
+    const contact = event.contactPhone || '0713 980 004';
+    contactEl.textContent = `Mawasiliano: ${contact}`;
+  }
+
   // 8. Dress Code
   const dressCodeEl = document.getElementById('card-dress-code');
   if (dressCodeEl) {

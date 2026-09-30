@@ -87,10 +87,29 @@ function playWarningSound() {
 async function verifyCode(code) {
   if (!code || !code.trim()) return;
 
+  let clean = code.trim().replace(/^["']|["']$/g, '');
+  if (clean.includes('http://') || clean.includes('https://') || clean.includes('?code=') || clean.includes('/invite/')) {
+    try {
+      const u = new URL(clean.startsWith('http') ? clean : `https://harusi.app/${clean.replace(/^\/+/, '')}`);
+      const cp = u.searchParams.get('code');
+      if (cp) clean = cp;
+      else {
+        const parts = u.pathname.split('/').filter(Boolean);
+        const lp = parts[parts.length - 1];
+        if (lp && lp !== 'invite' && lp !== 'invite.html') clean = lp;
+      }
+    } catch (e) {
+      const m = clean.match(/code=([a-zA-Z0-9_-]+)/i);
+      if (m) clean = m[1];
+    }
+  }
+  const prefixM = clean.match(/(?:pass|kodi)\s*[:#-]?\s*([a-zA-Z0-9]+)/i);
+  if (prefixM) clean = prefixM[1];
+
   const resultContainer = document.getElementById('scan-result-container');
   resultContainer.innerHTML = `
     <div class="glass-card" style="text-align: center; padding: 20px;">
-      <div style="font-size: 1.2rem; color: var(--gold-light);">Inakagua kadi: <strong>${escapeHtml(code)}</strong>...</div>
+      <div style="font-size: 1.2rem; color: var(--gold-light);">Inakagua kadi: <strong>${escapeHtml(clean)}</strong>...</div>
     </div>
   `;
 
@@ -98,7 +117,7 @@ async function verifyCode(code) {
     const res = await fetch('/api/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ code: clean })
     });
 
     const data = await res.json();

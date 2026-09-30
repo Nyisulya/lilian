@@ -385,13 +385,19 @@ app.post('/api/sms/remind-debtors', async (req, res) => {
     try {
       const smsRes = await smsService.sendDebtReminderSMS(guest, balance, customMessage);
       results.push({ guestId: guest.id, name: guest.name, phone: guest.phone, balance, smsRes });
-      guest.reminderCount = (guest.reminderCount || 0) + 1;
     } catch (e) {
       console.error(`Error sending reminder to ${guest.name}:`, e);
     }
   }
 
-  writeDB(db);
+  const freshDb = readDB();
+  for (const r of results) {
+    const target = (freshDb.guests || []).find(g => g.id === r.guestId);
+    if (target) {
+      target.reminderCount = (target.reminderCount || 0) + 1;
+    }
+  }
+  writeDB(freshDb);
   res.json({
     success: true,
     message: `SMS za vikumbusho vya Sendoff zimetumwa kwa wageni wote ${results.length} kiotomatiki (haziizidi SMS 3)!`,
@@ -660,16 +666,45 @@ app.post('/api/verify', (req, res) => {
 
   const db = readDB();
   const guests = db.guests || [];
-  const query = rawCode.toLowerCase();
+  // Clean rawCode: extract code if scanner sent a full URL, query param, or "PASS: 3001" prefix
+  let cleanInput = rawCode.replace(/^["']|["']$/g, '').trim();
+
+  // 0. Extract from URL if QR scanner read a web URL
+  if (cleanInput.includes('http://') || cleanInput.includes('https://') || cleanInput.includes('?code=') || cleanInput.includes('/invite/')) {
+    try {
+      const urlObj = new URL(cleanInput.startsWith('http') ? cleanInput : `https://harusi.app/${cleanInput.replace(/^\/+/, '')}`);
+      const codeFromParam = urlObj.searchParams.get('code');
+      if (codeFromParam) {
+        cleanInput = codeFromParam;
+      } else {
+        const parts = urlObj.pathname.split('/').filter(Boolean);
+        const lastPart = parts[parts.length - 1];
+        if (lastPart && lastPart !== 'invite' && lastPart !== 'invite.html') {
+          cleanInput = lastPart;
+        }
+      }
+    } catch (e) {
+      const match = cleanInput.match(/code=([a-zA-Z0-9_-]+)/i);
+      if (match) cleanInput = match[1];
+    }
+  }
+
+  // Extract from "PASS : 3001" or "KODI: 3001" prefix
+  const passPrefix = cleanInput.match(/(?:pass|kodi)\s*[:#-]?\s*([a-zA-Z0-9]+)/i);
+  if (passPrefix) {
+    cleanInput = passPrefix[1];
+  }
+
+  const query = cleanInput.toLowerCase();
 
   let guest = null;
 
-  // 1. Check if rawCode matches 4-digit security code (e.g. "4829")
-  guest = guests.find(g => g.code && String(g.code).trim() === rawCode);
+  // 1. Check if cleanInput matches security code (e.g. "3001")
+  guest = guests.find(g => g.code && String(g.code).trim().toLowerCase() === cleanInput.toLowerCase());
 
-  // 2. Check if rawCode matches guest ID (e.g. "1", "2", or "#1", or "TWG-101")
+  // 2. Check if cleanInput matches guest ID (e.g. "1", "26", or "#26", or "TWG-101")
   if (!guest) {
-    const cleanId = rawCode.replace(/^[#\s]+/, '').replace(/^twg-?/i, '');
+    const cleanId = cleanInput.replace(/^[#\s]+/, '').replace(/^twg-?/i, '');
     guest = guests.find(g => String(g.id).toLowerCase() === cleanId.toLowerCase());
   }
 
@@ -773,6 +808,29 @@ app.post('/api/verify/reset', (req, res) => {
     return res.json({ success: true, message: `Hali ya kadi ya ${guest.name} imerejeshwa (bado hajaingia).` });
   }
   res.status(404).json({ error: 'Mualikwa hakupatikana' });
+});
+
+// 7. Dynamic Personalized Card Generator Endpoint (Returns JPG Stream)
+app.get('/api/card-image/:id', (req, res) => {
+  const id = req.params.id;
+  const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
+  if (!fs.existsSync(cardsDir)) fs.mkdirSync(cardsDir, { recursive: true });
+
+  const cardPath = path.join(cardsDir, `card_${id}.jpg`);
+  
+  // Call python generator to create or update card
+  const { execFile } = require('child_process');
+  const pyScript = path.join(__dirname, 'services', 'generate_card.py');
+  
+  execFile('python', [pyScript, id, cardPath], (err) => {
+    if (err || !fs.existsSync(cardPath)) {
+      console.error('Card generation error:', err);
+      return res.status(500).send('Error generating card image');
+    }
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(cardPath);
+  });
 });
 
 // 7. QR Code Generator Endpoint (Returns PNG Stream)

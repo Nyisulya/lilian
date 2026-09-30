@@ -57,17 +57,6 @@ async function sendRawSMS(toPhone, messageText, messageType, guestName = '') {
     return { success: true, mode: 'simulation', log: logEntry };
   }
 
-  // STRICT SAFETY ENFORCEMENT: Only allow sending live SMS to user's phone (0787661560 / 255787661560)
-  const ALLOWED_LIVE_PHONE = '255787661560';
-  if (formattedPhone !== ALLOWED_LIVE_PHONE) {
-    logEntry.status = 'blocked_safety';
-    logEntry.responseMessage = 'Ujumbe umezuiwa kiusalama (Ujumbe unaruhusiwa kutumwa kwa 0787661560 pekee)';
-    db.smsLogs = db.smsLogs || [];
-    db.smsLogs.unshift(logEntry);
-    writeDB(db);
-    console.log(`[SMS BLOCKED FOR SAFETY] Dispatched to ${formattedPhone} blocked. Allowed phone: 0787661560 only.`);
-    return { success: false, blocked: true, message: 'Ujumbe umezuiwa: Ni namba 0787661560 pekee inayoruhusiwa kupokea SMS kwa sasa.', log: logEntry };
-  }
 
   // Real NextSMS API Call
   try {
