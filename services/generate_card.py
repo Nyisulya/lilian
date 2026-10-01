@@ -112,35 +112,32 @@ def render_guest_card(guest_id_or_code, output_path=None):
     sw = bb_s[2] - bb_s[0]
     sh = bb_s[3] - bb_s[1]
     d.text((295 - sw // 2, 695 - sh // 2), seat_txt, font=font_seat, fill=(5, 55, 35, 255))
-    # 3. High-Resolution, Instant-Scan Large Centered QR Code
-    # Use short pass code as payload (NOT full URL) for maximum scanability:
-    # Short code → QR Version 1 (21×21 modules) → 5.14px per module at 108px = INSTANT scan
-    # Full URL → QR Version 4 (33×33 modules) → 3.27px per module at 108px = FAILS on many phones
-    qr_payload = code  # e.g. "3141" — the scanner already handles raw codes
+    # 3. LARGE QR Code for instant phone scanning (no zoom needed)
+    qr_payload = code  # Short pass code e.g. "3141" — scanner handles raw codes
 
     qr = qrcode.QRCode(
         version=1,  # Force smallest version for maximum module size
         error_correction=qrcode.constants.ERROR_CORRECT_H,  # Highest error correction (30%)
-        box_size=10,  # Large native modules for clean downscale
+        box_size=20,  # Very large native modules for clean downscale
         border=2,  # ISO quiet zone
     )
     qr.add_data(qr_payload)
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color='#000000', back_color='#ffffff').convert('RGBA')
 
-    # Large 108x108 QR Code centered in the 116x116 luxury gold frame (cx=341, cy=886)
-    qr_size = 108
-    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.NEAREST)  # Crisp pixel edges
-    card.paste(qr_resized, (cx - qr_size // 2, 886 - qr_size // 2))
+    # 200x200 QR Code centered in the 220x220 gold frame (cx=341, cy=944)
+    qr_size = 200
+    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.NEAREST)
+    card.paste(qr_resized, (cx - qr_size // 2, 944 - qr_size // 2))
 
 
     # 4. Bottom PASS Pill: ── PASS : {code} ──
     pass_txt = f'──  PASS : {code}  ──'
-    font_pass = get_font('arialbd.ttf', 13)
+    font_pass = get_font('arialbd.ttf', 14)
     bb_p = d.textbbox((0, 0), pass_txt, font=font_pass)
     pw = bb_p[2] - bb_p[0]
     ph = bb_p[3] - bb_p[1]
-    d.text((cx - pw // 2, 979 - ph // 2), pass_txt, font=font_pass, fill=(250, 225, 156, 255))
+    d.text((cx - pw // 2, 1090 - ph // 2), pass_txt, font=font_pass, fill=(250, 225, 156, 255))
 
     # Save output
     if not output_path:
