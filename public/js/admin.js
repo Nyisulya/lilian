@@ -369,9 +369,14 @@ function renderDashboardOverview() {
             ${isCompleted ? '<span class="badge badge-success">✓ Kamili</span>' : `Tsh ${balance.toLocaleString('sw-TZ')}`}
           </td>
           <td>
-            <button type="button" class="btn btn-sm btn-emerald" style="padding: 3px 8px; font-size: 0.75rem;" onclick="openPaymentModal('${g.id}')">
-              💰 Lipa
-            </button>
+            <div style="display: flex; gap: 4px;">
+              <a href="/invite/${encodeURIComponent(g.id)}" target="_blank" class="btn btn-sm btn-gold" style="padding: 3px 8px; font-size: 0.75rem; text-decoration: none;" title="Tazama Kadi ya ${escapeHtml(g.name)}">
+                💌 Kadi
+              </a>
+              <button type="button" class="btn btn-sm btn-emerald" style="padding: 3px 8px; font-size: 0.75rem;" onclick="openPaymentModal('${g.id}')">
+                💰 Lipa
+              </button>
+            </div>
           </td>
         </tr>
       `;
@@ -441,6 +446,9 @@ function renderGuestTable(guests) {
         <td>${paymentBadge}</td>
         <td>
           <div class="table-actions">
+            <a href="/invite/${encodeURIComponent(g.id)}" target="_blank" class="btn-action-card" title="Tazama Kadi ya Mwaliko ya ${escapeHtml(g.name)}">
+              💌 Kadi
+            </a>
             <button type="button" class="btn-action-edit" onclick="openEditGuestModal('${g.id}')" title="Hariri taarifa za mualikwa huyu">
               ✏️ Hariri
             </button>

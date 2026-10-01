@@ -1521,6 +1521,32 @@ app.get('/og-image.jpg', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'og-image.jpg'));
 });
 
+// Dynamic Card Image Endpoint
+app.get('/api/card/image/:id', (req, res) => {
+  const guestId = req.params.id;
+  const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
+  if (!fs.existsSync(cardsDir)) {
+    fs.mkdirSync(cardsDir, { recursive: true });
+  }
+  const cardFile = path.join(cardsDir, `card_${guestId}.jpg`);
+  const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
+  const { execFile } = require('child_process');
+
+  execFile('python', [scriptPath, guestId, cardFile], (err) => {
+    if (err) {
+      console.warn('generate_card.py execution warning:', err.message);
+      if (fs.existsSync(cardFile)) {
+        res.setHeader('Content-Type', 'image/jpeg');
+        return res.sendFile(cardFile);
+      }
+      return res.status(500).json({ error: 'Hitilafu ya kutoa kadi ya picha: ' + err.message });
+    }
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=60');
+    res.sendFile(cardFile);
+  });
+});
+
 app.get('/invite/:id', (req, res) => {
   const db = readDB();
   const guestId = req.params.id;
