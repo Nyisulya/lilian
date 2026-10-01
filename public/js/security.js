@@ -188,49 +188,47 @@ function renderVerificationResult(data) {
     const totalSeats = Number(g.seats) || 1;
     const enteredSeats = Number(g.seatsCheckedIn) || totalSeats;
 
-    let statusTitle = 'KADI HALALI • RUHUSU KUINGIA';
+    let statusTitle = 'ANARUHUSIWA KUINGIA';
     let statusIcon = '✅';
     let subBanner = '';
 
-    if (data.subStatus === 'companion_arrival') {
-      statusTitle = 'KARIBU MWENZA! (MTU WA 2 KATI YA 2)';
-      statusIcon = '🎉';
-      subBanner = `
-        <div style="background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; color: #a7f3d0; font-size: 0.9rem; text-align: left;">
-          <strong>👥 Mgeni wa Pili (Double Card):</strong><br>
-          Mwenzake (<strong>${escapeHtml(g.name)}</strong>) aliingia mapema. Huyu ni mgeni wa pili aliyekuwa anasubiriwa. Kadi sasa imekamilika!
-        </div>
-      `;
-    } else if (totalSeats === 2) {
+    if (totalSeats === 2) {
       if (enteredSeats === 1) {
-        statusTitle = 'MGENI 1 AMEINGIA • NAFASI 1 IMEBAKI';
+        statusTitle = 'ANARUHUSIWA KUINGIA (Mtu wa 1 kati ya 2)';
+        statusIcon = '✅';
         subBanner = `
-          <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; color: #fde68a; font-size: 0.88rem; text-align: left;">
-            <strong>👤 Mtu 1 Yupo Ndani:</strong> Nafasi 1 imebaki wazi kwa ajili ya mwenzake atakapofika baadaye. Mwenzake akija na kadi hii hii ataruhusiwa!
-            <div style="margin-top: 8px;">
+          <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; color: #fde68a; font-size: 0.9rem; text-align: left;">
+            <div style="font-weight: 800; font-size: 1rem; color: #fbbf24;">📌 IMEBAKI NAFASI 1 YA KUINGIA</div>
+            <div style="margin-top: 4px; color: #cbd5e1; font-size: 0.82rem;">
+              Mtu wa kwanza ameruhusiwa kuingia. Mtu wa pili akija na kadi hii hii ataruhusiwa moja kwa moja!
+            </div>
+            <div style="margin-top: 10px;">
               <button type="button" class="btn btn-emerald btn-sm" onclick="setSeatsCheckedIn('${g.id}', 2)">
-                👥 Badili: Wameingia Wote 2 Sasa
+                👥 Kama Wapo Wote 2 Hapo Hapo (Ruhusu Wote & Funga Kadi)
               </button>
             </div>
           </div>
         `;
       } else {
+        statusTitle = 'ANARUHUSIWA KUINGIA (Mtu wa 2 kati ya 2)';
+        statusIcon = '🎉';
         subBanner = `
-          <div style="background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; text-align: left;">
-            <div style="font-weight: 700; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 6px;">
-              👥 Mwaliko wa Watu 2 (Double):
-            </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-              <span style="background: #166534; color: #fff; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: 700;">
-                ✓ Wameingia Wote 2 Pamoja
-              </span>
-              <button type="button" class="btn btn-outline-gold btn-sm" style="font-size: 0.8rem; padding: 5px 12px;" onclick="setSeatsCheckedIn('${g.id}', 1)">
-                👤 Kaja 1 Tu (Mwenzake Anakuja Baadaye)
-              </button>
+          <div style="background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; color: #a7f3d0; font-size: 0.9rem; text-align: left;">
+            <div style="font-weight: 800; font-size: 1rem; color: #2ecc71;">🔒 NAFASI ZOTE 2 ZIMEKAMILIKA</div>
+            <div style="margin-top: 4px; color: #cbd5e1; font-size: 0.82rem;">
+              Watu wote wawili wameshaingia ukumbini. Kadi sasa imejifunga.
             </div>
           </div>
         `;
       }
+    } else {
+      statusTitle = 'ANARUHUSIWA KUINGIA (Mtu 1)';
+      statusIcon = '✅';
+      subBanner = `
+        <div style="background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; color: #a7f3d0; font-size: 0.85rem; text-align: left;">
+          🔒 Kadi ya Mtu 1 imekamilika na kujifunga.
+        </div>
+      `;
     }
 
     container.innerHTML = `

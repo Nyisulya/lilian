@@ -789,7 +789,6 @@ app.post('/api/verify', (req, res) => {
   // 1. If all seats already entered -> Already Used
   if (guest.checkedIn || alreadyEntered >= totalSeats) {
     const originalTime = guest.checkInTime ? new Date(guest.checkInTime).toLocaleTimeString('sw-TZ') : 'Mapema';
-    const lastTime = guest.lastCheckInTime ? new Date(guest.lastCheckInTime).toLocaleTimeString('sw-TZ') : originalTime;
     return res.json({
       status: 'already_used',
       code: guest.id,
@@ -806,71 +805,44 @@ app.post('/api/verify', (req, res) => {
         checkInLog: guest.checkInLog || []
       },
       message: totalSeats > 1
-        ? `TAHADHARI! Kadi hii ya ${guest.name} (${totalSeats === 2 ? 'Watu 2' : `Watu ${totalSeats}`}) ILIKWISHATUMIKA YOTE! Watu wote ${alreadyEntered} wameshaingia ukumbini.`
+        ? `TAHADHARI! Kadi hii ya ${guest.name} (${totalSeats === 2 ? 'Watu 2' : `Watu ${totalSeats}`}) ILIKWISHATUMIKA! Watu wote ${alreadyEntered} walishamaliza kuingia ukumbini.`
         : `TAHADHARI! Kadi hii ya ${guest.name} ILIKWISHATUMIKA saa ${originalTime}!`
     });
   }
 
-  // 2. If 1 person entered earlier and this is the companion (Companion arrival)
-  if (alreadyEntered > 0 && alreadyEntered < totalSeats) {
-    const newEntered = alreadyEntered + 1;
-    guest.seatsCheckedIn = newEntered;
-    guest.lastCheckInTime = new Date().toISOString();
-    guest.checkInLog = guest.checkInLog || [];
-    guest.checkInLog.push({ seatNumber: newEntered, time: guest.lastCheckInTime });
-    if (newEntered >= totalSeats) {
-      guest.checkedIn = true;
-    }
-    writeDB(db);
+  // 2. Incremental Check-In (Akiingia mtu wa kwanza inakubali na kubakiza 1; akija wa pili ndo inajifunga)
+  const newEntered = alreadyEntered + 1;
+  const remaining = totalSeats - newEntered;
+  const nowIso = new Date().toISOString();
 
-    const firstTime = guest.checkInTime ? new Date(guest.checkInTime).toLocaleTimeString('sw-TZ') : 'mapema';
-
-    return res.json({
-      status: 'valid',
-      subStatus: 'companion_arrival',
-      code: guest.id,
-      guest: {
-        id: guest.id,
-        name: guest.name,
-        title: guest.title,
-        seats: totalSeats,
-        seatsCheckedIn: newEntered,
-        tableName: table.name,
-        code: guest.code,
-        checkInTime: guest.checkInTime,
-        lastCheckInTime: guest.lastCheckInTime,
-        checkInLog: guest.checkInLog
-      },
-      message: `KARIBU MWENZA! (Mtu wa ${newEntered} kati ya ${totalSeats}). Mwenzake (${guest.name}) aliingia saa ${firstTime}. Kadi sasa imekamilika!`
-    });
+  guest.seatsCheckedIn = newEntered;
+  if (!guest.checkInTime) {
+    guest.checkInTime = nowIso;
   }
+  guest.lastCheckInTime = nowIso;
+  guest.checkInLog = guest.checkInLog || [];
+  guest.checkInLog.push({ seatNumber: newEntered, time: nowIso });
 
-  // 3. First time scanning this card (alreadyEntered === 0)
-  const admittedCount = totalSeats;
-  guest.seatsCheckedIn = admittedCount;
-  guest.checkedIn = true;
-  guest.checkInTime = new Date().toISOString();
-  guest.lastCheckInTime = guest.checkInTime;
-  guest.checkInLog = [
-    { seatNumber: 1, time: guest.checkInTime }
-  ];
-  if (admittedCount > 1) {
-    for (let s = 2; s <= admittedCount; s++) {
-      guest.checkInLog.push({ seatNumber: s, time: guest.checkInTime });
-    }
+  if (newEntered >= totalSeats) {
+    guest.checkedIn = true; // Kadi inajifunga rasmi
+  } else {
+    guest.checkedIn = false; // Bado imebaki nafasi 1
   }
   writeDB(db);
 
   return res.json({
     status: 'valid',
-    subStatus: totalSeats > 1 ? 'double_entry' : 'single_entry',
+    seatNumber: newEntered,
+    totalSeats: totalSeats,
+    remainingSeats: remaining,
     code: guest.id,
     guest: {
       id: guest.id,
       name: guest.name,
       title: guest.title,
       seats: totalSeats,
-      seatsCheckedIn: admittedCount,
+      seatsCheckedIn: newEntered,
+      remainingSeats: remaining,
       tableName: table.name,
       code: guest.code,
       checkInTime: guest.checkInTime,
@@ -878,12 +850,14 @@ app.post('/api/verify', (req, res) => {
       checkInLog: guest.checkInLog
     },
     message: totalSeats > 1
-      ? `KADI YA DOUBLE HALALI! Watu wote 2 wameingia (${table.name}).`
-      : `KADI HALALI! Karibu sana ${guest.name} (${table.name}).`
+      ? (remaining > 0
+          ? `ANARUHUSIWA KUINGIA (Mtu wa ${newEntered} kati ya ${totalSeats}). Imebaki nafasi 1.`
+          : `ANARUHUSIWA KUINGIA (Mtu wa ${newEntered} kati ya ${totalSeats}). Watu wote 2 wameingia. Kadi imejifunga.`)
+      : `ANARUHUSIWA KUINGIA. Karibu sana ${guest.name} (${table.name}).`
   });
 });
 
-// Update seats checked in (Toggle: "Kaja 1 Tu (mwenzake atakuja baadaye)" au "Wote 2 wapo")
+// Update seats checked in (Kama wote 2 wapo getini kwa pamoja)
 app.post('/api/verify/set-seats', (req, res) => {
   const { guestId, seatsCheckedIn } = req.body;
   const db = readDB();
@@ -915,8 +889,8 @@ app.post('/api/verify/set-seats', (req, res) => {
       tableName: table.name
     },
     message: count < totalSeats
-      ? `Imerekodiwa: Mgeni 1 ameingia. Nafasi 1 imebaki kwa ajili ya mwenzake atakapofika!`
-      : `Imerekodiwa: Watu wote ${count} wameshaingia ndani!`
+      ? `Imesasishwa: Mtu 1 ameingia. Imebaki nafasi 1 ya mtu wa pili.`
+      : `Imesasishwa: Watu wote 2 wameingia. Kadi sasa imejifunga.`
   });
 });
 
