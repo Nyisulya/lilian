@@ -113,44 +113,27 @@ def render_guest_card(guest_id_or_code, output_path=None):
     sh = bb_s[3] - bb_s[1]
     d.text((295 - sw // 2, 695 - sh // 2), seat_txt, font=font_seat, fill=(5, 55, 35, 255))
 
-    # 3. Left Box: MAWASILIANO & 0713 980 004
-    cx_left = (195 + 348) // 2
-    font_contact_lbl = get_font('georgiab.ttf', 12)
-    font_contact_num = get_font('georgiab.ttf', 16)
-
-    lbl_contact = "MAWASILIANO"
-    num_contact = "0713 980 004"
-
-    bb_cl = d.textbbox((0, 0), lbl_contact, font=font_contact_lbl)
-    d.text((cx_left - (bb_cl[2]-bb_cl[0]) // 2, 896), lbl_contact, font=font_contact_lbl, fill=(245, 218, 145, 255))
-
-    bb_cn = d.textbbox((0, 0), num_contact, font=font_contact_num)
-    d.text((cx_left - (bb_cn[2]-bb_cn[0]) // 2, 919), num_contact, font=font_contact_num, fill=(255, 255, 255, 255))
-
-    # 4. Right Box: High-Resolution, Instant-Scan QR Code
-    # Standard URL payload that opens link on phones & verifies on security scanner
+    # 3. High-Resolution, Instant-Scan Large Centered QR Code
     qr_payload = f"https://lilian.nyisu.com/invite/{gid}?code={code}"
 
     qr = qrcode.QRCode(
         version=None,
         error_correction=qrcode.constants.ERROR_CORRECT_M,
         box_size=4,
-        border=2, # Essential Quiet Zone for optical scanner detection
+        border=2, # Essential Quiet Zone for instant optical scanner detection
     )
     qr.add_data(qr_payload)
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color='black', back_color='white').convert('RGBA')
 
-    # Resize cleanly to 60x60
-    qr_resized = qr_img.resize((60, 60), Image.Resampling.BOX)
+    # Large 108x108 QR Code centered in the 116x116 luxury gold frame (cx=341, cy=886)
+    qr_size = 108
+    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.BOX)
+    card.paste(qr_resized, (cx - qr_size // 2, 886 - qr_size // 2))
 
-    cx_right = (380 + 526) // 2
-    cy_right = (888 + 952) // 2
-    card.paste(qr_resized, (cx_right - 30, cy_right - 30))
-
-    # 5. Bottom PASS Pill: ── PASS : {code} ──
+    # 4. Bottom PASS Pill: ── PASS : {code} ──
     pass_txt = f'──  PASS : {code}  ──'
-    font_pass = get_font('arialbd.ttf', 12.5)
+    font_pass = get_font('arialbd.ttf', 13)
     bb_p = d.textbbox((0, 0), pass_txt, font=font_pass)
     pw = bb_p[2] - bb_p[0]
     ph = bb_p[3] - bb_p[1]
