@@ -50,9 +50,9 @@ async function loadGuestCard(guestId) {
   }
 }
 
-// Render Royal Card (matching Image 2 layout & user specifications)
+// Render Royal Card (Official Dynamic Master Image)
 function renderRoyalCard(data) {
-  const { event, guest, table } = data;
+  const { event, guest } = data;
   const brideName = event.brideName || 'Lilian';
 
   // 1. Page Title & Envelope Info
@@ -64,107 +64,19 @@ function renderRoyalCard(data) {
   const envGuest = document.getElementById('envelope-guest-name');
   if (envGuest) envGuest.textContent = guest.name;
 
-  // 2. Card Header
-  const titleDisplay = document.getElementById('card-title-display');
-  if (titleDisplay) titleDisplay.textContent = `SEND-OFF YA ${brideName.toUpperCase()}`;
-
-  const familyDisplay = document.getElementById('card-family-name');
-  if (familyDisplay) {
-    const fam = event.familyName || 'FAMILIA YA MZEE MARCUS NYAHENDE';
-    familyDisplay.textContent = fam.toUpperCase();
+  // 2. Bind Official Dynamic Real Card Image
+  const cardImg = document.getElementById('official-dynamic-card-img');
+  const cardImageUrl = `/api/card/image/${encodeURIComponent(guest.id)}?v=${Date.now()}`;
+  if (cardImg) {
+    cardImg.src = cardImageUrl;
+    cardImg.alt = `Kadi Rasmi ya Mwaliko wa Send-off: ${guest.name}`;
   }
 
-  // 3. Bride Image
-  const brideImg = document.getElementById('bride-hero-img');
-  if (brideImg && event.bridePhoto) {
-    brideImg.src = event.bridePhoto;
-    brideImg.alt = `Send-off ya ${brideName}`;
-  }
-
-  // 4. Guest Details Box
-  const guestNameEl = document.getElementById('guest-honor-name');
-  if (guestNameEl) guestNameEl.textContent = guest.name;
-
-  const guestTitleEl = document.getElementById('guest-honor-title');
-  if (guestTitleEl) {
-    if (guest.title && guest.title.trim() && guest.title !== 'Mualikwa') {
-      guestTitleEl.textContent = guest.title;
-      guestTitleEl.style.display = 'block';
-    } else {
-      guestTitleEl.style.display = 'none';
-    }
-  }
-
-  // 5. Seat Pill: "ondoa viti sijui, weka single au double"
-  const seatCount = Number(guest.seats) || 1;
-  const seatLabel = seatCount === 2 ? 'MWALIKO: DOUBLE' : (seatCount === 1 ? 'MWALIKO: SINGLE' : `MWALIKO: WATU ${seatCount}`);
-  const seatTextEl = document.getElementById('guest-seat-text');
-  if (seatTextEl) seatTextEl.textContent = seatLabel;
-
-  // 6. Event Date & Time & Venue (Robust timezone parsing for Jumanne 13 Oktoba 2026)
-  let dateFormatted = 'Jumanne, 13 Oktoba 2026';
-  if (event.weddingDate) {
-    const rawParts = String(event.weddingDate).split('T')[0].split('-');
-    let dateObj;
-    if (rawParts.length === 3) {
-      dateObj = new Date(Number(rawParts[0]), Number(rawParts[1]) - 1, Number(rawParts[2]), 12, 0, 0);
-    } else {
-      dateObj = new Date(event.weddingDate);
-    }
-    const days = ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'];
-    const months = ['Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni', 'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba'];
-    const dayName = days[dateObj.getDay()] || 'Jumanne';
-    const day = dateObj.getDate();
-    const monthName = months[dateObj.getMonth()] || 'Oktoba';
-    const year = dateObj.getFullYear();
-    dateFormatted = `${dayName}, ${day} ${monthName} ${year}`;
-  }
-
-  const timeFormatted = event.receptionTime || 'Saa 12:30 Jioni';
-  const dtEl = document.getElementById('event-datetime-display');
-  if (dtEl) {
-    dtEl.innerHTML = `📅 ${dateFormatted} &bull; ⏰ ${timeFormatted}`;
-  }
-
-  const venueEl = document.getElementById('event-venue-display');
-  if (venueEl) {
-    venueEl.textContent = event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
-  }
-
-  const contactEl = document.getElementById('event-contact-display');
-  if (contactEl) {
-    const contact = event.contactPhone || '0713 980 004';
-    contactEl.textContent = `Mawasiliano: ${contact}`;
-  }
-
-  const bottomContactEl = document.getElementById('card-bottom-contact');
-  if (bottomContactEl) {
-    bottomContactEl.textContent = event.contactPhone || '0713 980 004';
-  }
-
-  // 8. Dress Code
-  const dressCodeEl = document.getElementById('card-dress-code');
-  if (dressCodeEl) {
-    dressCodeEl.textContent = event.dressCode || event.themeColor || 'Emerald Green & Touch of Gold (Kijani cha Kifalme na Mguso wa Dhahabu)';
-  }
-
-  // 9. Security Pass Code & Guest Number
-  const codeDigitsEl = document.getElementById('guest-code-digits');
-  if (codeDigitsEl) codeDigitsEl.textContent = guest.code || '4829';
-
-  const guestNumEl = document.getElementById('guest-num-tag');
-  if (guestNumEl) guestNumEl.textContent = `• Namba ya Mgeni: #${guest.id}`;
-
-  // 10. QR Pass Image & Label
-  const qrImg = document.getElementById('qr-pass-img');
-  if (qrImg) {
-    qrImg.src = `/api/qr/${encodeURIComponent(guest.id)}`;
-    qrImg.alt = `QR Pass ya ${guest.name}`;
-  }
-
-  const qrPassLabel = document.getElementById('qr-pass-label');
-  if (qrPassLabel) {
-    qrPassLabel.textContent = `PASS: ${guest.code || '4829'}`;
+  const downloadBtn = document.getElementById('btn-download-card');
+  if (downloadBtn) {
+    downloadBtn.href = cardImageUrl;
+    const cleanGuestName = String(guest.name || 'Mualikwa').replace(/[^a-zA-Z0-9_-]/g, '_');
+    downloadBtn.download = `Kadi_Sendoff_Lilian_${cleanGuestName}.jpg`;
   }
 }
 
