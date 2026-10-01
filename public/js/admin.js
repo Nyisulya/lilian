@@ -369,7 +369,10 @@ function renderDashboardOverview() {
             ${isCompleted ? '<span class="badge badge-success">✓ Kamili</span>' : `Tsh ${balance.toLocaleString('sw-TZ')}`}
           </td>
           <td>
-            <div style="display: flex; gap: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <button type="button" class="btn btn-sm btn-whatsapp" style="padding: 3px 8px; font-size: 0.75rem;" onclick="sendWhatsAppCard('${g.id}')" title="Tuma Kadi ya Picha WhatsApp">
+                📲 Tuma Kadi
+              </button>
               <a href="/invite/${encodeURIComponent(g.id)}" target="_blank" class="btn btn-sm btn-gold" style="padding: 3px 8px; font-size: 0.75rem; text-decoration: none;" title="Tazama Kadi ya ${escapeHtml(g.name)}">
                 💌 Kadi
               </a>
@@ -446,6 +449,9 @@ function renderGuestTable(guests) {
         <td>${paymentBadge}</td>
         <td>
           <div class="table-actions">
+            <button type="button" class="btn-action-wa" onclick="sendWhatsAppCard('${g.id}')" title="Tuma Kadi ya Picha kwa WhatsApp ya ${escapeHtml(g.name)}">
+              📲 Tuma Kadi
+            </button>
             <a href="/invite/${encodeURIComponent(g.id)}" target="_blank" class="btn-action-card" title="Tazama Kadi ya Mwaliko ya ${escapeHtml(g.name)}">
               💌 Kadi
             </a>
@@ -685,6 +691,13 @@ function openSendoffWhatsAppModal(guestId) {
     queueCounter.textContent = `Mgeni ${currentIdx >= 0 ? currentIdx + 1 : 1} / ${allGuests.length}`;
   }
 
+  // Update phone input field
+  const phoneInput = document.getElementById('wa-card-guest-phone');
+  if (phoneInput) {
+    phoneInput.value = guest.phone || '';
+    phoneInput.oninput = () => { guest.phone = phoneInput.value.trim(); };
+  }
+
   // Message 1: Invitation + Photo Card + 4-Digit Gate Pass Code
   const famName = eventDetails?.familyName || 'Mzee Marcus Nyahende';
   const msg1 = `💍 *MWALIKO WA SHEREHE YA SEND-OFF YA ${bride.toUpperCase()}* 💍\n\nHabari Ndugu *${guest.name}*,\n\nFamilia ya ${famName} inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}* (Send-off Party).\n\n🎟️ *Aina ya Kadi (Mwaliko):* ${seatLabel}\n📍 *Meza Yako:* ${table.name}\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *${guest.code || '4829'}*\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n🏛️ *Ukumbi:* ${venue}\n\nPicha ya kadi yako rasmi yenye Kodi yako ya siri ya kuingilia (${guest.code || '4829'}) na QR Code imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂`;
@@ -708,8 +721,8 @@ function openSendoffWhatsAppModal(guestId) {
   const modal = document.getElementById('whatsapp-sendoff-modal');
   if (modal) modal.classList.add('active');
 
-  // Render Card on Canvas
-  renderSendoffCardCanvas(guest, table);
+  // Load Real HD Card Image
+  loadSendoffCardImage(guest);
 }
 
 function navigateSendoffGuest(direction) {
@@ -836,355 +849,271 @@ function copyWaText(tabNum) {
   });
 }
 
-async function renderSendoffCardCanvas(guest, table) {
-  const canvas = document.getElementById('sendoff-card-canvas');
+/**
+ * Load the real, high-resolution master card image generated for this guest.
+ * Displays the authentic card with the 200px instant QR code!
+ */
+async function loadSendoffCardImage(guest) {
   const imgPreview = document.getElementById('sendoff-card-img-preview');
   const spinner = document.getElementById('card-generating-spinner');
-
-  if (!canvas || !imgPreview) return;
+  if (!imgPreview) return;
 
   if (spinner) spinner.style.display = 'block';
   imgPreview.style.display = 'none';
 
-  const ctx = canvas.getContext('2d');
-  const W = 1080;
-  const H = 1440;
-  canvas.width = W;
-  canvas.height = H;
+  const cardStaticUrl = `/images/cards/card_${guest.id}.jpg?v=${Date.now()}`;
+  const cardApiUrl = `/api/card/image/${guest.id}`;
 
-  // 1. Background Luxury Emerald Radial Gradient
-  const bgGrad = ctx.createRadialGradient(W / 2, 360, 80, W / 2, H / 2, 900);
-  bgGrad.addColorStop(0, '#0f3825');
-  bgGrad.addColorStop(0.4, '#082518');
-  bgGrad.addColorStop(0.85, '#04150e');
-  bgGrad.addColorStop(1, '#020b07');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, W, H);
-
-  // 2. Subtle Golden Star Dust / Bokeh
-  ctx.fillStyle = 'rgba(249, 231, 159, 0.25)';
-  const starSeeds = [
-    [100, 150, 2], [220, 90, 3], [350, 180, 2], [750, 110, 3], [920, 190, 2],
-    [80, 420, 3], [980, 380, 2], [140, 720, 2], [960, 700, 3], [120, 1050, 3],
-    [940, 1020, 2], [200, 1340, 2], [450, 1380, 3], [700, 1350, 2], [880, 1320, 3]
-  ];
-  starSeeds.forEach(([sx, sy, sr]) => {
-    ctx.beginPath();
-    ctx.arc(sx, sy, sr, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  // 3. Luxury Double Gold Borders
-  ctx.save();
-  ctx.strokeStyle = '#d4af37';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(36, 36, W - 72, H - 72);
-
-  ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(48, 48, W - 96, H - 96);
-
-  // Ornamental Corner Flourishes
-  const cornerSize = 40;
-  const drawCorner = (x, y, dx, dy) => {
-    ctx.beginPath();
-    ctx.moveTo(x, y + dy * cornerSize);
-    ctx.lineTo(x, y);
-    ctx.lineTo(x + dx * cornerSize, y);
-    ctx.strokeStyle = '#fae19c';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    // small diamond
-    ctx.fillStyle = '#d4af37';
-    ctx.beginPath();
-    ctx.arc(x + dx * 16, y + dy * 16, 4, 0, Math.PI * 2);
-    ctx.fill();
-  };
-  drawCorner(56, 56, 1, 1);
-  drawCorner(W - 56, 56, -1, 1);
-  drawCorner(56, H - 56, 1, -1);
-  drawCorner(W - 56, H - 56, -1, -1);
-  ctx.restore();
-
-  // 4. Header Text
-  ctx.textAlign = 'center';
-
-  // Small emblem
-  ctx.font = '32px serif';
-  ctx.fillText('💍', W / 2, 105);
-
-  ctx.fillStyle = '#a7f3d0';
-  ctx.font = '600 21px "Outfit", sans-serif';
-  const canvasFam = (eventDetails?.familyName || 'FAMILIA YA MZEE MARCUS NYAHENDE').toUpperCase();
-  ctx.fillText(canvasFam, W / 2, 140);
-
-  ctx.fillStyle = '#cbd5e1';
-  ctx.font = '400 17px "Outfit", sans-serif';
-  ctx.fillText('KWA HESHIMA INAKUALIKA KWENYE USIKU WA', W / 2, 172);
-
-  // Big Gold Title
-  ctx.save();
-  ctx.shadowColor = 'rgba(212, 175, 55, 0.6)';
-  ctx.shadowBlur = 18;
-  ctx.fillStyle = '#fae19c';
-  ctx.font = 'bold 58px "Playfair Display", "Cinzel", serif';
-  ctx.fillText(`SEND-OFF YA ${(eventDetails?.brideName || 'Lilian').toUpperCase()}`, W / 2, 242);
-  ctx.restore();
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'italic 26px "Playfair Display", serif';
-  ctx.fillText('A Night of Celebration, Love & Elegance', W / 2, 288);
-
-  ctx.fillStyle = '#d4af37';
-  ctx.font = '18px serif';
-  ctx.fillText('─────── ◆ ───────', W / 2, 320);
-
-  // 5. Load & Draw Bride Photo (Lilian)
-  await new Promise(resolve => {
-    const brideImg = new Image();
-    brideImg.crossOrigin = 'anonymous';
-    brideImg.src = eventDetails?.bridePhoto || '/images/lilian_sendoff.jpg';
-    brideImg.onload = () => {
-      const px = W / 2;
-      const py = 490;
-      const pr = 145; // radius
-
-      // Glow behind circle
-      ctx.save();
-      ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
-      ctx.shadowBlur = 25;
-      ctx.beginPath();
-      ctx.arc(px, py, pr + 6, 0, Math.PI * 2);
-      ctx.fillStyle = '#d4af37';
-      ctx.fill();
-      ctx.restore();
-
-      // Circle clipping
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(px, py, pr, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(brideImg, px - pr, py - pr, pr * 2, pr * 2);
-      ctx.restore();
-
-      // Gold braided ring
-      ctx.save();
-      ctx.strokeStyle = '#fae19c';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(px, py, pr, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
-
-      // Ribbon badge under photo
-      ctx.save();
-      ctx.fillStyle = '#d4af37';
-      const rw = 260;
-      const rh = 34;
-      const rx = W / 2 - rw / 2;
-      const ry = py + pr - 14;
-      ctx.beginPath();
-      ctx.roundRect(rx, ry, rw, rh, 17);
-      ctx.fill();
-
-      ctx.fillStyle = '#051910';
-      ctx.font = 'bold 15px "Outfit", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('BIBI HARUSI MTARAJIWA', W / 2, ry + 22);
-      ctx.restore();
-
-      resolve();
-    };
-    brideImg.onerror = () => resolve();
-  });
-
-  // 6. Personalized Guest Box
-  const gBoxX = 110;
-  const gBoxY = 690;
-  const gBoxW = 860;
-  const gBoxH = 370;
-
-  ctx.save();
-  ctx.fillStyle = 'rgba(3, 18, 12, 0.72)';
-  ctx.beginPath();
-  ctx.roundRect(gBoxX, gBoxY, gBoxW, gBoxH, 20);
-  ctx.fill();
-
-  ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // "MWALIKO MAALUMU KWA"
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = '600 17px "Outfit", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('MWALIKO MAALUMU KWA:', W / 2, gBoxY + 45);
-
-  // Guest Name (Big, Elegant)
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 40px "Playfair Display", serif';
-  ctx.fillText(guest.name, W / 2, gBoxY + 98);
-
-  if (guest.title) {
-    ctx.fillStyle = '#a7f3d0';
-    ctx.font = '400 20px "Outfit", sans-serif';
-    ctx.fillText(guest.title, W / 2, gBoxY + 130);
-  }
-
-  // Single Centered Badge: Mwaliko (Single / Double)
-  const badgeY = guest.title ? gBoxY + 155 : gBoxY + 135;
-  const bW = 380;
-  const bH = 50;
-
-  ctx.fillStyle = 'rgba(212, 175, 55, 0.15)';
-  ctx.beginPath();
-  ctx.roundRect(W / 2 - bW / 2, badgeY, bW, bH, 12);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  ctx.fillStyle = '#fae19c';
-  ctx.font = 'bold 20px "Outfit", sans-serif';
-  ctx.textAlign = 'center';
-  const canvasSeatLabel = Number(guest.seats) === 2 ? 'DOUBLE' : (Number(guest.seats) === 1 ? 'SINGLE' : `WATU ${guest.seats}`);
-  ctx.fillText(`🎟️ MWALIKO: ${canvasSeatLabel}`, W / 2, badgeY + 32);
-
-  // Event Details Inside Box
-  const detY = badgeY + 85;
-  ctx.fillStyle = '#fae19c';
-  ctx.font = 'bold 24px "Outfit", sans-serif';
-  let canvasDateStr = '13 OKTOBA 2026';
-  if (eventDetails?.weddingDate) {
-    const d = new Date(eventDetails.weddingDate);
-    const months = ['JANUARI', 'FEBRUARI', 'MACHI', 'APRILI', 'MEI', 'JUNI', 'JULAI', 'AGOSTI', 'SEPTEMBA', 'OKTOBA', 'NOVEMBA', 'DESEMBA'];
-    canvasDateStr = `${d.getDate()} ${months[d.getMonth()] || 'OKTOBA'} ${d.getFullYear()}`;
-  }
-  const canvasTimeStr = (eventDetails?.receptionTime || 'Saa 12:30 Jioni').toUpperCase();
-  ctx.fillText(`📅 ${canvasDateStr}  •  ⏰ ${canvasTimeStr}`, W / 2, detY);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '500 21px "Outfit", sans-serif';
-  const canvasVenueStr = (eventDetails?.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam').toUpperCase();
-  ctx.fillText(`🏛️ ${canvasVenueStr}`, W / 2, detY + 36);
-
-  ctx.restore();
-
-  // 7. Bottom Section: Dress code & QR Code
-  // Left side: Dress code & Quote
-  ctx.textAlign = 'left';
-  ctx.fillStyle = '#d4af37';
-  ctx.font = 'bold 20px "Outfit", sans-serif';
-  ctx.fillText('👗 RANGI ZA SHEREHE (DRESS CODE):', 110, 1145);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '600 24px "Outfit", sans-serif';
-  const canvasDressStr = eventDetails?.themeColor || eventDetails?.dressCode || 'Emerald Green & Touch of Gold';
-  ctx.fillText(canvasDressStr, 110, 1180);
-
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = 'italic 21px "Playfair Display", serif';
-  ctx.fillText('✨ "Uwepo wako utaleta nakshi na furaha tele!"', 110, 1225);
-
-  // Dedicated 4-Digit Security Pass Code Box on Left
-  ctx.save();
-  ctx.fillStyle = 'rgba(212, 175, 55, 0.15)';
-  ctx.beginPath();
-  ctx.roundRect(110, 1255, 480, 75, 14);
-  ctx.fill();
-
-  ctx.strokeStyle = '#d4af37';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.fillStyle = '#fae19c';
-  ctx.font = 'bold 15px "Outfit", sans-serif';
-  ctx.fillText('🔑 KODI YA KUINGILIA MLANGONI:', 130, 1282);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 34px monospace';
-  ctx.fillText(`${guest.code || '4829'}`, 130, 1318);
-
-  ctx.fillStyle = 'rgba(250, 225, 156, 0.9)';
-  ctx.font = 'bold 18px "Outfit", sans-serif';
-  ctx.fillText(`• Namba ya Mgeni: #${guest.id}`, 275, 1314);
-  ctx.restore();
-
-  // Right side: QR Code Box
-  await new Promise(resolve => {
-    const qrImg = new Image();
-    qrImg.crossOrigin = 'anonymous';
-    qrImg.src = `/api/qr/${guest.id}`;
-    qrImg.onload = () => {
-      const qx = 750;
-      const qy = 1100;
-      const qs = 220;
-
-      // White frame
-      ctx.save();
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.roundRect(qx, qy, qs, qs, 16);
-      ctx.fill();
-
-      ctx.strokeStyle = '#d4af37';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Draw QR
-      ctx.drawImage(qrImg, qx + 12, qy + 12, qs - 24, qs - 24);
-      ctx.restore();
-
-      // Label below QR
-      ctx.fillStyle = '#fae19c';
-      ctx.font = 'bold 16px "Outfit", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`PASS: ${guest.code || '4829'}`, qx + qs / 2, qy + qs + 26);
-
-      resolve();
-    };
-    qrImg.onerror = () => resolve();
-  });
-
-  // Finished rendering! Convert canvas to preview image
-  canvas.toBlob(blob => {
-    currentCardBlob = blob;
-    const url = URL.createObjectURL(blob);
-    imgPreview.src = url;
+  imgPreview.onload = () => {
     if (spinner) spinner.style.display = 'none';
     imgPreview.style.display = 'block';
-  }, 'image/png');
+  };
+
+  imgPreview.onerror = () => {
+    imgPreview.src = cardApiUrl;
+    if (spinner) spinner.style.display = 'none';
+    imgPreview.style.display = 'block';
+  };
+
+  imgPreview.src = cardStaticUrl;
+
+  // Pre-fetch blob for instant download / copy / share
+  try {
+    let res = await fetch(`/images/cards/card_${guest.id}.jpg`);
+    if (!res.ok) res = await fetch(cardApiUrl);
+    if (res.ok) {
+      currentCardBlob = await res.blob();
+    }
+  } catch (e) {
+    console.warn('Prefetching card image blob:', e);
+  }
 }
 
-function downloadSendoffCard() {
-  if (!currentCardBlob || !activeSendoffGuest) return;
+async function downloadSendoffCard() {
+  if (!activeSendoffGuest) return;
+  const bride = eventDetails?.brideName || 'Lilian';
+  const cleanName = (activeSendoffGuest.name || 'Mualikwa').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const fileName = `Kadi_Sendoff_${bride}_${cleanName}.jpg`;
+
+  if (currentCardBlob) {
+    const link = document.createElement('a');
+    link.download = fileName;
+    link.href = URL.createObjectURL(currentCardBlob);
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    return;
+  }
+
   const link = document.createElement('a');
-  link.download = `Kadi_Sendoff_${(eventDetails?.brideName || 'Lilian')}_${activeSendoffGuest.id}_${activeSendoffGuest.name.replace(/\s+/g, '_')}.png`;
-  link.href = URL.createObjectURL(currentCardBlob);
+  link.download = fileName;
+  link.href = `/api/card/image/${activeSendoffGuest.id}`;
   link.click();
 }
 
 async function copySendoffCardImage() {
-  if (!currentCardBlob) {
-    alert('Kadi inatengenezwa, tafadhali subiri sekunde chache...');
-    return;
-  }
+  if (!activeSendoffGuest) return;
+  const btn = document.getElementById('btn-copy-card-img');
+  const orig = btn ? btn.innerHTML : '📋 Nakili Picha';
+  if (btn) btn.innerHTML = '⏳ Inanakili...';
+
   try {
-    const item = new ClipboardItem({ 'image/png': currentCardBlob });
-    await navigator.clipboard.write([item]);
-    const btn = document.getElementById('btn-copy-card-img');
-    if (btn) {
-      const orig = btn.innerHTML;
-      btn.innerHTML = '✅ Picha Imenakiliwa!';
-      setTimeout(() => { btn.innerHTML = orig; }, 3000);
+    let blob = currentCardBlob;
+    if (!blob) {
+      const res = await fetch(`/images/cards/card_${activeSendoffGuest.id}.jpg`);
+      blob = res.ok ? await res.blob() : null;
+      if (!blob) {
+        const resApi = await fetch(`/api/card/image/${activeSendoffGuest.id}`);
+        if (resApi.ok) blob = await resApi.blob();
+      }
     }
-    alert('✅ Picha ya Kadi imenakiliwa kikamilifu!\n\nSasa fungua WhatsApp Web kwenye mazungumzo ya mgeni huyu na ubonyeze Ctrl+V kupaste picha ya kadi mara moja.');
+
+    if (!blob) throw new Error('Kadi haijapatikana');
+
+    const pngBlob = await convertJpgToPng(blob);
+    if (!pngBlob) throw new Error('Ubadilishaji wa picha haukufanikiwa');
+
+    if (navigator.clipboard && navigator.clipboard.write) {
+      const item = new ClipboardItem({ 'image/png': pngBlob });
+      await navigator.clipboard.write([item]);
+
+      if (btn) {
+        btn.innerHTML = '✅ Picha Imenakiliwa!';
+        setTimeout(() => { btn.innerHTML = orig; }, 3000);
+      }
+      alert('✅ Picha ya Kadi imenakiliwa kikamilifu!\n\nSasa fungua WhatsApp Web kwenye mazungumzo ya mgeni huyu na ubonyeze Ctrl + V kupaste picha ya kadi mara moja!');
+    } else {
+      throw new Error('Clipboard API haipatikani kwenye kivinjari hiki');
+    }
   } catch (err) {
     console.error('Clipboard error:', err);
+    if (btn) btn.innerHTML = orig;
     downloadSendoffCard();
-    alert('Picha imepakuliwa kwenye kifaa chako. Unaweza kuiweka moja kwa moja kwenye WhatsApp!');
+    alert('📥 Picha imepakuliwa kwenye kompyuta yako. Unaweza kuiburuza au kuiweka moja kwa moja kwenye WhatsApp!');
   }
 }
+
+// ========== SHARE CARD IMAGE DIRECTLY TO WHATSAPP ==========
+
+/**
+ * Share the pre-generated high-quality card JPG directly to WhatsApp.
+ * Uses Web Share API (Level 2 with files) on mobile devices.
+ * Falls back to download + WhatsApp text link on desktop.
+ */
+async function shareCardToWhatsApp() {
+  if (!activeSendoffGuest) return;
+
+  const guest = activeSendoffGuest;
+  const guestId = guest.id;
+  const guestName = guest.name || 'Mgeni';
+  const guestCode = guest.code || guest.id;
+  const bride = eventDetails?.brideName || 'Lilian';
+
+  // Read phone from input or guest data
+  const phoneInput = document.getElementById('wa-card-guest-phone');
+  const rawPhone = (phoneInput && phoneInput.value.trim()) ? phoneInput.value.trim() : (guest.phone || '');
+  const phone = formatPhoneForWhatsApp(rawPhone);
+
+  const btn = document.getElementById('btn-share-wa');
+  const origText = btn ? btn.innerHTML : '📲 Tuma Picha ya Kadi WhatsApp';
+  if (btn) {
+    btn.innerHTML = '⏳ Inatayarisha picha...';
+    btn.disabled = true;
+  }
+
+  try {
+    // 1. Obtain image blob
+    let blob = currentCardBlob;
+    if (!blob) {
+      let response = await fetch(`/images/cards/card_${guestId}.jpg`);
+      if (!response.ok) response = await fetch(`/api/card/image/${guestId}`);
+      if (response.ok) {
+        blob = await response.blob();
+        currentCardBlob = blob;
+      } else {
+        throw new Error('Kadi haijapatikana. Tafadhali jaribu tena.');
+      }
+    }
+
+    const cleanGuestName = String(guestName).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const fileName = `Kadi_Sendoff_${bride}_${cleanGuestName}.jpg`;
+    const file = new File([blob], fileName, { type: 'image/jpeg' });
+
+    // Compose personalized caption
+    const caption = `💍 *KADI YA MWALIKO - SEND-OFF YA ${bride.toUpperCase()}*\n\n` +
+      `Habari Ndugu *${guestName}*,\n` +
+      `🔑 Kodi yako ya Mlangoni (Pass Code): *${guestCode}*\n\n` +
+      `Picha ya kadi yako rasmi yenye QR Code imeambatanishwa hapa. Karibu sana tufurahi pamoja! ✨🥂`;
+
+    // 2. Mobile Native Web Share API: Attaches the REAL PHOTO directly into WhatsApp!
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        title: `Kadi ya ${guestName}`,
+        text: caption,
+        files: [file]
+      });
+
+      if (btn) {
+        btn.innerHTML = '✅ Imetumwa!';
+        setTimeout(() => { btn.innerHTML = origText; btn.disabled = false; }, 3000);
+      }
+      return;
+    }
+
+    // 3. Desktop Flow: Auto-download + Copy to clipboard + Open WhatsApp Web
+    const link = document.createElement('a');
+    link.download = fileName;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+
+    // Copy to clipboard
+    try {
+      const pngBlob = await convertJpgToPng(blob);
+      if (pngBlob && navigator.clipboard && navigator.clipboard.write) {
+        const item = new ClipboardItem({ 'image/png': pngBlob });
+        await navigator.clipboard.write([item]);
+      }
+    } catch (e) {
+      console.warn('Clipboard write fallback:', e);
+    }
+
+    // Open WhatsApp Web
+    const waUrl = phone 
+      ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(caption + '\n\n(👆 Picha ya kadi imepakuliwa na kunakiliwa. Bonyeza Ctrl+V kupaste picha hapa!)')}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(caption + '\n\n(👆 Picha ya kadi imepakuliwa na kunakiliwa. Bonyeza Ctrl+V kupaste picha hapa!)')}`;
+    window.open(waUrl, '_blank');
+
+    if (btn) {
+      btn.innerHTML = '📥 Picha Imenakiliwa & Kupakuliwa!';
+      setTimeout(() => { btn.innerHTML = origText; btn.disabled = false; }, 3500);
+    }
+
+    alert(
+      `✅ Picha ya Kadi ya ${guestName} ipo Tayari!\n\n` +
+      `1. WhatsApp imefunguliwa na mgeni.\n` +
+      `2. Picha imenakiliwa (Copied) — Bonyeza tu Ctrl + V (Paste) kutuma picha moja kwa moja!\n` +
+      `3. Pia faili la picha (${fileName}) limehifadhiwa kwenye kompyuta yako.`
+    );
+  } catch (err) {
+    console.error('Share error:', err);
+    if (err.name !== 'AbortError') {
+      alert('Hitilafu wakati wa kutayarisha picha: ' + (err.message || 'Jaribu tena'));
+    }
+  } finally {
+    if (btn) {
+      btn.innerHTML = origText;
+      btn.disabled = false;
+    }
+  }
+}
+
+/**
+ * Convert JPG blob to PNG blob (needed for clipboard API which requires PNG)
+ */
+function convertJpgToPng(jpgBlob) {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(pngBlob => {
+        if (pngBlob) resolve(pngBlob);
+        else reject(new Error('PNG conversion failed'));
+      }, 'image/png');
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(jpgBlob);
+  });
+}
+
+/**
+ * Bulk share: Share cards to multiple guests one by one via WhatsApp
+ * Opens share sheet for each guest sequentially
+ */
+async function bulkShareCardsWhatsApp() {
+  const guestsWithPhone = allGuests.filter(g => g.phone && g.phone.trim());
+  
+  if (!guestsWithPhone.length) {
+    alert('Hakuna wageni wenye namba za simu!');
+    return;
+  }
+
+  const confirmed = confirm(
+    `📲 Unataka kutuma kadi za picha kwa wageni ${guestsWithPhone.length} kupitia WhatsApp?\n\n` +
+    `Kwa kila mgeni, WhatsApp itafungua na picha ya kadi yake.\n` +
+    `Wewe utabonyeza "Send" tu kwa kila mmoja.\n\n` +
+    `Endelea?`
+  );
+  if (!confirmed) return;
+
+  // Open sendoff modal with first guest and let user navigate
+  openSendoffWhatsAppModal(guestsWithPhone[0].id);
+  alert(`💡 Maagizo:\n\n1. Bonyeza "📲 Tuma Picha WhatsApp" kwa mgeni huu\n2. Tuma kwenye WhatsApp\n3. Rudi hapa na bonyeza "Anayefuata ➡️" kwa mgeni mwingine\n\nWageni ${guestsWithPhone.length} wana namba za simu.`);
+}
+
 
 // 2. Vikumbusho vya Michango x 5
 let activeReminderGuest = null;
@@ -2122,9 +2051,24 @@ async function deleteTable(tableId) {
   }
 }
 
+function formatPhoneForWhatsApp(phone) {
+  if (!phone) return '';
+  let cleaned = String(phone).replace(/[^0-9]/g, '');
+  if (cleaned.startsWith('0')) {
+    cleaned = '255' + cleaned.substring(1);
+  } else if (cleaned.startsWith('+255')) {
+    cleaned = cleaned.substring(1);
+  } else if (!cleaned.startsWith('255') && cleaned.length === 9) {
+    cleaned = '255' + cleaned;
+  }
+  return cleaned;
+}
+
 function openWhatsAppWindow(phone, text) {
-  const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
-  const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
+  const cleanPhone = formatPhoneForWhatsApp(phone);
+  const url = cleanPhone 
+    ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`
+    : `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
 }
 

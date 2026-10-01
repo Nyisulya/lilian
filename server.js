@@ -1513,6 +1513,14 @@ app.get('/api/card/image/:id', (req, res) => {
     fs.mkdirSync(cardsDir, { recursive: true });
   }
   const cardFile = path.join(cardsDir, `card_${guestId}.jpg`);
+
+  // If card already exists and no forced regeneration is requested, serve it instantly!
+  if (fs.existsSync(cardFile) && !req.query.regenerate) {
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    return res.sendFile(cardFile);
+  }
+
   const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
   const { execFile } = require('child_process');
 

@@ -182,17 +182,92 @@ function openEnvelope() {
   }
 }
 
-// WhatsApp Share
-function shareCardViaWhatsApp() {
+// WhatsApp Share - Shares the ACTUAL CARD IMAGE (photo)
+async function shareCardViaWhatsApp() {
   if (!currentGuest || !currentEvent) return;
-  const currentUrl = window.location.href;
   const bride = currentEvent.brideName || 'Lilian';
-
+  const guestName = currentGuest.name || 'Mualikwa';
+  const guestCode = currentGuest.code || currentGuest.id;
   const seatCount = Number(currentGuest.seats) || 1;
-  const seatLabel = seatCount === 2 ? 'Double' : (seatCount === 1 ? 'Single' : `Watu ${seatCount}`);
-  const text = `Habari mpenzi wangu,\n\nHii hapa kadi yetu rasmi ya mwaliko wa Send-off ya *${bride}*:\n👉 ${currentUrl}\n\nMwaliko wetu ni wa *${seatLabel}* na kadi yetu ya QR ya kuingilia mlangoni ipo hapo. Fungua uione! 💍`;
+  const seatLabel = seatCount === 2 ? 'Double (Watu 2)' : (seatCount === 1 ? 'Single (Mtu 1)' : `Watu ${seatCount}`);
 
-  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  const caption = `💍 *KADI YA MWALIKO WA SEND-OFF YA ${bride.toUpperCase()}*\n\n` +
+    `Habari *${guestName}*,\n` +
+    `Tunayo furaha kukualika katika sherehe ya Send-off ya *${bride}*.\n\n` +
+    `🎟️ *Mwaliko:* ${seatLabel}\n` +
+    `🔑 *Kodi Yako ya Mlangoni (Pass Code):* *${guestCode}*\n\n` +
+    `✨ Picha ya kadi yako rasmi yenye QR Code imeambatanishwa hapo juu. Karibu sana!`;
+
+  const cardImageUrl = `/images/cards/card_${currentGuest.id}.jpg`;
+  const btn = document.querySelector('.btn-whatsapp-share');
+  const origBtnContent = btn ? btn.innerHTML : '';
+
+  try {
+    if (btn) btn.innerHTML = '<span>⏳</span><span>Inatayarisha Picha...</span>';
+
+    const response = await fetch(cardImageUrl);
+    if (!response.ok) throw new Error('Haikupatikana');
+    const blob = await response.blob();
+    const cleanGuestName = String(guestName).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const fileName = `Kadi_Sendoff_${bride}_${cleanGuestName}.jpg`;
+    const file = new File([blob], fileName, { type: 'image/jpeg' });
+
+    // 1. Mobile Web Share API: Natively attaches the real image file to WhatsApp!
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        title: `Kadi ya ${guestName}`,
+        text: caption,
+        files: [file]
+      });
+      if (btn) btn.innerHTML = '<span>✅</span><span>Imetumwa!</span>';
+      setTimeout(() => { if (btn) btn.innerHTML = origBtnContent; }, 3000);
+      return;
+    }
+
+    // 2. Desktop Fallback: Copy Image + Auto-Download + Open WhatsApp
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    try {
+      const pngBlob = await convertCardToPngBlob(blob);
+      if (pngBlob && navigator.clipboard && navigator.clipboard.write) {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+      }
+    } catch (e) {
+      console.warn('Clipboard write fallback:', e);
+    }
+
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(caption + '\n\n(Picha ya kadi imepakuliwa na kunakiliwa. Bonyeza Ctrl+V kupaste)')}`;
+    window.open(waUrl, '_blank');
+
+    alert(`📥 Picha ya kadi yako imepakuliwa na kunakiliwa!\n\nKwenye WhatsApp, bonyeza Ctrl+V kupaste picha ya kadi.`);
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      console.error('Share error:', err);
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(caption)}`, '_blank');
+    }
+  } finally {
+    if (btn) btn.innerHTML = origBtnContent;
+  }
+}
+
+function convertCardToPngBlob(jpgBlob) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(resolve, 'image/png');
+    };
+    img.onerror = () => resolve(null);
+    img.src = URL.createObjectURL(jpgBlob);
+  });
 }
 
 function escapeHtml(text) {
