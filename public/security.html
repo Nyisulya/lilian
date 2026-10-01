@@ -65,11 +65,27 @@
       <div class="scan-overlay-target">
         <div class="scan-laser-beam"></div>
       </div>
+
+      <!-- Scanning Paused Overlay -->
+      <div id="scan-paused-indicator" style="display: none; position: absolute; inset: 0; background: rgba(3, 14, 9, 0.92); backdrop-filter: blur(8px); z-index: 20; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+        <div style="font-size: 3rem; margin-bottom: 8px;">⏸️</div>
+        <div style="color: #2ecc71; font-weight: 800; font-size: 1.2rem; margin-bottom: 6px;">KADI IMEKAGULIWA!</div>
+        <div style="color: #cbd5e1; font-size: 0.85rem; max-width: 320px; line-height: 1.4; margin-bottom: 18px;">
+          Tazama majibu ya mgeni hapo chini. Ukimaliza kumruhusu, bonyeza kitufe hapa chini kuscan mgeni anayefuata.
+        </div>
+        <button type="button" class="btn btn-emerald" style="padding: 14px 28px; font-weight: 800; border-radius: 30px; font-size: 1.05rem; box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);" onclick="resumeScanner()">
+          📸 Scan Mgeni Anayefuata ➔
+        </button>
+      </div>
     </div>
 
     <div style="margin-top: 14px; text-align: center;">
       <button id="toggle-camera-btn" class="btn btn-gold" style="width: 100%;">
         📷 Washa Kamera ya Simu Kuscan
+      </button>
+
+      <button id="btn-resume-scan" class="btn btn-emerald" style="display: none; width: 100%; margin-top: 10px; font-size: 1.1rem; padding: 14px; font-weight: 800; border-radius: 12px; box-shadow: 0 6px 20px rgba(46, 204, 113, 0.35);" onclick="resumeScanner()">
+        📸 Scan Mgeni Anayefuata (Ruhusu Kamera) ➔
       </button>
     </div>
 
@@ -108,6 +124,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Developer & Specialist Showcase Footer -->
+    <footer style="text-align: center; padding: 26px 14px 10px 14px; margin-top: 30px; border-top: 1px solid var(--bg-glass-border); font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;">
+      <div style="font-size: 1.1rem; margin-bottom: 4px;">🛡️ Mfumo wa Kidijitali wa Usalama & Kadi za Mlangoni</div>
+      <div>
+        Msanifu & Mtaalamu wa Mifumo: <strong style="color: #ffffff; font-size: 0.92rem;">Felician Joseph</strong>
+      </div>
+      <div style="margin-top: 8px;">
+        <a href="https://wa.me/255787661560?text=Habari%20Felician,%20nimeona%20mfumo%20wako%20wa%20kadi%20na%20scanner%20ya%20getini,%20nahitaji%20kwa%20ajili%20ya%20sherehe%20yangu." target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.4); color: #25d366; padding: 6px 14px; border-radius: 20px; font-weight: 700; text-decoration: none;">
+          <span>📲</span> <span>Pata Mfumo Huu (WhatsApp: 0787 661 560)</span>
+        </a>
+      </div>
+    </footer>
 
   </div>
 

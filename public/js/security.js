@@ -4,6 +4,7 @@
 
 let html5QrCode = null;
 let isScannerRunning = false;
+let isScanPaused = false;
 let audioCtx = null;
 let recentScans = [];
 
@@ -13,6 +14,46 @@ document.addEventListener('DOMContentLoaded', () => {
   setupManualForm();
   setupCameraScanner();
 });
+
+// Pause Scanner to let bodyguard review guest information without repeated rapid scans
+function pauseScanner() {
+  isScanPaused = true;
+  const overlay = document.getElementById('scan-paused-indicator');
+  if (overlay) overlay.style.display = 'flex';
+  const resumeBtn = document.getElementById('btn-resume-scan');
+  if (resumeBtn) resumeBtn.style.display = 'block';
+
+  if (html5QrCode && isScannerRunning) {
+    try {
+      html5QrCode.pause(true);
+    } catch (e) {
+      console.log('Camera pause note:', e);
+    }
+  }
+}
+
+// Resume Scanner when bodyguard clicks "Scan Mgeni Anayefuata"
+function resumeScanner() {
+  isScanPaused = false;
+  const overlay = document.getElementById('scan-paused-indicator');
+  if (overlay) overlay.style.display = 'none';
+  const resumeBtn = document.getElementById('btn-resume-scan');
+  if (resumeBtn) resumeBtn.style.display = 'none';
+
+  if (html5QrCode && isScannerRunning) {
+    try {
+      html5QrCode.resume();
+    } catch (e) {
+      console.log('Camera resume note:', e);
+    }
+  }
+
+  // Smooth scroll back up to camera viewport
+  const viewport = document.querySelector('.scanner-viewport-wrap');
+  if (viewport) {
+    viewport.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
 
 // Initialize Web Audio API for Instant Chimes (No external sound files required)
 function initAudio() {
@@ -171,7 +212,14 @@ function renderVerificationResult(data) {
           </div>
         </div>
 
-        <div style="margin-top: 16px;">
+        <!-- Prominent Next Guest Action Button -->
+        <div style="margin-top: 18px;">
+          <button type="button" class="btn btn-emerald" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);" onclick="resumeScanner()">
+            📸 SCAN MGENI ANAYEFUATA ➔
+          </button>
+        </div>
+
+        <div style="margin-top: 12px; text-align: center;">
           <button class="btn btn-outline-gold btn-sm" onclick="resetGuestCheckIn('${g.id}')">
             🔄 Rejesha (Futa Check-in)
           </button>
@@ -212,7 +260,14 @@ function renderVerificationResult(data) {
           </div>
         </div>
 
-        <div style="margin-top: 16px; display: flex; gap: 8px; justify-content: center;">
+        <!-- Prominent Next Guest Action Button -->
+        <div style="margin-top: 18px;">
+          <button type="button" class="btn btn-emerald" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);" onclick="resumeScanner()">
+            📸 SCAN MGENI ANAYEFUATA ➔
+          </button>
+        </div>
+
+        <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center;">
           <button class="btn btn-outline-gold btn-sm" onclick="resetGuestCheckIn('${g.id || data.code}')">
             Ruhusu Upya (Override)
           </button>
@@ -251,6 +306,12 @@ function renderVerificationResult(data) {
         </div>
         <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">${data.message}</p>
         <div>${matchesHtml}</div>
+
+        <div style="margin-top: 18px;">
+          <button type="button" class="btn btn-emerald" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);" onclick="resumeScanner()">
+            📸 SCAN MGENI ANAYEFUATA ➔
+          </button>
+        </div>
       </div>
     `;
 
@@ -264,6 +325,12 @@ function renderVerificationResult(data) {
         <p style="color: #fde68a; margin: 8px 0;">
           Msimbo <strong>${escapeHtml(data.code || code)}</strong> haupatikani kwenye orodha ya waalikwa wa harusi hii.
         </p>
+
+        <div style="margin-top: 18px;">
+          <button type="button" class="btn btn-emerald" style="width: 100%; padding: 14px; font-size: 1.05rem; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);" onclick="resumeScanner()">
+            📸 SCAN MGENI ANAYEFUATA ➔
+          </button>
+        </div>
       </div>
     `;
 
@@ -350,6 +417,7 @@ function setupManualForm() {
     e.preventDefault();
     const input = document.getElementById('manual-code-input');
     if (input && input.value.trim()) {
+      pauseScanner();
       verifyCode(input.value.trim());
       input.value = '';
     }
@@ -377,24 +445,31 @@ function startCamera() {
     return;
   }
 
+  isScanPaused = false;
+  const overlay = document.getElementById('scan-paused-indicator');
+  if (overlay) overlay.style.display = 'none';
+  const resumeBtn = document.getElementById('btn-resume-scan');
+  if (resumeBtn) resumeBtn.style.display = 'none';
+
   html5QrCode = new Html5Qrcode('reader');
   const config = {
-    fps: 15,  // Higher FPS for faster detection
+    fps: 15,  // Smooth and responsive detection
     qrbox: { width: 250, height: 250 },
     aspectRatio: 1.0,
     formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]  // Only scan QR codes (skip barcodes)
   };
 
-  let lastScanTime = 0;
-
   html5QrCode.start(
     { facingMode: 'environment' }, // Rear camera on mobile phones
     config,
     (decodedText) => {
-      // Throttle: ignore scans within 2 seconds of last successful scan
-      const now = Date.now();
-      if (now - lastScanTime < 2000) return;
-      lastScanTime = now;
+      // IF ALREADY PAUSED: completely ignore incoming frames!
+      if (isScanPaused) return;
+
+      // Immediately freeze/pause the scanner so guard can read results
+      pauseScanner();
+
+      // Perform verification
       verifyCode(decodedText);
     },
     (errorMessage) => {
@@ -416,6 +491,12 @@ function stopCamera() {
   if (html5QrCode && isScannerRunning) {
     html5QrCode.stop().then(() => {
       isScannerRunning = false;
+      isScanPaused = false;
+      const overlay = document.getElementById('scan-paused-indicator');
+      if (overlay) overlay.style.display = 'none';
+      const resumeBtn = document.getElementById('btn-resume-scan');
+      if (resumeBtn) resumeBtn.style.display = 'none';
+
       toggleBtn.innerHTML = '📷 Washa Kamera ya Simu';
       toggleBtn.classList.add('btn-gold');
       toggleBtn.classList.remove('btn-emerald');
