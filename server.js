@@ -810,27 +810,9 @@ app.post('/api/verify/reset', (req, res) => {
   res.status(404).json({ error: 'Mualikwa hakupatikana' });
 });
 
-// 7. Dynamic Personalized Card Generator Endpoint (Returns JPG Stream)
+// Dynamic Personalized Card Generator Endpoint (Redirects to unified handler)
 app.get('/api/card-image/:id', (req, res) => {
-  const id = req.params.id;
-  const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
-  if (!fs.existsSync(cardsDir)) fs.mkdirSync(cardsDir, { recursive: true });
-
-  const cardPath = path.join(cardsDir, `card_${id}.jpg`);
-  
-  // Call python generator to create or update card
-  const { execFile } = require('child_process');
-  const pyScript = path.join(__dirname, 'services', 'generate_card.py');
-  
-  execFile('python', [pyScript, id, cardPath], (err) => {
-    if (err || !fs.existsSync(cardPath)) {
-      console.error('Card generation error:', err);
-      return res.status(500).send('Error generating card image');
-    }
-    res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.sendFile(cardPath);
-  });
+  res.redirect('/api/card/image/' + encodeURIComponent(req.params.id));
 });
 
 // 7. QR Code Generator Endpoint (Returns PNG Stream)
@@ -1554,7 +1536,9 @@ app.get('/api/card/image/:id', (req, res) => {
         return tryExec(idx + 1);
       }
       res.setHeader('Content-Type', 'image/jpeg');
-      res.setHeader('Cache-Control', 'public, max-age=60');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.sendFile(cardFile);
     });
   };

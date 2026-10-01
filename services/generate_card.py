@@ -144,10 +144,31 @@ def render_guest_card(guest_id_or_code, output_path=None):
         output_path = os.path.join(CARDS_DIR, f'card_{guest.get("id")}.jpg')
 
     card.convert('RGB').save(output_path, quality=98)
-    print(f"Generated scannable card at {output_path}")
     return output_path
 
+def render_all_guests():
+    live_db = os.path.join(BASE_DIR, 'data', 'live_db.json')
+    legacy_db = os.path.join(BASE_DIR, 'data', 'db.json')
+    db_file = live_db if os.path.exists(live_db) else legacy_db
+
+    with open(db_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    guests = data.get('guests', [])
+    print(f"Rendering all {len(guests)} guest cards...")
+    count = 0
+    for g in guests:
+        gid = g.get('id')
+        if gid:
+            render_guest_card(gid)
+            count += 1
+    print(f"Successfully generated {count} cards in {CARDS_DIR}")
+
 if __name__ == '__main__':
-    gid = sys.argv[1] if len(sys.argv) > 1 else '1'
-    out = sys.argv[2] if len(sys.argv) > 2 else None
-    render_guest_card(gid, out)
+    arg = sys.argv[1] if len(sys.argv) > 1 else '1'
+    if arg.lower() == 'all':
+        render_all_guests()
+    else:
+        out = sys.argv[2] if len(sys.argv) > 2 else None
+        p = render_guest_card(arg, out)
+        print(f"Generated scannable card at {p}")
