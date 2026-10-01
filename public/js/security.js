@@ -378,15 +378,24 @@ function startCamera() {
   }
 
   html5QrCode = new Html5Qrcode('reader');
-  const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+  const config = {
+    fps: 15,  // Higher FPS for faster detection
+    qrbox: { width: 250, height: 250 },
+    aspectRatio: 1.0,
+    formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]  // Only scan QR codes (skip barcodes)
+  };
+
+  let lastScanTime = 0;
 
   html5QrCode.start(
     { facingMode: 'environment' }, // Rear camera on mobile phones
     config,
     (decodedText) => {
-      // Audio trigger on scan
+      // Throttle: ignore scans within 2 seconds of last successful scan
+      const now = Date.now();
+      if (now - lastScanTime < 2000) return;
+      lastScanTime = now;
       verifyCode(decodedText);
-      // Optional throttle to prevent continuous duplicate scans in 2 seconds
     },
     (errorMessage) => {
       // Scanning ongoing...

@@ -821,20 +821,22 @@ app.get('/api/qr/:id', async (req, res) => {
   const db = readDB();
   const guest = (db.guests || []).find(g => String(g.id).toLowerCase() === String(id).toLowerCase() || String(g.code) === String(id));
   const guestCode = guest ? (guest.code || guest.id) : id;
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
-  const verifyPayload = guest ? `${baseUrl}/invite/${guest.id}?code=${guestCode}` : `${baseUrl}/invite/${id}`;
+  // Use short pass code for instant scanability (NOT full URL)
+  const verifyPayload = String(guestCode);
 
   try {
     const qrBuffer = await QRCode.toBuffer(verifyPayload, {
       errorCorrectionLevel: 'H',
       type: 'png',
       margin: 2,
-      scale: 8,
+      scale: 10,
+      version: 1,
       color: {
-        dark: '#0f382a', // Luxury Emerald Dark Green
+        dark: '#000000',
         light: '#ffffff'
       }
     });
+
 
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=86400');

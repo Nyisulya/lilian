@@ -112,24 +112,27 @@ def render_guest_card(guest_id_or_code, output_path=None):
     sw = bb_s[2] - bb_s[0]
     sh = bb_s[3] - bb_s[1]
     d.text((295 - sw // 2, 695 - sh // 2), seat_txt, font=font_seat, fill=(5, 55, 35, 255))
-
     # 3. High-Resolution, Instant-Scan Large Centered QR Code
-    qr_payload = f"https://lilian.nyisu.com/invite/{gid}?code={code}"
+    # Use short pass code as payload (NOT full URL) for maximum scanability:
+    # Short code → QR Version 1 (21×21 modules) → 5.14px per module at 108px = INSTANT scan
+    # Full URL → QR Version 4 (33×33 modules) → 3.27px per module at 108px = FAILS on many phones
+    qr_payload = code  # e.g. "3141" — the scanner already handles raw codes
 
     qr = qrcode.QRCode(
-        version=None,
-        error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=4,
-        border=2, # Essential Quiet Zone for instant optical scanner detection
+        version=1,  # Force smallest version for maximum module size
+        error_correction=qrcode.constants.ERROR_CORRECT_H,  # Highest error correction (30%)
+        box_size=10,  # Large native modules for clean downscale
+        border=2,  # ISO quiet zone
     )
     qr.add_data(qr_payload)
     qr.make(fit=True)
-    qr_img = qr.make_image(fill_color='black', back_color='white').convert('RGBA')
+    qr_img = qr.make_image(fill_color='#000000', back_color='#ffffff').convert('RGBA')
 
     # Large 108x108 QR Code centered in the 116x116 luxury gold frame (cx=341, cy=886)
     qr_size = 108
-    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.BOX)
+    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.NEAREST)  # Crisp pixel edges
     card.paste(qr_resized, (cx - qr_size // 2, 886 - qr_size // 2))
+
 
     # 4. Bottom PASS Pill: ── PASS : {code} ──
     pass_txt = f'──  PASS : {code}  ──'
