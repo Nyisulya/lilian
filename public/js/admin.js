@@ -2917,6 +2917,9 @@ function printAllTableQRCards() {
           <div class="card-footer-info">
             📅 ${dateStr} &bull; 🏛️ ${venue}<br>
             <span style="font-size: 9px; color: #777;">Link: ${directUrl}</span>
+            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #d4af37; font-size: 9.5px; color: #111;">
+              ✨ Unahitaji mfumo kama huu kwa sherehe yako? <strong>📲 0787 661 560</strong> (Felician Joseph)
+            </div>
           </div>
         </div>
       </div>
