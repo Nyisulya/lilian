@@ -7,8 +7,45 @@ from PIL import Image, ImageDraw, ImageFont
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_PATH = os.path.join(BASE_DIR, 'public', 'images', 'card_template_dynamic.png')
 CARDS_DIR = os.path.join(BASE_DIR, 'public', 'images', 'cards')
+FONTS_DIR = os.path.join(BASE_DIR, 'public', 'fonts')
 
 os.makedirs(CARDS_DIR, exist_ok=True)
+os.makedirs(FONTS_DIR, exist_ok=True)
+
+def get_font(font_filename, size):
+    # 1. Try bundled fonts directory in project
+    local_path = os.path.join(FONTS_DIR, font_filename)
+    if os.path.exists(local_path):
+        try:
+            return ImageFont.truetype(local_path, int(size))
+        except Exception:
+            pass
+
+    # 2. Try Windows system fonts
+    win_path = os.path.join(r'C:\Windows\Fonts', font_filename)
+    if os.path.exists(win_path):
+        try:
+            return ImageFont.truetype(win_path, int(size))
+        except Exception:
+            pass
+
+    # 3. Try Linux standard font paths
+    for lp in [
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+        '/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf',
+        '/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf'
+    ]:
+        if os.path.exists(lp):
+            try:
+                return ImageFont.truetype(lp, int(size))
+            except Exception:
+                pass
+
+    # 4. Fallback to default font
+    try:
+        return ImageFont.load_default(size=int(size))
+    except TypeError:
+        return ImageFont.load_default()
 
 def get_guest_data(guest_id_or_code):
     live_db = os.path.join(BASE_DIR, 'data', 'live_db.json')
@@ -65,7 +102,7 @@ def render_guest_card(guest_id_or_code, output_path=None):
     else:
         fs = 13.5
 
-    font_name = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', int(fs))
+    font_name = get_font('georgiab.ttf', fs)
     bb_n = d.textbbox((0, 0), name_clean, font=font_name)
     nw = bb_n[2] - bb_n[0]
     nh = bb_n[3] - bb_n[1]
@@ -73,7 +110,7 @@ def render_guest_card(guest_id_or_code, output_path=None):
 
     # 2. Seat Badge: SINGLE / DOUBLE
     seat_txt = 'DOUBLE' if seats >= 2 else 'SINGLE'
-    font_seat = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', 13)
+    font_seat = get_font('georgiab.ttf', 13)
     bb_s = d.textbbox((0, 0), seat_txt, font=font_seat)
     sw = bb_s[2] - bb_s[0]
     sh = bb_s[3] - bb_s[1]
@@ -81,8 +118,8 @@ def render_guest_card(guest_id_or_code, output_path=None):
 
     # 3. Left Box: MAWASILIANO & 0713 980 004
     cx_left = (195 + 348) // 2
-    font_contact_lbl = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', 12)
-    font_contact_num = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', 16)
+    font_contact_lbl = get_font('georgiab.ttf', 12)
+    font_contact_num = get_font('georgiab.ttf', 16)
 
     lbl_contact = "MAWASILIANO"
     num_contact = "0713 980 004"
@@ -111,7 +148,7 @@ def render_guest_card(guest_id_or_code, output_path=None):
 
     # 5. Bottom PASS Pill: ── PASS : {code} ──
     pass_txt = f'──  PASS : {code}  ──'
-    font_pass = ImageFont.truetype(r'C:\Windows\Fonts\arialbd.ttf', 12.5)
+    font_pass = get_font('arialbd.ttf', 12.5)
     bb_p = d.textbbox((0, 0), pass_txt, font=font_pass)
     pw = bb_p[2] - bb_p[0]
     ph = bb_p[3] - bb_p[1]

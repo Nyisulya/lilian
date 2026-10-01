@@ -1521,7 +1521,7 @@ app.get('/og-image.jpg', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'og-image.jpg'));
 });
 
-// Dynamic Card Image Endpoint
+// Dynamic Card Image Endpoint (Cross-Platform for VPS Linux & Windows)
 app.get('/api/card/image/:id', (req, res) => {
   const guestId = req.params.id;
   const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
@@ -1532,19 +1532,34 @@ app.get('/api/card/image/:id', (req, res) => {
   const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
   const { execFile } = require('child_process');
 
-  execFile('python', [scriptPath, guestId, cardFile], (err) => {
-    if (err) {
-      console.warn('generate_card.py execution warning:', err.message);
+  const pyCandidates = process.platform === 'win32' ? ['python', 'python3'] : ['python3', 'python'];
+
+  const tryExec = (idx) => {
+    if (idx >= pyCandidates.length) {
       if (fs.existsSync(cardFile)) {
         res.setHeader('Content-Type', 'image/jpeg');
         return res.sendFile(cardFile);
       }
-      return res.status(500).json({ error: 'Hitilafu ya kutoa kadi ya picha: ' + err.message });
+      const fallbackTemplate = path.join(__dirname, 'public', 'images', 'card_template_dynamic.png');
+      if (fs.existsSync(fallbackTemplate)) {
+        res.setHeader('Content-Type', 'image/png');
+        return res.sendFile(fallbackTemplate);
+      }
+      return res.status(500).json({ error: 'Kadi ya picha haikupatikana.' });
     }
-    res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=60');
-    res.sendFile(cardFile);
-  });
+
+    const cmd = pyCandidates[idx];
+    execFile(cmd, [scriptPath, guestId, cardFile], (err) => {
+      if (err) {
+        return tryExec(idx + 1);
+      }
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=60');
+      res.sendFile(cardFile);
+    });
+  };
+
+  tryExec(0);
 });
 
 app.get('/invite/:id', (req, res) => {
