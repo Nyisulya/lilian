@@ -191,12 +191,15 @@ async function shareCardViaWhatsApp() {
   const seatCount = Number(currentGuest.seats) || 1;
   const seatLabel = seatCount === 2 ? 'Double (Watu 2)' : (seatCount === 1 ? 'Single (Mtu 1)' : `Watu ${seatCount}`);
 
-  const caption = `💍 *KADI YA MWALIKO WA SEND-OFF YA ${bride.toUpperCase()}*\n\n` +
-    `Habari *${guestName}*,\n` +
-    `Tunayo furaha kukualika katika sherehe ya Send-off ya *${bride}*.\n\n` +
-    `🎟️ *Mwaliko:* ${seatLabel}\n` +
-    `🔑 *Kodi Yako ya Mlangoni (Pass Code):* *${guestCode}*\n\n` +
-    `✨ Picha ya kadi yako rasmi yenye QR Code imeambatanishwa hapo juu. Karibu sana!`;
+  const caption = `💍 *KADI YA MWALIKO - SEND-OFF YA ${bride.toUpperCase()}*\n\n` +
+    `Habari Ndugu *${guestName}*,\n\n` +
+    `Ukifika ukumbini mlangoni, utaonyesha kadi hii au utataja namba yako maalum ya mwaliko: *${guestCode}*.\n\n` +
+    `📍 *Mahali Ukumbi Ulipo (Location):*\n` +
+    `Bragging Social Hall, Goba, Dar es Salaam\n` +
+    `👉 https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam\n\n` +
+    `📖 Bonyeza link hii kuona hadithi nzuri na picha za ${bride}:\n` +
+    `👉 https://lilian.nyisu.com\n\n` +
+    `Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
 
   const cardImageUrl = `/images/cards/card_${currentGuest.id}.jpg`;
   const btn = document.querySelector('.btn-whatsapp-share');

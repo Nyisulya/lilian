@@ -698,9 +698,21 @@ function openSendoffWhatsAppModal(guestId) {
     phoneInput.oninput = () => { guest.phone = phoneInput.value.trim(); };
   }
 
-  // Message 1: Invitation + Photo Card + 4-Digit Gate Pass Code
+  // Message 1: Invitation + Venue Map + Story Link
   const famName = eventDetails?.familyName || 'Mzee Marcus Nyahende';
-  const msg1 = `💍 *MWALIKO WA SHEREHE YA SEND-OFF YA ${bride.toUpperCase()}* 💍\n\nHabari Ndugu *${guest.name}*,\n\nFamilia ya ${famName} inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}* (Send-off Party).\n\n🎟️ *Aina ya Kadi (Mwaliko):* ${seatLabel}\n📍 *Meza Yako:* ${table.name}\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *${guest.code || '4829'}*\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n🏛️ *Ukumbi:* ${venue}\n\nPicha ya kadi yako rasmi yenye Kodi yako ya siri ya kuingilia (${guest.code || '4829'}) na QR Code imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂`;
+  const msg1 = `💍 *KADI YA MWALIKO - SEND-OFF YA ${bride.toUpperCase()}*\n\n` +
+    `Habari Ndugu *${guest.name}*,\n\n` +
+    `Familia ya ${famName} inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}*.\n\n` +
+    `🎟️ *Mwaliko:* ${seatLabel}\n` +
+    `📍 *Meza Yako:* ${table.name}\n` +
+    `📅 *Tarehe:* ${dateStr} • ${timeStr}\n\n` +
+    `Ukifika ukumbini mlangoni, utaonyesha kadi hii au utataja namba yako maalum ya mwaliko: *${guest.code || guest.id}*.\n\n` +
+    `📍 *Mahali Ukumbi Ulipo (Location):*\n` +
+    `${venue}\n` +
+    `👉 ${mapsUrl}\n\n` +
+    `📖 Bonyeza link hii kuona hadithi nzuri na picha za ${bride}:\n` +
+    `👉 https://lilian.nyisu.com\n\n` +
+    `Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
 
   // Message 2: Venue Location
   const msg2 = `📍 *UKUMBI & MAHALI ILIPO (LOCATION)* 📍\n\nSherehe itafanyika:\n🏛️ *Ukumbi:* ${venue}\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n\nBonyeza link hii ya Google Maps itakuongoza moja kwa moja hadi ukumbini bila kupotea:\n👉 ${mapsUrl}\n\nKaribu sana!`;
@@ -998,11 +1010,23 @@ async function shareCardToWhatsApp() {
     const fileName = `Kadi_Sendoff_${bride}_${cleanGuestName}.jpg`;
     const file = new File([blob], fileName, { type: 'image/jpeg' });
 
+    const venueName = (eventDetails?.receptionVenue && !eventDetails.receptionVenue.includes('Mlimani')) 
+      ? eventDetails.receptionVenue 
+      : 'Bragging Social Hall, Goba, Dar es Salaam';
+    const mapsLink = (eventDetails?.googleMapsUrl && !eventDetails.googleMapsUrl.includes('Mlimani')) 
+      ? eventDetails.googleMapsUrl 
+      : 'https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam';
+
     // Compose personalized caption
     const caption = `💍 *KADI YA MWALIKO - SEND-OFF YA ${bride.toUpperCase()}*\n\n` +
-      `Habari Ndugu *${guestName}*,\n` +
-      `🔑 Kodi yako ya Mlangoni (Pass Code): *${guestCode}*\n\n` +
-      `Picha ya kadi yako rasmi yenye QR Code imeambatanishwa hapa. Karibu sana tufurahi pamoja! ✨🥂`;
+      `Habari Ndugu *${guestName}*,\n\n` +
+      `Ukifika ukumbini mlangoni, utaonyesha kadi hii au utataja namba yako maalum ya mwaliko: *${guestCode}*.\n\n` +
+      `📍 *Mahali Ukumbi Ulipo (Location):*\n` +
+      `${venueName}\n` +
+      `👉 ${mapsLink}\n\n` +
+      `📖 Bonyeza link hii kuona hadithi nzuri na picha za ${bride}:\n` +
+      `👉 https://lilian.nyisu.com\n\n` +
+      `Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
 
     // 2. Mobile Native Web Share API: Attaches the REAL PHOTO directly into WhatsApp!
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
