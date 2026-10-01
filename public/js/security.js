@@ -185,13 +185,62 @@ function renderVerificationResult(data) {
   if (data.status === 'valid') {
     playValidSound();
     const g = data.guest;
+    const totalSeats = Number(g.seats) || 1;
+    const enteredSeats = Number(g.seatsCheckedIn) || totalSeats;
+
+    let statusTitle = 'KADI HALALI • RUHUSU KUINGIA';
+    let statusIcon = '✅';
+    let subBanner = '';
+
+    if (data.subStatus === 'companion_arrival') {
+      statusTitle = 'KARIBU MWENZA! (MTU WA 2 KATI YA 2)';
+      statusIcon = '🎉';
+      subBanner = `
+        <div style="background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; color: #a7f3d0; font-size: 0.9rem; text-align: left;">
+          <strong>👥 Mgeni wa Pili (Double Card):</strong><br>
+          Mwenzake (<strong>${escapeHtml(g.name)}</strong>) aliingia mapema. Huyu ni mgeni wa pili aliyekuwa anasubiriwa. Kadi sasa imekamilika!
+        </div>
+      `;
+    } else if (totalSeats === 2) {
+      if (enteredSeats === 1) {
+        statusTitle = 'MGENI 1 AMEINGIA • NAFASI 1 IMEBAKI';
+        subBanner = `
+          <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; color: #fde68a; font-size: 0.88rem; text-align: left;">
+            <strong>👤 Mtu 1 Yupo Ndani:</strong> Nafasi 1 imebaki wazi kwa ajili ya mwenzake atakapofika baadaye. Mwenzake akija na kadi hii hii ataruhusiwa!
+            <div style="margin-top: 8px;">
+              <button type="button" class="btn btn-emerald btn-sm" onclick="setSeatsCheckedIn('${g.id}', 2)">
+                👥 Badili: Wameingia Wote 2 Sasa
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        subBanner = `
+          <div style="background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; text-align: left;">
+            <div style="font-weight: 700; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 6px;">
+              👥 Mwaliko wa Watu 2 (Double):
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <span style="background: #166534; color: #fff; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: 700;">
+                ✓ Wameingia Wote 2 Pamoja
+              </span>
+              <button type="button" class="btn btn-outline-gold btn-sm" style="font-size: 0.8rem; padding: 5px 12px;" onclick="setSeatsCheckedIn('${g.id}', 1)">
+                👤 Kaja 1 Tu (Mwenzake Anakuja Baadaye)
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
 
     container.innerHTML = `
       <div class="result-card result-valid">
-        <div class="result-status-icon">✅</div>
-        <div class="result-status-title">KADI HALALI • RUHUSU KUINGIA</div>
+        <div class="result-status-icon">${statusIcon}</div>
+        <div class="result-status-title">${statusTitle}</div>
         <div class="result-guest-name">${escapeHtml(g.name)}</div>
         <div style="font-size: 0.9rem; color: #a7f3d0; margin-bottom: 12px;">${escapeHtml(g.title || 'Mgeni Maalumu')}</div>
+
+        ${subBanner}
 
         <div class="result-meta-grid">
           <div class="result-meta-item">
@@ -200,7 +249,7 @@ function renderVerificationResult(data) {
           </div>
           <div class="result-meta-item">
             <div class="result-meta-label">Aina ya Mwaliko</div>
-            <div class="result-meta-val">${Number(g.seats) === 2 ? '👥 Double (Watu 2)' : (Number(g.seats) === 1 ? '👤 Single (Mtu 1)' : `👥 Watu ${g.seats}`)}</div>
+            <div class="result-meta-val">${totalSeats === 2 ? '👥 Double (Watu 2)' : (totalSeats === 1 ? '👤 Single (Mtu 1)' : `👥 Watu ${totalSeats}`)}</div>
           </div>
           <div class="result-meta-item">
             <div class="result-meta-label">Msimbo wa Kadi</div>
@@ -239,13 +288,14 @@ function renderVerificationResult(data) {
     playWarningSound();
     const g = data.guest || {};
     const originalTime = g.checkInTime ? new Date(g.checkInTime).toLocaleTimeString('sw-TZ') : 'Mapema';
+    const totalSeats = Number(g.seats) || 1;
 
     container.innerHTML = `
       <div class="result-card result-already-used">
         <div class="result-status-icon">🚨</div>
         <div class="result-status-title">TAHADHARI! KADI ILIKWISHATUMIKA!</div>
         <p style="color: #fca5a5; font-weight: 600; margin: 8px 0;">
-          Kadi hii tayari ilishakaguliwa saa <strong>${originalTime}</strong>! Inazuia kuingia mara mbili.
+          ${totalSeats > 1 ? `Kadi hii ya watu ${totalSeats} tayari ilishakaguliwa na wote wameshaingia ukumbini!` : `Kadi hii tayari ilishakaguliwa saa <strong>${originalTime}</strong>! Inazuia kuingia mara mbili.`}
         </p>
         <div class="result-guest-name" style="color: #ffffff;">${escapeHtml(g.name || data.code)}</div>
         
@@ -255,8 +305,16 @@ function renderVerificationResult(data) {
             <div class="result-meta-val">${escapeHtml(g.tableName || '-')}</div>
           </div>
           <div class="result-meta-item">
+            <div class="result-meta-label">Aina ya Kadi</div>
+            <div class="result-meta-val">${totalSeats === 2 ? '👥 Double (Watu 2)' : `Watu ${totalSeats}`}</div>
+          </div>
+          <div class="result-meta-item">
             <div class="result-meta-label">Kaguzi ya Awali</div>
             <div class="result-meta-val">⚠️ Saa ${originalTime}</div>
+          </div>
+          <div class="result-meta-item">
+            <div class="result-meta-label">Hali ya Kadi</div>
+            <div class="result-meta-val" style="color: #ef4444;">❌ Imefungwa</div>
           </div>
         </div>
 
@@ -344,6 +402,26 @@ function renderVerificationResult(data) {
   }
 }
 
+// Toggle seats checked in (Double card support: 1 or 2)
+async function setSeatsCheckedIn(guestId, count) {
+  try {
+    const res = await fetch('/api/verify/set-seats', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ guestId, seatsCheckedIn: count })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert(data.message);
+      // Re-verify to display updated state on screen
+      verifyCode(guestId);
+      loadGateStats();
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 // Reset Guest check-in status (Override)
 async function resetGuestCheckIn(guestId) {
   if (!confirm(`Unataka kurejesha kadi ya ${guestId} ili iweze kuscan-iwa tena?`)) return;
@@ -371,9 +449,13 @@ async function loadGateStats() {
     const res = await fetch('/api/stats');
     const s = await res.json();
     
-    document.getElementById('gate-scanned-count').textContent = s.checkedInCount;
-    document.getElementById('gate-confirmed-count').textContent = s.confirmedCount;
-    document.getElementById('gate-remaining-count').textContent = s.remainingToArrive;
+    const scannedEl = document.getElementById('gate-scanned-count');
+    const confirmedEl = document.getElementById('gate-confirmed-count');
+    const remainingEl = document.getElementById('gate-remaining-count');
+
+    if (scannedEl) scannedEl.textContent = s.checkedInCount !== undefined ? s.checkedInCount : 0;
+    if (confirmedEl) confirmedEl.textContent = s.confirmedCount !== undefined ? s.confirmedCount : (s.totalSeats || s.totalGuests || 0);
+    if (remainingEl) remainingEl.textContent = s.remainingToArrive !== undefined ? s.remainingToArrive : 0;
   } catch (err) {
     console.error('Error loading gate stats:', err);
   }

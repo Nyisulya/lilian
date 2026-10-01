@@ -109,12 +109,17 @@ app.put('/api/event', (req, res) => {
 });
 
 // 2. Stats for Kamati Dashboard
+// 2. Stats for Kamati Dashboard & Gate Security
 app.get('/api/stats', (req, res) => {
   const db = readDB();
   const guests = db.guests || [];
 
   const totalGuests = guests.length;
   let totalSeatsAllocated = 0;
+  let totalSeats = 0;
+  let checkedInSeats = 0;
+  let checkedInCards = 0;
+  let confirmedSeats = 0;
   let completedCount = 0;
   let debtorsCount = 0;
   let totalDebtorsBalance = 0;
@@ -137,8 +142,20 @@ app.get('/api/stats', (req, res) => {
     const balance = pledge - paid;
 
     totalSeatsAllocated += seats;
+    totalSeats += seats;
     totalPledges += pledge;
     totalPaid += paid;
+    confirmedSeats += seats;
+
+    // Calculate actual seats entered
+    const entered = (g.seatsCheckedIn !== undefined && g.seatsCheckedIn !== null)
+      ? Number(g.seatsCheckedIn)
+      : (g.checkedIn ? seats : 0);
+
+    checkedInSeats += entered;
+    if (entered > 0) {
+      checkedInCards++;
+    }
 
     if (pledge > 0 && balance <= 0) {
       completedCount++;
@@ -154,12 +171,20 @@ app.get('/api/stats', (req, res) => {
 
     if (g.tableId && tableOccupancy[g.tableId]) {
       tableOccupancy[g.tableId].assigned += seats;
+      tableOccupancy[g.tableId].checkedIn += entered;
     }
   });
 
+  const remainingToArrive = Math.max(0, totalSeats - checkedInSeats);
+
   res.json({
     totalGuests,
+    totalSeats,
     totalSeatsAllocated,
+    checkedInCount: checkedInSeats, // Total individual people inside
+    checkedInCards, // Total cards/families scanned
+    confirmedCount: confirmedSeats, // Total expected people
+    remainingToArrive, // People still to arrive
     completedCount,
     debtorsCount,
     totalDebtorsBalance,
@@ -756,9 +781,15 @@ app.post('/api/verify', (req, res) => {
   }
 
   const table = (db.tables || []).find(t => t.id === guest.tableId) || { name: 'Haijapangwa' };
+  const totalSeats = Number(guest.seats) || 1;
+  const alreadyEntered = (guest.seatsCheckedIn !== undefined && guest.seatsCheckedIn !== null)
+    ? Number(guest.seatsCheckedIn)
+    : (guest.checkedIn ? totalSeats : 0);
 
-  if (guest.checkedIn) {
-    // Already used! Prevent fraud / double entry
+  // 1. If all seats already entered -> Already Used
+  if (guest.checkedIn || alreadyEntered >= totalSeats) {
+    const originalTime = guest.checkInTime ? new Date(guest.checkInTime).toLocaleTimeString('sw-TZ') : 'Mapema';
+    const lastTime = guest.lastCheckInTime ? new Date(guest.lastCheckInTime).toLocaleTimeString('sw-TZ') : originalTime;
     return res.json({
       status: 'already_used',
       code: guest.id,
@@ -766,33 +797,126 @@ app.post('/api/verify', (req, res) => {
         id: guest.id,
         name: guest.name,
         title: guest.title,
-        seats: guest.seats,
+        seats: totalSeats,
+        seatsCheckedIn: alreadyEntered,
         tableName: table.name,
         code: guest.code,
-        checkInTime: guest.checkInTime
+        checkInTime: guest.checkInTime,
+        lastCheckInTime: guest.lastCheckInTime,
+        checkInLog: guest.checkInLog || []
       },
-      message: `TAHADHARI! Kadi hii ya ${guest.name} ILIKWISHATUMIKA saa ${new Date(guest.checkInTime).toLocaleTimeString('sw-TZ')}!`
+      message: totalSeats > 1
+        ? `TAHADHARI! Kadi hii ya ${guest.name} (${totalSeats === 2 ? 'Watu 2' : `Watu ${totalSeats}`}) ILIKWISHATUMIKA YOTE! Watu wote ${alreadyEntered} wameshaingia ukumbini.`
+        : `TAHADHARI! Kadi hii ya ${guest.name} ILIKWISHATUMIKA saa ${originalTime}!`
     });
   }
 
-  // Mark as checked in
+  // 2. If 1 person entered earlier and this is the companion (Companion arrival)
+  if (alreadyEntered > 0 && alreadyEntered < totalSeats) {
+    const newEntered = alreadyEntered + 1;
+    guest.seatsCheckedIn = newEntered;
+    guest.lastCheckInTime = new Date().toISOString();
+    guest.checkInLog = guest.checkInLog || [];
+    guest.checkInLog.push({ seatNumber: newEntered, time: guest.lastCheckInTime });
+    if (newEntered >= totalSeats) {
+      guest.checkedIn = true;
+    }
+    writeDB(db);
+
+    const firstTime = guest.checkInTime ? new Date(guest.checkInTime).toLocaleTimeString('sw-TZ') : 'mapema';
+
+    return res.json({
+      status: 'valid',
+      subStatus: 'companion_arrival',
+      code: guest.id,
+      guest: {
+        id: guest.id,
+        name: guest.name,
+        title: guest.title,
+        seats: totalSeats,
+        seatsCheckedIn: newEntered,
+        tableName: table.name,
+        code: guest.code,
+        checkInTime: guest.checkInTime,
+        lastCheckInTime: guest.lastCheckInTime,
+        checkInLog: guest.checkInLog
+      },
+      message: `KARIBU MWENZA! (Mtu wa ${newEntered} kati ya ${totalSeats}). Mwenzake (${guest.name}) aliingia saa ${firstTime}. Kadi sasa imekamilika!`
+    });
+  }
+
+  // 3. First time scanning this card (alreadyEntered === 0)
+  const admittedCount = totalSeats;
+  guest.seatsCheckedIn = admittedCount;
   guest.checkedIn = true;
   guest.checkInTime = new Date().toISOString();
+  guest.lastCheckInTime = guest.checkInTime;
+  guest.checkInLog = [
+    { seatNumber: 1, time: guest.checkInTime }
+  ];
+  if (admittedCount > 1) {
+    for (let s = 2; s <= admittedCount; s++) {
+      guest.checkInLog.push({ seatNumber: s, time: guest.checkInTime });
+    }
+  }
   writeDB(db);
 
   return res.json({
     status: 'valid',
+    subStatus: totalSeats > 1 ? 'double_entry' : 'single_entry',
     code: guest.id,
     guest: {
       id: guest.id,
       name: guest.name,
       title: guest.title,
-      seats: guest.seats,
+      seats: totalSeats,
+      seatsCheckedIn: admittedCount,
       tableName: table.name,
       code: guest.code,
-      checkInTime: guest.checkInTime
+      checkInTime: guest.checkInTime,
+      lastCheckInTime: guest.lastCheckInTime,
+      checkInLog: guest.checkInLog
     },
-    message: `KADI HALALI! Karibu sana ${guest.name} (${table.name}).`
+    message: totalSeats > 1
+      ? `KADI YA DOUBLE HALALI! Watu wote 2 wameingia (${table.name}).`
+      : `KADI HALALI! Karibu sana ${guest.name} (${table.name}).`
+  });
+});
+
+// Update seats checked in (Toggle: "Kaja 1 Tu (mwenzake atakuja baadaye)" au "Wote 2 wapo")
+app.post('/api/verify/set-seats', (req, res) => {
+  const { guestId, seatsCheckedIn } = req.body;
+  const db = readDB();
+  const guest = (db.guests || []).find(g => String(g.id).toLowerCase() === String(guestId || '').toLowerCase() || String(g.code) === String(guestId));
+  if (!guest) {
+    return res.status(404).json({ error: 'Mgeni hakupatikana' });
+  }
+
+  const totalSeats = Number(guest.seats) || 1;
+  const count = Math.min(totalSeats, Math.max(1, Number(seatsCheckedIn) || 1));
+  guest.seatsCheckedIn = count;
+  guest.checkedIn = count >= totalSeats;
+  if (!guest.checkInTime) {
+    guest.checkInTime = new Date().toISOString();
+  }
+  guest.lastCheckInTime = new Date().toISOString();
+  writeDB(db);
+
+  const table = (db.tables || []).find(t => t.id === guest.tableId) || { name: 'Haijapangwa' };
+
+  res.json({
+    success: true,
+    guest: {
+      id: guest.id,
+      name: guest.name,
+      seats: totalSeats,
+      seatsCheckedIn: guest.seatsCheckedIn,
+      checkedIn: guest.checkedIn,
+      tableName: table.name
+    },
+    message: count < totalSeats
+      ? `Imerekodiwa: Mgeni 1 ameingia. Nafasi 1 imebaki kwa ajili ya mwenzake atakapofika!`
+      : `Imerekodiwa: Watu wote ${count} wameshaingia ndani!`
   });
 });
 
@@ -800,10 +924,13 @@ app.post('/api/verify', (req, res) => {
 app.post('/api/verify/reset', (req, res) => {
   const { guestId } = req.body;
   const db = readDB();
-  const guest = (db.guests || []).find(g => g.id.toUpperCase() === (guestId || '').toUpperCase());
+  const guest = (db.guests || []).find(g => String(g.id).toLowerCase() === String(guestId || '').toLowerCase() || String(g.code) === String(guestId));
   if (guest) {
     guest.checkedIn = false;
+    guest.seatsCheckedIn = 0;
     guest.checkInTime = null;
+    guest.lastCheckInTime = null;
+    guest.checkInLog = [];
     writeDB(db);
     return res.json({ success: true, message: `Hali ya kadi ya ${guest.name} imerejeshwa (bado hajaingia).` });
   }
