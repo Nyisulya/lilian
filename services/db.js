@@ -54,6 +54,24 @@ if (!fs.existsSync(LIVE_DB_FILE)) {
   }
 }
 
+// 2.1 Auto-sync if db.json has a newer dataVersion than live_db.json (e.g. after git pull on VPS)
+if (fs.existsSync(LEGACY_DB_FILE) && fs.existsSync(LIVE_DB_FILE)) {
+  try {
+    const legacyRaw = JSON.parse(fs.readFileSync(LEGACY_DB_FILE, 'utf8'));
+    const liveRaw = JSON.parse(fs.readFileSync(LIVE_DB_FILE, 'utf8'));
+    if (legacyRaw.dataVersion && legacyRaw.dataVersion !== liveRaw.dataVersion) {
+      console.log(`🔄 Upgrading live_db.json dataVersion: ${liveRaw.dataVersion || 'none'} -> ${legacyRaw.dataVersion}`);
+      liveRaw.guests = legacyRaw.guests;
+      liveRaw.dataVersion = legacyRaw.dataVersion;
+      liveRaw.lastUpdated = legacyRaw.lastUpdated;
+      fs.writeFileSync(LIVE_DB_FILE, JSON.stringify(liveRaw, null, 2), 'utf8');
+      console.log('✅ live_db.json guests updated to new version from Git');
+    }
+  } catch (err) {
+    console.error('Error auto-syncing dataVersion:', err);
+  }
+}
+
 function getDBFilePath() {
   return fs.existsSync(LIVE_DB_FILE) ? LIVE_DB_FILE : LEGACY_DB_FILE;
 }
