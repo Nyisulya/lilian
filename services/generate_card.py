@@ -13,7 +13,6 @@ os.makedirs(CARDS_DIR, exist_ok=True)
 os.makedirs(FONTS_DIR, exist_ok=True)
 
 def get_font(font_filename, size):
-    # 1. Try bundled fonts directory in project
     local_path = os.path.join(FONTS_DIR, font_filename)
     if os.path.exists(local_path):
         try:
@@ -21,7 +20,6 @@ def get_font(font_filename, size):
         except Exception:
             pass
 
-    # 2. Try Windows system fonts
     win_path = os.path.join(r'C:\Windows\Fonts', font_filename)
     if os.path.exists(win_path):
         try:
@@ -29,7 +27,6 @@ def get_font(font_filename, size):
         except Exception:
             pass
 
-    # 3. Try Linux standard font paths
     for lp in [
         '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
         '/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf',
@@ -41,7 +38,6 @@ def get_font(font_filename, size):
             except Exception:
                 pass
 
-    # 4. Fallback to default font
     try:
         return ImageFont.load_default(size=int(size))
     except TypeError:
@@ -83,6 +79,7 @@ def render_guest_card(guest_id_or_code, output_path=None):
     name = guest.get('name', 'Mualikwa Maalumu').strip()
     seats = int(guest.get('seats', 1) or 1)
     code = str(guest.get('code') or guest.get('id') or '3001')
+    gid = str(guest.get('id') or '1')
 
     if not os.path.exists(TEMPLATE_PATH):
         raise FileNotFoundError(f"Template not found at {TEMPLATE_PATH}")
@@ -130,21 +127,26 @@ def render_guest_card(guest_id_or_code, output_path=None):
     bb_cn = d.textbbox((0, 0), num_contact, font=font_contact_num)
     d.text((cx_left - (bb_cn[2]-bb_cn[0]) // 2, 919), num_contact, font=font_contact_num, fill=(255, 255, 255, 255))
 
-    # 4. Right Box: High-Contrast Crisp QR Code
+    # 4. Right Box: High-Resolution, Instant-Scan QR Code
+    # Standard URL payload that opens link on phones & verifies on security scanner
+    qr_payload = f"https://lilian.nyisu.com/invite/{gid}?code={code}"
+
     qr = qrcode.QRCode(
-        version=1,
+        version=None,
         error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=8,
-        border=0,
+        box_size=4,
+        border=2, # Essential Quiet Zone for optical scanner detection
     )
-    qr.add_data(code)
+    qr.add_data(qr_payload)
     qr.make(fit=True)
-    qr_img = qr.make_image(fill_color='#021910', back_color='white').convert('RGBA')
-    qr_resized = qr_img.resize((56, 56), Image.Resampling.NEAREST)
+    qr_img = qr.make_image(fill_color='black', back_color='white').convert('RGBA')
+
+    # Resize cleanly to 60x60
+    qr_resized = qr_img.resize((60, 60), Image.Resampling.BOX)
 
     cx_right = (380 + 526) // 2
     cy_right = (888 + 952) // 2
-    card.paste(qr_resized, (cx_right - 28, cy_right - 28))
+    card.paste(qr_resized, (cx_right - 30, cy_right - 30))
 
     # 5. Bottom PASS Pill: ── PASS : {code} ──
     pass_txt = f'──  PASS : {code}  ──'
@@ -159,7 +161,7 @@ def render_guest_card(guest_id_or_code, output_path=None):
         output_path = os.path.join(CARDS_DIR, f'card_{guest.get("id")}.jpg')
 
     card.convert('RGB').save(output_path, quality=98)
-    print(f"Generated card at {output_path}")
+    print(f"Generated scannable card at {output_path}")
     return output_path
 
 if __name__ == '__main__':
