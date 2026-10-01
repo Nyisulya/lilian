@@ -21,7 +21,6 @@ def get_guest_data(guest_id_or_code):
     guests = data.get('guests', [])
     search_term = str(guest_id_or_code).strip().lower()
 
-    # Match by ID, Code, or Name
     guest = None
     for g in guests:
         gid = str(g.get('id', '')).lower()
@@ -55,10 +54,10 @@ def render_guest_card(guest_id_or_code, output_path=None):
     cx = 341
     d = ImageDraw.Draw(card)
 
-    # 1. Guest Name (Clean, perfectly centered in emerald ribbon)
+    # 1. Guest Name (Centered in emerald ribbon)
     name_clean = name.upper()
-    if len(name_clean) <= 15:
-        fs = 23
+    if len(name_clean) <= 16:
+        fs = 22
     elif len(name_clean) <= 22:
         fs = 19
     elif len(name_clean) <= 28:
@@ -70,7 +69,7 @@ def render_guest_card(guest_id_or_code, output_path=None):
     bb_n = d.textbbox((0, 0), name_clean, font=font_name)
     nw = bb_n[2] - bb_n[0]
     nh = bb_n[3] - bb_n[1]
-    d.text((cx - nw // 2, 636 - nh // 2), name_clean, font=font_name, fill=(255, 255, 255, 255))
+    d.text((cx - nw // 2, 635 - nh // 2), name_clean, font=font_name, fill=(255, 255, 255, 255))
 
     # 2. Seat Badge: SINGLE / DOUBLE
     seat_txt = 'DOUBLE' if seats >= 2 else 'SINGLE'
@@ -78,34 +77,37 @@ def render_guest_card(guest_id_or_code, output_path=None):
     bb_s = d.textbbox((0, 0), seat_txt, font=font_seat)
     sw = bb_s[2] - bb_s[0]
     sh = bb_s[3] - bb_s[1]
-    d.text((295 - sw // 2, 696 - sh // 2), seat_txt, font=font_seat, fill=(5, 55, 35, 255))
+    d.text((295 - sw // 2, 695 - sh // 2), seat_txt, font=font_seat, fill=(5, 55, 35, 255))
 
-    # 3. Left Contact Box (MAWASILIANO / 0713 980 004)
-    font_lbl = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', 11)
-    font_phone = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', 16)
-    cx_box = (178 + 338) // 2
+    # 3. Left Box: MAWASILIANO & 0713 980 004
+    cx_left = (195 + 348) // 2
+    font_contact_lbl = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', 12)
+    font_contact_num = ImageFont.truetype(r'C:\Windows\Fonts\georgiab.ttf', 16)
 
-    lbl = "MAWASILIANO"
-    num = "0713 980 004"
-    bbl = d.textbbox((0, 0), lbl, font=font_lbl)
-    bbn = d.textbbox((0, 0), num, font=font_phone)
-    d.text((cx_box - (bbl[2]-bbl[0])//2, 887), lbl, font=font_lbl, fill=(245, 218, 145, 255))
-    d.text((cx_box - (bbn[2]-bbn[0])//2, 911), num, font=font_phone, fill=(255, 255, 255, 255))
+    lbl_contact = "MAWASILIANO"
+    num_contact = "0713 980 004"
 
-    # 4. Right QR Code (High-Contrast, Crisp for Gate Scanner)
+    bb_cl = d.textbbox((0, 0), lbl_contact, font=font_contact_lbl)
+    d.text((cx_left - (bb_cl[2]-bb_cl[0]) // 2, 896), lbl_contact, font=font_contact_lbl, fill=(245, 218, 145, 255))
+
+    bb_cn = d.textbbox((0, 0), num_contact, font=font_contact_num)
+    d.text((cx_left - (bb_cn[2]-bb_cn[0]) // 2, 919), num_contact, font=font_contact_num, fill=(255, 255, 255, 255))
+
+    # 4. Right Box: High-Contrast Crisp QR Code
     qr = qrcode.QRCode(
         version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
         box_size=8,
-        border=1,
+        border=0,
     )
     qr.add_data(code)
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color='#021910', back_color='white').convert('RGBA')
-    qr_resized = qr_img.resize((70, 70), Image.Resampling.NEAREST)
+    qr_resized = qr_img.resize((56, 56), Image.Resampling.NEAREST)
 
-    # Paste in right box (center = 451, 910)
-    card.paste(qr_resized, (451 - 35, 910 - 35), qr_resized)
+    cx_right = (380 + 526) // 2
+    cy_right = (888 + 952) // 2
+    card.paste(qr_resized, (cx_right - 28, cy_right - 28))
 
     # 5. Bottom PASS Pill: ── PASS : {code} ──
     pass_txt = f'──  PASS : {code}  ──'
@@ -113,13 +115,14 @@ def render_guest_card(guest_id_or_code, output_path=None):
     bb_p = d.textbbox((0, 0), pass_txt, font=font_pass)
     pw = bb_p[2] - bb_p[0]
     ph = bb_p[3] - bb_p[1]
-    d.text((cx - pw // 2, 974 - ph // 2), pass_txt, font=font_pass, fill=(250, 225, 156, 255))
+    d.text((cx - pw // 2, 979 - ph // 2), pass_txt, font=font_pass, fill=(250, 225, 156, 255))
 
     # Save output
     if not output_path:
         output_path = os.path.join(CARDS_DIR, f'card_{guest.get("id")}.jpg')
 
     card.convert('RGB').save(output_path, quality=98)
+    print(f"Generated card at {output_path}")
     return output_path
 
 if __name__ == '__main__':

@@ -137,6 +137,11 @@ function renderRoyalCard(data) {
     contactEl.textContent = `Mawasiliano: ${contact}`;
   }
 
+  const bottomContactEl = document.getElementById('card-bottom-contact');
+  if (bottomContactEl) {
+    bottomContactEl.textContent = event.contactPhone || '0713 980 004';
+  }
+
   // 8. Dress Code
   const dressCodeEl = document.getElementById('card-dress-code');
   if (dressCodeEl) {

@@ -660,6 +660,38 @@ body.royal-invite-body {
   margin-top: 3px;
 }
 
+.pass-contact-footer {
+  margin-top: 5px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(212, 175, 55, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  color: var(--royal-gold-bright);
+}
+
+.pass-contact-footer .contact-icon {
+  font-size: 0.8rem;
+}
+
+.pass-contact-footer .contact-lbl {
+  font-family: 'Montserrat', var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #a7f3d0;
+  letter-spacing: 0.4px;
+}
+
+.pass-contact-footer .contact-val {
+  font-family: 'Montserrat', var(--font-sans);
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
 /* Right: Gold-Framed QR Pass Card */
 .royal-qr-card {
   background: #ffffff;
