@@ -20,6 +20,13 @@ function getGuestIdFromUrl() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (window.__INITIAL_GUEST__) {
+    currentGuest = window.__INITIAL_GUEST__;
+    currentEvent = window.__INITIAL_EVENT__;
+    renderRoyalCard({ guest: currentGuest, event: currentEvent });
+    setupMusicPlayer();
+    return;
+  }
   const guestId = getGuestIdFromUrl();
   await loadGuestCard(guestId);
   setupMusicPlayer();
@@ -53,7 +60,8 @@ async function loadGuestCard(guestId) {
 // Render Royal Card (Official Dynamic Master Image)
 function renderRoyalCard(data) {
   const { event, guest } = data;
-  const brideName = event.brideName || 'Lilian';
+  if (!guest) return;
+  const brideName = event?.brideName || 'Lilian';
 
   // 1. Page Title & Envelope Info
   document.title = `👑 Kadi Rasmi ya Mwaliko: Send-off ya ${brideName} - ${guest.name}`;
@@ -64,11 +72,15 @@ function renderRoyalCard(data) {
   const envGuest = document.getElementById('envelope-guest-name');
   if (envGuest) envGuest.textContent = guest.name;
 
-  // 2. Bind Official Dynamic Real Card Image
+  // 2. Bind Official Dynamic Real Card Image with robust caching
   const cardImg = document.getElementById('official-dynamic-card-img');
-  const cardImageUrl = `/api/card/image/${encodeURIComponent(guest.id)}?v=${Date.now()}`;
+  const cardImageUrl = `/api/card/image/${encodeURIComponent(guest.id)}`;
   if (cardImg) {
-    cardImg.src = cardImageUrl;
+    // Only set src if not already loaded to avoid image re-fetching
+    const currentSrc = cardImg.getAttribute('src');
+    if (!currentSrc || !currentSrc.includes(`/api/card/image/${encodeURIComponent(guest.id)}`)) {
+      cardImg.src = cardImageUrl;
+    }
     cardImg.alt = `Kadi Rasmi ya Mwaliko wa Send-off: ${guest.name}`;
   }
 

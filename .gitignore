@@ -9,3 +9,5 @@ scratch/
 data/live_db.json
 data/backups/
 data/db.vps.backup.json
+.env
+.env.*

@@ -3,6 +3,8 @@
  * Supports: UltraMsg, Wasender, Meta Cloud API, Green-API, and Simulation Mode
  */
 
+const fs = require('fs');
+const path = require('path');
 const { readDB, writeDB } = require('./db');
 
 function formatPhone(phone) {
@@ -39,8 +41,12 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
     responseMessage: ''
   };
 
+  const waApiKey = process.env.WHATSAPP_API_KEY || config.apiKey;
+  const waInstanceId = process.env.WHATSAPP_INSTANCE_ID || config.instanceId;
+  const waProvider = config.provider || 'UltraMsg';
+
   // 1. Simulation Mode or Missing Credentials
-  if (config.simulationMode !== false || !config.apiKey) {
+  if (config.simulationMode !== false || !waApiKey) {
     logEntry.status = 'delivered';
     logEntry.responseMessage = config.simulationMode !== false 
       ? 'Imetumwa WhatsApp kwa mafanikio (Simulation Mode)' 
@@ -55,27 +61,29 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
   }
 
   // 2. UltraMsg Gateway (Easiest & Most Popular in Tanzania for Auto WhatsApp)
-  if (config.provider === 'UltraMsg' && config.instanceId && config.apiKey) {
+  if (waProvider === 'UltraMsg' && waInstanceId && waApiKey) {
     try {
+      const rawInst = String(waInstanceId).trim();
+      const instId = rawInst.startsWith('instance') ? rawInst : `instance${rawInst}`;
       const endpoint = imageUrl 
-        ? `https://api.ultramsg.com/${config.instanceId}/messages/image`
-        : `https://api.ultramsg.com/${config.instanceId}/messages/chat`;
+        ? `https://api.ultramsg.com/${instId}/messages/image`
+        : `https://api.ultramsg.com/${instId}/messages/chat`;
 
       const payload = imageUrl ? {
-        token: config.apiKey,
+        token: waApiKey,
         to: formattedPhone,
         image: imageUrl,
         caption: messageText
       } : {
-        token: config.apiKey,
+        token: waApiKey,
         to: formattedPhone,
         body: messageText
       };
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(payload).toString()
       });
 
       const resData = await response.json().catch(() => ({}));
@@ -180,7 +188,12 @@ async function sendFullWhatsAppInvitation(guest) {
   const timeStr = 'Kuanzia Saa 12:30 Jioni';
   const venue = event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
   const mapsUrl = event.googleMapsUrl || 'https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam';
-  const cardImageUrl = `${systemUrl}${event.bridePhoto || '/images/lilian_sendoff.jpg'}`;
+  
+  // Attach personalized high-resolution invitation card with guest's name, seats & QR
+  const cardLocalPath = path.join(__dirname, '..', 'public', 'images', 'cards', `card_${guest.id}.jpg`);
+  const cardImageUrl = fs.existsSync(cardLocalPath)
+    ? `${systemUrl}/images/cards/card_${guest.id}.jpg`
+    : `${systemUrl}${event.bridePhoto || '/images/lilian_sendoff.jpg'}`;
   const interactiveCardUrl = `${systemUrl}/invite/${guest.id}`;
 
   // Message 1: Official Invitation + Photo Card + 4-Digit Pass Code
@@ -208,6 +221,42 @@ async function sendFullWhatsAppInvitation(guest) {
   results.push(r3);
 
   return { success: true, results };
+}
+
+/**
+ * Send WhatsApp Card Invitation Sequence to all guests who have completed payment
+ */
+async function sendAllCompletedWhatsAppInvitations() {
+  const db = readDB();
+  const guests = db.guests || [];
+  
+  // Find guests with completed payments and a valid phone number
+  const completedGuests = guests.filter(g => {
+    const pledge = Number(g.pledgeAmount) || 0;
+    const paid = Number(g.paidAmount) || 0;
+    const isPaid = (pledge > 0 && paid >= pledge) || g.isCompleted === true;
+    const hasPhone = g.phone && g.phone.replace(/[^0-9]/g, '').length >= 9;
+    return isPaid && hasPhone;
+  });
+
+  const results = [];
+  for (const guest of completedGuests) {
+    try {
+      const res = await sendFullWhatsAppInvitation(guest);
+      results.push({ guestId: guest.id, name: guest.name, phone: guest.phone, success: res.success });
+      // 1.5s delay to be safe and avoid rate limiting
+      await new Promise(r => setTimeout(r, 1500));
+    } catch (err) {
+      results.push({ guestId: guest.id, name: guest.name, phone: guest.phone, success: false, error: err.message });
+    }
+  }
+
+  return {
+    total: completedGuests.length,
+    sent: results.filter(r => r.success).length,
+    failed: results.filter(r => !r.success).length,
+    details: results
+  };
 }
 
 /**
@@ -241,6 +290,7 @@ _Mhudumu wetu atafikisha vinywaji hivi moja kwa moja kwenye meza husika mara moj
 module.exports = {
   sendRawWhatsApp,
   sendFullWhatsAppInvitation,
+  sendAllCompletedWhatsAppInvitations,
   sendTableDrinkOrderWhatsApp,
   formatPhone
 };

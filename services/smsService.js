@@ -42,8 +42,12 @@ async function sendRawSMS(toPhone, messageText, messageType, guestName = '') {
     responseMessage: ''
   };
 
+  const smsUser = process.env.NEXTSMS_USERNAME || config.username;
+  const smsPass = process.env.NEXTSMS_PASSWORD || config.password;
+  const smsSenderId = process.env.NEXTSMS_SENDER_ID || config.senderId || 'NEXTSMS';
+
   // Check if simulation mode is active or credentials not yet provided
-  if (config.simulationMode || !config.username || !config.password) {
+  if (config.simulationMode || !smsUser || !smsPass) {
     logEntry.status = 'delivered';
     logEntry.responseMessage = config.simulationMode 
       ? 'Imetumwa kwa mafanikio (Simulation Mode)' 
@@ -60,10 +64,10 @@ async function sendRawSMS(toPhone, messageText, messageType, guestName = '') {
 
   // Real NextSMS API Call
   try {
-    const authHeader = 'Basic ' + Buffer.from(`${config.username}:${config.password}`).toString('base64');
+    const authHeader = 'Basic ' + Buffer.from(`${smsUser}:${smsPass}`).toString('base64');
     
     const payload = {
-      from: config.senderId || 'NEXTSMS',
+      from: smsSenderId,
       to: formattedPhone,
       text: cleanMessageText
     };

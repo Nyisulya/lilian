@@ -2,6 +2,28 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+
+// Auto-load .env file if present (kept locally and in .gitignore, never pushed to Git)
+const envFilePath = path.join(__dirname, '.env');
+if (fs.existsSync(envFilePath)) {
+  try {
+    const envLines = fs.readFileSync(envFilePath, 'utf8').split(/\r?\n/);
+    for (const rawLine of envLines) {
+      const line = rawLine.trim();
+      if (line && !line.startsWith('#') && line.includes('=')) {
+        const splitIdx = line.indexOf('=');
+        const k = line.substring(0, splitIdx).trim();
+        const v = line.substring(splitIdx + 1).trim();
+        if (k && !process.env[k]) {
+          process.env[k] = v;
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error loading .env file:', e);
+  }
+}
+
 const QRCode = require('qrcode');
 const multer = require('multer');
 const compression = require('compression');
@@ -207,7 +229,11 @@ app.get('/api/guests', (req, res) => {
 
 app.get('/api/guests/:id', (req, res) => {
   const db = readDB();
-  const guest = (db.guests || []).find(g => g.id.toLowerCase() === req.params.id.toLowerCase());
+  const search = String(req.params.id).trim().toLowerCase();
+  const guest = (db.guests || []).find(g => 
+    String(g.id).toLowerCase() === search || 
+    String(g.code || '').toLowerCase() === search
+  );
   if (!guest) {
     return res.status(404).json({ error: 'Mualikwa hakupatikana' });
   }
@@ -606,6 +632,20 @@ app.post('/api/whatsapp/send-invitation/:id', async (req, res) => {
   });
 });
 
+app.post('/api/whatsapp/send-all-completed', async (req, res) => {
+  try {
+    const result = await whatsappService.sendAllCompletedWhatsAppInvitations();
+    res.json({
+      success: true,
+      message: `Mchakato umekamilika! Kadi zimetumwa kwa wageni ${result.sent} kati ya ${result.total}.`,
+      result
+    });
+  } catch (err) {
+    console.error('Error in bulk WhatsApp send:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.get('/api/whatsapp/config', (req, res) => {
   const db = readDB();
   res.json(db.whatsappConfig || {});
@@ -621,6 +661,30 @@ app.put('/api/whatsapp/config', (req, res) => {
 app.get('/api/whatsapp/logs', (req, res) => {
   const db = readDB();
   res.json(db.whatsappLogs || []);
+});
+
+app.post('/api/whatsapp/test', async (req, res) => {
+  const { phone } = req.body || {};
+  if (!phone) {
+    return res.status(400).json({ error: 'Tafadhali ingiza namba ya simu.' });
+  }
+  const testMsg = `✨ *JARIBIO LA MFUMO WA WHATSAPP (SEND-OFF YA LILIAN)* ✨\n\nHabari! Huu ni ujumbe wa majaribio kutoka mfumo wa kiotomatiki wa Harusi (UltraMsg Gateway).\n\nNamba yako ya WhatsApp imeunganishwa kikamilifu na mfumo uko tayari kutuma kadi na mialiko kwa wageni wote! 🥂🎉`;
+  
+  const db = readDB();
+  const config = db.whatsappConfig || {};
+  const systemUrl = config.systemUrl || 'https://lilian.nyisu.com';
+  const testImg = `${systemUrl}/images/cards/card_1.jpg`;
+
+  try {
+    const result = await whatsappService.sendRawWhatsApp(phone, testMsg, testImg, 'Jaribio la WhatsApp', 'Majaribio');
+    res.json({
+      success: result.success,
+      message: result.success ? 'Ujumbe wa majaribio na picha ya kadi zimetumwa WhatsApp kwa mafanikio!' : (result.log?.responseMessage || 'Hitilafu ya utumaji'),
+      result
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // 4. RSVP & Drink Preference Submission (From Guest E-Card)
@@ -1608,24 +1672,43 @@ app.get('/og-image.jpg', (req, res) => {
 
 // Dynamic Card Image Endpoint (Cross-Platform for VPS Linux & Windows)
 app.get('/api/card/image/:id', (req, res) => {
-  const guestId = req.params.id;
+  const db = readDB();
+  const search = String(req.params.id).trim().toLowerCase();
+  const guest = (db.guests || []).find(g => 
+    String(g.id).toLowerCase() === search || 
+    String(g.code || '').toLowerCase() === search
+  );
+  const targetId = guest ? guest.id : req.params.id;
   const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
   if (!fs.existsSync(cardsDir)) {
     fs.mkdirSync(cardsDir, { recursive: true });
   }
-  const cardFile = path.join(cardsDir, `card_${guestId}.jpg`);
 
-  // If card already exists and no forced regeneration is requested, serve it instantly!
+  // 1. Direct check for primary card by ID
+  const cardFile = path.join(cardsDir, `card_${targetId}.jpg`);
   if (fs.existsSync(cardFile) && !req.query.regenerate) {
     res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
     return res.sendFile(cardFile);
   }
 
+  // 2. Secondary check if card exists by code (e.g., card_3008.jpg)
+  if (guest && guest.code) {
+    const codeFile = path.join(cardsDir, `card_${guest.code}.jpg`);
+    if (fs.existsSync(codeFile) && !req.query.regenerate) {
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+      return res.sendFile(codeFile);
+    }
+  }
+
+  // 3. Fallback on-the-fly generation if file missing
   const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
   const { execFile } = require('child_process');
 
-  const pyCandidates = process.platform === 'win32' ? ['python', 'python3'] : ['python3', 'python'];
+  const pyCandidates = process.platform === 'win32'
+    ? ['python', 'python3']
+    : ['python3', 'python', '/usr/bin/python3', '/usr/local/bin/python3', path.join(__dirname, 'venv', 'bin', 'python3')];
 
   const tryExec = (idx) => {
     if (idx >= pyCandidates.length) {
@@ -1633,23 +1716,16 @@ app.get('/api/card/image/:id', (req, res) => {
         res.setHeader('Content-Type', 'image/jpeg');
         return res.sendFile(cardFile);
       }
-      const fallbackTemplate = path.join(__dirname, 'public', 'images', 'card_template_dynamic.png');
-      if (fs.existsSync(fallbackTemplate)) {
-        res.setHeader('Content-Type', 'image/png');
-        return res.sendFile(fallbackTemplate);
-      }
-      return res.status(500).json({ error: 'Kadi ya picha haikupatikana.' });
+      return res.status(404).json({ error: 'Kadi ya picha haikupatikana.' });
     }
 
     const cmd = pyCandidates[idx];
-    execFile(cmd, [scriptPath, guestId, cardFile], (err) => {
+    execFile(cmd, [scriptPath, targetId, cardFile], (err) => {
       if (err) {
         return tryExec(idx + 1);
       }
       res.setHeader('Content-Type', 'image/jpeg');
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
+      res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
       res.sendFile(cardFile);
     });
   };
@@ -1659,23 +1735,30 @@ app.get('/api/card/image/:id', (req, res) => {
 
 app.get('/invite/:id', (req, res) => {
   const db = readDB();
-  const guestId = req.params.id;
-  const guest = (db.guests || []).find(g => g.id.toLowerCase() === guestId.toLowerCase());
+  const search = String(req.params.id).trim().toLowerCase();
+  const guest = (db.guests || []).find(g => 
+    String(g.id).toLowerCase() === search || 
+    String(g.code || '').toLowerCase() === search
+  );
   const event = db.event || {};
+  const guestId = guest ? guest.id : req.params.id;
   const guestName = guest ? guest.name : 'Mualikwa Maalumu';
   const tableName = (db.tables || []).find(t => t.id === (guest ? guest.tableId : null))?.name || 'Meza Maalumu';
 
   const host = req.get('host') || 'lilian.nyisu.com';
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const baseUrl = `${protocol}://${host}`;
-  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg?v=20261013c`;
+  const ogImage = `${baseUrl}/images/lilian_sendoff.jpg?v=20261018`;
 
   const filePath = path.join(__dirname, 'public', 'invite.html');
   fs.readFile(filePath, 'utf8', (err, html) => {
     if (err) return res.sendFile(filePath);
 
+    const safeGuestName = String(guestName).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+    const cleanGuestName = String(guestName).replace(/[^a-zA-Z0-9_-]/g, '_');
+
     const ogTags = `
-  <title>👑 Kadi ya Mwaliko: Send-off ya Lilian - ${guestName}</title>
+  <title>👑 Kadi ya Mwaliko: Send-off ya Lilian - ${safeGuestName}</title>
   <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261013e">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261013e">
   <link rel="shortcut icon" href="/favicon.ico?v=20261013e">
@@ -1685,8 +1768,8 @@ app.get('/invite/:id', (req, res) => {
   <!-- Open Graph / WhatsApp / SMS Rich Previews -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Send-off ya Lilian Marcus Nyahende">
-  <meta property="og:title" content="👑 Kadi Rasmi ya Mwaliko: Send-off ya Lilian - ${guestName}">
-  <meta property="og:description" content="Mwaliko Maalumu kwa ${guestName} (${tableName}). Tarehe 13/10/2026 Bragging Social Hall, Goba, Dar es Salaam. Bofya kufungua Kadi ya VIP na Kodi ya Kuingilia.">
+  <meta property="og:title" content="👑 Kadi Rasmi ya Mwaliko: Send-off ya Lilian - ${safeGuestName}">
+  <meta property="og:description" content="Mwaliko Maalumu kwa ${safeGuestName} (${tableName}). Tarehe 18/10/2026 Bragging Social Hall, Goba, Dar es Salaam. Bofya kufungua Kadi ya VIP na Kodi ya Kuingilia.">
   <meta property="og:url" content="${baseUrl}/invite/${guestId}">
   <meta property="og:image" content="${ogImage}">
   <meta property="og:image:secure_url" content="${ogImage}">
@@ -1697,12 +1780,33 @@ app.get('/invite/:id', (req, res) => {
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="👑 Kadi Rasmi ya Mwaliko: Send-off ya Lilian - ${guestName}">
-  <meta name="twitter:description" content="Mwaliko Maalumu kwa ${guestName}. Bofya kufungua kadi yako.">
+  <meta name="twitter:title" content="👑 Kadi Rasmi ya Mwaliko: Send-off ya Lilian - ${safeGuestName}">
+  <meta name="twitter:description" content="Mwaliko Maalumu kwa ${safeGuestName}. Bofya kufungua kadi yako.">
   <meta name="twitter:image" content="${ogImage}">
     `;
 
-    const modified = html.replace(/<title>.*?<\/title>/i, ogTags);
+    let modified = html.replace(/<title>.*?<\/title>/i, ogTags);
+
+    // SSR PRE-RENDER: Stream the EXACT card image and guest name directly in the initial HTML!
+    // 1. Direct card image src - browser starts loading immediately on first byte of HTML!
+    modified = modified.replace(
+      /src="\/api\/card\/image\/1"/g,
+      `src="/api/card/image/${encodeURIComponent(guestId)}"`
+    );
+    // 2. Direct download button href & filename
+    modified = modified.replace(
+      /href="\/api\/card\/image\/1"/g,
+      `href="/api/card/image/${encodeURIComponent(guestId)}" download="Kadi_Sendoff_Lilian_${cleanGuestName}.jpg"`
+    );
+    // 3. Envelope guest name pre-filled
+    modified = modified.replace(
+      /<div class="envelope-guest-title-val" id="envelope-guest-name">Mheshimiwa Mualikwa<\/div>/,
+      `<div class="envelope-guest-title-val" id="envelope-guest-name">${safeGuestName}</div>`
+    );
+    // 4. Inject preloaded JSON payload so client JS does not need any network roundtrip!
+    const ssrScript = `<script>window.__INITIAL_GUEST__ = ${JSON.stringify(guest || null)}; window.__INITIAL_EVENT__ = ${JSON.stringify(event || null)};</script>\n</head>`;
+    modified = modified.replace('</head>', ssrScript);
+
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
@@ -1767,4 +1871,23 @@ app.listen(PORT, () => {
 
   // Start background Telegram poller for subscriber discovery
   telegramService.startPolling(30000);
+
+  // Pre-warm and verify guest cards for instant 0ms responses on VPS
+  try {
+    const db = readDB();
+    const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
+    if (!fs.existsSync(cardsDir)) fs.mkdirSync(cardsDir, { recursive: true });
+    const missing = (db.guests || []).filter(g => !fs.existsSync(path.join(cardsDir, `card_${g.id}.jpg`)));
+    if (missing.length > 0) {
+      console.log(`⚡ Pre-generating ${missing.length} missing guest cards for instant delivery...`);
+      const { execFile } = require('child_process');
+      const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
+      const pyCmd = process.platform === 'win32' ? 'python' : 'python3';
+      execFile(pyCmd, [scriptPath, 'all'], (err) => {
+        if (!err) console.log(`✅ All guest cards pre-generated and verified!`);
+      });
+    } else {
+      console.log(`✅ All ${db.guests ? db.guests.length : 0} guest cards are pre-generated and cached for 0ms response!`);
+    }
+  } catch (e) {}
 });

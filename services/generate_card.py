@@ -117,7 +117,7 @@ def render_guest_card(guest_id_or_code, output_path=None):
 
     qr = qrcode.QRCode(
         version=1,  # Force smallest version for maximum module size
-        error_correction=qrcode.constants.ERROR_CORRECT_H,  # Highest error correction (30%)
+        error_correction=qrcode.constants.ERROR_CORRECT_M,  # Optimal balance for high-contrast instant decode
         box_size=20,  # Very large native modules for clean downscale
         border=2,  # ISO quiet zone
     )

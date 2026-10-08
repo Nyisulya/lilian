@@ -1138,6 +1138,62 @@ async function bulkShareCardsWhatsApp() {
   alert(`💡 Maagizo:\n\n1. Bonyeza "📲 Tuma Picha WhatsApp" kwa mgeni huu\n2. Tuma kwenye WhatsApp\n3. Rudi hapa na bonyeza "Anayefuata ➡️" kwa mgeni mwingine\n\nWageni ${guestsWithPhone.length} wana namba za simu.`);
 }
 
+/**
+ * Automated 1-Click WhatsApp Bulk Dispatch for All Completed (100% Paid) Guests
+ * Uses UltraMsg API Gateway to send photo cards & invitations automatically
+ */
+async function sendWhatsAppCardsToAllCompleted() {
+  const completedGuests = (allGuests || []).filter(g => {
+    const pledge = Number(g.pledgeAmount) || 0;
+    const paid = Number(g.paidAmount) || 0;
+    const isPaid = (pledge > 0 && paid >= pledge) || g.isCompleted === true;
+    return isPaid && g.phone && g.phone.replace(/[^0-9]/g, '').length >= 9;
+  });
+
+  if (!completedGuests.length) {
+    alert('Hakuna mgeni aliyekamilisha malipo (100%) mwenye namba ya simu kwa sasa.');
+    return;
+  }
+
+  const confirmed = confirm(
+    `🚀 MKAZO WA MKEKA WA WALIOLIPA (WHATSAPP AUTOMATION):\n\n` +
+    `Je, unataka kutuma Kadi za Picha na Ujumbe wa Mwaliko wa WhatsApp kiotomatiki kwa wageni wote ${completedGuests.length} waliomaliza kulipa?\n\n` +
+    `Kila mgeni atapokea:\n` +
+    `1. 🎟️ Picha halisi ya Kadi yake (Yenye Jina, Meza, Viti, na QR Code ya Getini)\n` +
+    `2. 🔑 Kodi ya siri ya tarakimu 4 ya kuingilia mlangoni\n` +
+    `3. 📍 Ramani ya Ukumbi (Google Maps)\n` +
+    `4. 👗 Dress Code & Ratiba rasmi\n\n` +
+    `Bofya OK kuanza kutuma mara moja kupitia UltraMsg!`
+  );
+  if (!confirmed) return;
+
+  const btn = document.getElementById('bulk-wa-cards-btn');
+  const origHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Inatuma Kadi za WhatsApp...';
+  }
+
+  try {
+    const res = await fetch('/api/whatsapp/send-all-completed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert(`🎉 MAFANIKIO!\n\n${data.message}`);
+    } else {
+      alert(`Hitilafu: ${data.error || 'Haikuweza kukamilisha utumaji'}`);
+    }
+  } catch (err) {
+    alert(`Hitilafu ya mtandao: ${err.message}`);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml || '🚀 Tuma Kadi za Picha WhatsApp (Walio Kamilisha)';
+    }
+  }
+}
 
 // 2. Vikumbusho vya Michango x 5
 let activeReminderGuest = null;
@@ -2586,6 +2642,48 @@ async function sendQuickTestSMS() {
       loadSmsLogs();
     } else {
       const errMsg = data?.result?.log?.responseMessage || data?.error || 'Hitilafu ya kutuma';
+      if (statusEl) statusEl.innerHTML = `<span style="color: #e74c3c;">❌ Hitilafu: ${errMsg}</span>`;
+      alert(`Hitilafu: ${errMsg}`);
+    }
+  } catch (err) {
+    console.error(err);
+    if (statusEl) statusEl.innerHTML = '<span style="color: #e74c3c;">❌ Hitilafu ya mtandao</span>';
+    alert('Hitilafu ya mtandao');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+// Quick Test WhatsApp sender from Settings
+async function sendQuickTestWhatsApp() {
+  const phoneInput = document.getElementById('test-wa-phone');
+  const btn = document.getElementById('test-wa-btn');
+  const statusEl = document.getElementById('test-wa-status');
+
+  const phone = phoneInput ? phoneInput.value.trim() : '';
+  if (!phone) {
+    alert('Tafadhali weka namba ya simu ya kujaribu WhatsApp.');
+    return;
+  }
+
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Inatuma WhatsApp...';
+  if (statusEl) statusEl.innerHTML = '<span style="color: var(--gold-light);">Inawasiliana na UltraMsg...</span>';
+
+  try {
+    const res = await fetch('/api/whatsapp/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      if (statusEl) statusEl.innerHTML = '<span style="color: #2ecc71; font-weight: 600;">✅ Ujumbe wa majaribio na picha ya kadi zimetumwa WhatsApp kwa mafanikio! Angalia simu yako sasa hivi.</span>';
+      alert(`✅ Ujumbe na picha ya kadi zimetumwa kwa mafanikio kwenda WhatsApp ya ${phone}!`);
+    } else {
+      const errMsg = data?.result?.log?.responseMessage || data?.error || data?.message || 'Hitilafu ya kutuma';
       if (statusEl) statusEl.innerHTML = `<span style="color: #e74c3c;">❌ Hitilafu: ${errMsg}</span>`;
       alert(`Hitilafu: ${errMsg}`);
     }

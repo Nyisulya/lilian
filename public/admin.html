@@ -403,7 +403,10 @@
           <div style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">Ufuatiliaji wa Madeni (Debtors)</div>
           <div style="font-size: 0.82rem; color: var(--gold-light);" id="debtors-summary-text">Inahesabu wanaodaiwa...</div>
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-whatsapp btn-sm" onclick="sendWhatsAppCardsToAllCompleted()" id="bulk-wa-cards-btn" title="Tuma kadi rasmi za picha na mialiko ya WhatsApp kwa walio kamilisha ahadi zao wote (Mkeka Kamili)">
+            🚀 Tuma Kadi za Picha WhatsApp (Walio Kamilisha)
+          </button>
           <button class="btn btn-gold btn-sm" onclick="sendBulkDebtReminders()" id="bulk-reminder-btn">
             📢 Tuma SMS ya Vikumbusho kwa Wanaodaiwa Wote
           </button>
@@ -1194,6 +1197,23 @@
                 💾 Hifadhi Mipangilio ya WhatsApp ya Kiotomatiki
               </button>
             </form>
+
+            <!-- Quick Test WhatsApp Box -->
+            <div style="margin-top: 20px; background: rgba(0, 0, 0, 0.35); border: 1px dashed #25d366; border-radius: 12px; padding: 14px 16px;">
+              <div style="font-weight: 700; color: #2ecc71; margin-bottom: 6px; font-size: 0.95rem;">
+                🧪 Jaribu Kutuma WhatsApp ya Majaribio (Test WhatsApp)
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">
+                Ingiza namba yako ya simu hapa kutuma ujumbe wa majaribio pamoja na picha ya kadi ili kuthibitisha muunganisho wa UltraMsg.
+              </p>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="test-wa-phone" class="form-control" placeholder="07XXXXXXXX" value="0787661560" style="flex: 1; min-width: 200px;">
+                <button type="button" class="btn btn-whatsapp btn-sm" onclick="sendQuickTestWhatsApp()" id="test-wa-btn">
+                  🚀 Tuma WhatsApp ya Majaribio
+                </button>
+              </div>
+              <div id="test-wa-status" style="margin-top: 8px; font-size: 0.8rem;"></div>
+            </div>
           </div>
 
           <!-- Database Safety & Backup Download Box -->
