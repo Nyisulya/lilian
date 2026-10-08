@@ -72,15 +72,12 @@ function renderRoyalCard(data) {
   const envGuest = document.getElementById('envelope-guest-name');
   if (envGuest) envGuest.textContent = guest.name;
 
-  // 2. Bind Official Dynamic Real Card Image with robust caching
+  // 2. Bind Official Dynamic Real Card Image with cache buster
   const cardImg = document.getElementById('official-dynamic-card-img');
-  const cardImageUrl = `/api/card/image/${encodeURIComponent(guest.id)}`;
+  const cacheKey = guest.updatedAt ? new Date(guest.updatedAt).getTime() : (guest.createdAt ? new Date(guest.createdAt).getTime() : Date.now());
+  const cardImageUrl = `/api/card/image/${encodeURIComponent(guest.id)}?v=${cacheKey}`;
   if (cardImg) {
-    // Only set src if not already loaded to avoid image re-fetching
-    const currentSrc = cardImg.getAttribute('src');
-    if (!currentSrc || !currentSrc.includes(`/api/card/image/${encodeURIComponent(guest.id)}`)) {
-      cardImg.src = cardImageUrl;
-    }
+    cardImg.src = cardImageUrl;
     cardImg.alt = `Kadi Rasmi ya Mwaliko wa Send-off: ${guest.name}`;
   }
 

@@ -873,8 +873,7 @@ async function loadSendoffCardImage(guest) {
   if (spinner) spinner.style.display = 'block';
   imgPreview.style.display = 'none';
 
-  const cardStaticUrl = `/images/cards/card_${guest.id}.jpg?v=${Date.now()}`;
-  const cardApiUrl = `/api/card/image/${guest.id}`;
+  const cardApiUrl = `/api/card/image/${guest.id}?v=${Date.now()}`;
 
   imgPreview.onload = () => {
     if (spinner) spinner.style.display = 'none';
@@ -882,17 +881,15 @@ async function loadSendoffCardImage(guest) {
   };
 
   imgPreview.onerror = () => {
-    imgPreview.src = cardApiUrl;
     if (spinner) spinner.style.display = 'none';
     imgPreview.style.display = 'block';
   };
 
-  imgPreview.src = cardStaticUrl;
+  imgPreview.src = cardApiUrl;
 
   // Pre-fetch blob for instant download / copy / share
   try {
-    let res = await fetch(`/images/cards/card_${guest.id}.jpg`);
-    if (!res.ok) res = await fetch(cardApiUrl);
+    const res = await fetch(cardApiUrl);
     if (res.ok) {
       currentCardBlob = await res.blob();
     }
@@ -996,8 +993,7 @@ async function shareCardToWhatsApp() {
     // 1. Obtain image blob
     let blob = currentCardBlob;
     if (!blob) {
-      let response = await fetch(`/images/cards/card_${guestId}.jpg`);
-      if (!response.ok) response = await fetch(`/api/card/image/${guestId}`);
+      let response = await fetch(`/api/card/image/${guestId}?v=${Date.now()}`);
       if (response.ok) {
         blob = await response.blob();
         currentCardBlob = blob;

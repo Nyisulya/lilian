@@ -261,6 +261,23 @@ function generateUniqueCode(existingGuests) {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
+function removeStaleCardFiles(guestId, guestCode) {
+  const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
+  if (!fs.existsSync(cardsDir)) return;
+  if (guestId) {
+    const p1 = path.join(cardsDir, `card_${guestId}.jpg`);
+    if (fs.existsSync(p1)) {
+      try { fs.unlinkSync(p1); } catch (e) {}
+    }
+  }
+  if (guestCode) {
+    const p2 = path.join(cardsDir, `card_${guestCode}.jpg`);
+    if (fs.existsSync(p2)) {
+      try { fs.unlinkSync(p2); } catch (e) {}
+    }
+  }
+}
+
 app.post('/api/guests', (req, res) => {
   const db = readDB();
   const guests = db.guests || [];
@@ -298,8 +315,12 @@ app.post('/api/guests', (req, res) => {
     checkInTime: null,
     reminderCount: 0,
     wishes: null,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
+
+  // Remove any stale card image from previous deleted guest with same ID/code
+  removeStaleCardFiles(newGuest.id, newGuest.code);
 
   guests.push(newGuest);
   db.guests = guests;
@@ -315,20 +336,28 @@ app.put('/api/guests/:id', (req, res) => {
     return res.status(404).json({ error: 'Mualikwa hakupatikana' });
   }
 
-  db.guests[idx] = { ...db.guests[idx], ...req.body };
+  const oldGuest = db.guests[idx];
+  removeStaleCardFiles(oldGuest.id, oldGuest.code);
+
+  db.guests[idx] = { ...db.guests[idx], ...req.body, updatedAt: new Date().toISOString() };
+  removeStaleCardFiles(db.guests[idx].id, db.guests[idx].code);
+
   writeDB(db);
   res.json(db.guests[idx]);
 });
 
 app.delete('/api/guests/:id', (req, res) => {
   const db = readDB();
-  const initialLen = (db.guests || []).length;
-  db.guests = (db.guests || []).filter(g => g.id.toLowerCase() !== req.params.id.toLowerCase());
-  if (db.guests.length === initialLen) {
+  const toDelete = (db.guests || []).find(g => g.id.toLowerCase() === req.params.id.toLowerCase());
+  if (!toDelete) {
     return res.status(404).json({ error: 'Mualikwa hakupatikana' });
   }
+
+  removeStaleCardFiles(toDelete.id, toDelete.code);
+
+  db.guests = (db.guests || []).filter(g => g.id.toLowerCase() !== req.params.id.toLowerCase());
   writeDB(db);
-  res.json({ success: true, message: 'Mualikwa amefutwa' });
+  res.json({ success: true, message: 'Mualikwa amefutwa na kadi yake imeondolewa' });
 });
 
 // Increment Reminder count
@@ -1684,25 +1713,47 @@ app.get('/api/card/image/:id', (req, res) => {
     fs.mkdirSync(cardsDir, { recursive: true });
   }
 
-  // 1. Direct check for primary card by ID
   const cardFile = path.join(cardsDir, `card_${targetId}.jpg`);
+
+  // STALENESS CHECK: If card exists on disk, verify it was created AFTER this guest was registered/modified!
+  if (fs.existsSync(cardFile)) {
+    if (guest) {
+      const guestTime = new Date(guest.updatedAt || guest.createdAt || 0).getTime();
+      const fileTime = fs.statSync(cardFile).mtimeMs;
+      // If card file was created before this guest was registered/modified, delete it!
+      if (fileTime < guestTime || req.query.regenerate) {
+        try { fs.unlinkSync(cardFile); } catch (e) {}
+      }
+    } else if (req.query.regenerate) {
+      try { fs.unlinkSync(cardFile); } catch (e) {}
+    }
+  }
+
+  // 1. Direct check for primary card by ID
   if (fs.existsSync(cardFile) && !req.query.regenerate) {
     res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     return res.sendFile(cardFile);
   }
 
   // 2. Secondary check if card exists by code (e.g., card_3008.jpg)
   if (guest && guest.code) {
     const codeFile = path.join(cardsDir, `card_${guest.code}.jpg`);
+    if (fs.existsSync(codeFile)) {
+      const guestTime = new Date(guest.updatedAt || guest.createdAt || 0).getTime();
+      const fileTime = fs.statSync(codeFile).mtimeMs;
+      if (fileTime < guestTime || req.query.regenerate) {
+        try { fs.unlinkSync(codeFile); } catch (e) {}
+      }
+    }
     if (fs.existsSync(codeFile) && !req.query.regenerate) {
       res.setHeader('Content-Type', 'image/jpeg');
-      res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
       return res.sendFile(codeFile);
     }
   }
 
-  // 3. Fallback on-the-fly generation if file missing
+  // 3. Fallback on-the-fly generation if file missing or was stale
   const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
   const { execFile } = require('child_process');
 
@@ -1725,11 +1776,41 @@ app.get('/api/card/image/:id', (req, res) => {
         return tryExec(idx + 1);
       }
       res.setHeader('Content-Type', 'image/jpeg');
-      res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
       res.sendFile(cardFile);
     });
   };
 
+  tryExec(0);
+});
+
+// Endpoint to clean all stale card images and regenerate fresh cards for current guests
+app.post('/api/cards/clean-and-regenerate', (req, res) => {
+  const cardsDir = path.join(__dirname, 'public', 'images', 'cards');
+  if (fs.existsSync(cardsDir)) {
+    const files = fs.readdirSync(cardsDir);
+    for (const f of files) {
+      if (f.endsWith('.jpg') || f.endsWith('.png')) {
+        try { fs.unlinkSync(path.join(cardsDir, f)); } catch (e) {}
+      }
+    }
+  }
+
+  const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
+  const { execFile } = require('child_process');
+  const pyCandidates = process.platform === 'win32'
+    ? ['python', 'python3']
+    : ['python3', 'python', '/usr/bin/python3', '/usr/local/bin/python3', path.join(__dirname, 'venv', 'bin', 'python3')];
+
+  const tryExec = (idx) => {
+    if (idx >= pyCandidates.length) {
+      return res.json({ success: true, message: 'Kadi za zamani zimefutwa.' });
+    }
+    execFile(pyCandidates[idx], [scriptPath, 'all'], (err) => {
+      if (err) return tryExec(idx + 1);
+      res.json({ success: true, message: 'Kadi zote za wageni zimezalishwa upya kikamilifu!' });
+    });
+  };
   tryExec(0);
 });
 
