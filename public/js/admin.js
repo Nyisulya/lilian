@@ -1163,12 +1163,16 @@ async function sendWhatsAppCardsToAllCompleted() {
   );
   if (!confirmed) return;
 
-  const btn = document.getElementById('bulk-wa-cards-btn');
-  const origHtml = btn ? btn.innerHTML : '';
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Inatuma Kadi za WhatsApp...';
-  }
+  const btns = [
+    document.getElementById('bulk-wa-cards-btn'),
+    document.getElementById('bulk-wa-cards-btn-tab1')
+  ].filter(Boolean);
+
+  btns.forEach(b => {
+    b.disabled = true;
+    b.dataset.origHtml = b.innerHTML;
+    b.innerHTML = '⏳ Inatuma Kadi za WhatsApp...';
+  });
 
   try {
     const res = await fetch('/api/whatsapp/send-all-completed', {
@@ -1184,10 +1188,10 @@ async function sendWhatsAppCardsToAllCompleted() {
   } catch (err) {
     alert(`Hitilafu ya mtandao: ${err.message}`);
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = origHtml || '🚀 Tuma Kadi za Picha WhatsApp (Walio Kamilisha)';
-    }
+    btns.forEach(b => {
+      b.disabled = false;
+      b.innerHTML = b.dataset.origHtml || '🚀 Tuma Kadi za Picha WhatsApp';
+    });
   }
 }
 
