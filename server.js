@@ -1714,46 +1714,19 @@ app.get('/api/card/image/:id', (req, res) => {
   }
 
   const cardFile = path.join(cardsDir, `card_${targetId}.jpg`);
+  const codeFile = (guest && guest.code) ? path.join(cardsDir, `card_${guest.code}.jpg`) : null;
+  const existingFile = fs.existsSync(cardFile) ? cardFile : (codeFile && fs.existsSync(codeFile) ? codeFile : null);
 
-  // STALENESS CHECK: If card exists on disk, verify it was created AFTER this guest was registered/modified!
-  if (fs.existsSync(cardFile)) {
-    if (guest) {
-      const guestTime = new Date(guest.updatedAt || guest.createdAt || 0).getTime();
-      const fileTime = fs.statSync(cardFile).mtimeMs;
-      // If card file was created before this guest was registered/modified, delete it!
-      if (fileTime < guestTime || req.query.regenerate) {
-        try { fs.unlinkSync(cardFile); } catch (e) {}
-      }
-    } else if (req.query.regenerate) {
-      try { fs.unlinkSync(cardFile); } catch (e) {}
-    }
-  }
+  const forceRegenerate = req.query.regenerate === 'true' || req.query.regenerate === '1';
 
-  // 1. Direct check for primary card by ID
-  if (fs.existsSync(cardFile) && !req.query.regenerate) {
+  // 1. Direct check: If card already exists on disk and no forced regeneration is requested, serve it immediately (0ms)
+  if (existingFile && !forceRegenerate) {
     res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-    return res.sendFile(cardFile);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.sendFile(existingFile);
   }
 
-  // 2. Secondary check if card exists by code (e.g., card_3008.jpg)
-  if (guest && guest.code) {
-    const codeFile = path.join(cardsDir, `card_${guest.code}.jpg`);
-    if (fs.existsSync(codeFile)) {
-      const guestTime = new Date(guest.updatedAt || guest.createdAt || 0).getTime();
-      const fileTime = fs.statSync(codeFile).mtimeMs;
-      if (fileTime < guestTime || req.query.regenerate) {
-        try { fs.unlinkSync(codeFile); } catch (e) {}
-      }
-    }
-    if (fs.existsSync(codeFile) && !req.query.regenerate) {
-      res.setHeader('Content-Type', 'image/jpeg');
-      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-      return res.sendFile(codeFile);
-    }
-  }
-
-  // 3. Fallback on-the-fly generation if file missing or was stale
+  // 2. On-the-fly generation via Python
   const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
   const { execFile } = require('child_process');
 
@@ -1763,21 +1736,26 @@ app.get('/api/card/image/:id', (req, res) => {
 
   const tryExec = (idx) => {
     if (idx >= pyCandidates.length) {
-      if (fs.existsSync(cardFile)) {
+      if (existingFile) {
         res.setHeader('Content-Type', 'image/jpeg');
-        return res.sendFile(cardFile);
+        return res.sendFile(existingFile);
       }
+      console.error(`❌ [Card Gen Error] Failed to generate card for ID ${targetId}. Python Pillow/qrcode not found on system.`);
+      console.error(`👉 Install with: sudo apt install -y python3-pil python3-qrcode (or pip3 install pillow qrcode)`);
       return res.status(404).json({ error: 'Kadi ya picha haikupatikana.' });
     }
 
     const cmd = pyCandidates[idx];
-    execFile(cmd, [scriptPath, targetId, cardFile], (err) => {
+    execFile(cmd, [scriptPath, targetId, cardFile], (err, stdout, stderr) => {
       if (err) {
         return tryExec(idx + 1);
       }
-      res.setHeader('Content-Type', 'image/jpeg');
-      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-      res.sendFile(cardFile);
+      if (fs.existsSync(cardFile)) {
+        res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        return res.sendFile(cardFile);
+      }
+      return tryExec(idx + 1);
     });
   };
 
@@ -1964,8 +1942,13 @@ app.listen(PORT, () => {
       const { execFile } = require('child_process');
       const scriptPath = path.join(__dirname, 'services', 'generate_card.py');
       const pyCmd = process.platform === 'win32' ? 'python' : 'python3';
-      execFile(pyCmd, [scriptPath, 'all'], (err) => {
-        if (!err) console.log(`✅ All guest cards pre-generated and verified!`);
+      execFile(pyCmd, [scriptPath, 'all'], (err, stdout, stderr) => {
+        if (!err) {
+          console.log(`✅ All guest cards pre-generated and verified!`);
+        } else {
+          console.warn(`⚠️ Could not pre-generate cards automatically via ${pyCmd}.`);
+          console.warn(`👉 To enable dynamic card generation on VPS, run: sudo apt install -y python3-pil python3-qrcode`);
+        }
       });
     } else {
       console.log(`✅ All ${db.guests ? db.guests.length : 0} guest cards are pre-generated and cached for 0ms response!`);

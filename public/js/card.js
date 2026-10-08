@@ -77,6 +77,10 @@ function renderRoyalCard(data) {
   const cacheKey = guest.updatedAt ? new Date(guest.updatedAt).getTime() : (guest.createdAt ? new Date(guest.createdAt).getTime() : Date.now());
   const cardImageUrl = `/api/card/image/${encodeURIComponent(guest.id)}?v=${cacheKey}`;
   if (cardImg) {
+    cardImg.onerror = () => {
+      cardImg.onerror = null;
+      cardImg.src = `/images/cards/card_${encodeURIComponent(guest.id)}.jpg`;
+    };
     cardImg.src = cardImageUrl;
     cardImg.alt = `Kadi Rasmi ya Mwaliko wa Send-off: ${guest.name}`;
   }

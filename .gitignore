@@ -11,6 +11,5 @@ data/backups/
 data/db.vps.backup.json
 .env
 .env.*
-public/images/cards/*.jpg
-public/images/cards/*.png
+
 !public/images/cards/.gitkeep
