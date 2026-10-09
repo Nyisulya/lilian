@@ -23,7 +23,7 @@ function formatPhone(phone) {
 /**
  * Dispatch WhatsApp Message (Image or Text) via Configured Gateway
  */
-async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType = 'Mwaliko wa Kadi', guestName = '') {
+async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType = 'Mwaliko wa Kadi', guestName = '', options = {}) {
   const db = readDB();
   const config = db.whatsappConfig || {};
   const formattedPhone = formatPhone(toPhone);
@@ -41,9 +41,11 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
     responseMessage: ''
   };
 
-  const waApiKey = process.env.WHATSAPP_API_KEY || config.apiKey;
-  const waInstanceId = process.env.WHATSAPP_INSTANCE_ID || config.instanceId;
   const waProvider = config.provider || 'UltraMsg';
+  const waApiKey = process.env.WHATSAPP_API_KEY || (waProvider === 'UltraMsg'
+    ? (config.ultraMsgApiKey || config.apiKey)
+    : config.apiKey);
+  const waInstanceId = process.env.WHATSAPP_INSTANCE_ID || config.instanceId;
 
   // 1. Simulation Mode or Missing Credentials
   if (config.simulationMode !== false || !waApiKey) {
@@ -112,28 +114,67 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
   }
 
   // 3. Meta Official Cloud API
-  if (config.provider === 'Meta' && config.phoneNumberId && config.apiKey) {
+  const metaToken = process.env.WHATSAPP_TOKEN || config.apiKey;
+  const metaPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || config.phoneNumberId;
+  const useTemplate = options.useTemplate ?? config.useTemplate ?? (config.provider === 'Meta');
+  const metaTemplate = options.templateName || config.templateName || 'sendoff_lilian_invite';
+  const metaLang = options.templateLanguage || config.templateLanguage || 'sw';
+  const metaParams = options.templateParams || config.templateParams;
+
+  if (config.provider === 'Meta' && metaPhoneId && metaToken) {
     try {
-      const endpoint = `https://graph.facebook.com/v19.0/${config.phoneNumberId}/messages`;
-      const payload = imageUrl ? {
-        messaging_product: 'whatsapp',
-        to: formattedPhone,
-        type: 'image',
-        image: {
-          link: imageUrl,
-          caption: messageText
+      const endpoint = `https://graph.facebook.com/v19.0/${metaPhoneId}/messages`;
+      
+      let payload;
+      if (useTemplate && metaTemplate) {
+        // Send via Approved Meta Template
+        payload = {
+          messaging_product: 'whatsapp',
+          to: formattedPhone,
+          type: 'template',
+          template: {
+            name: metaTemplate,
+            language: { code: metaLang },
+            components: []
+          }
+        };
+
+        const headerImageUrl = options.headerImageUrl || (imageUrl && imageUrl.startsWith('http') ? imageUrl : null);
+        if (headerImageUrl) {
+          payload.template.components.push({
+            type: 'header',
+            parameters: [{ type: 'image', image: { link: headerImageUrl } }]
+          });
         }
-      } : {
-        messaging_product: 'whatsapp',
-        to: formattedPhone,
-        type: 'text',
-        text: { body: messageText }
-      };
+
+        if (metaParams && Array.isArray(metaParams) && metaParams.length > 0) {
+          payload.template.components.push({
+            type: 'body',
+            parameters: metaParams.map(p => ({ type: 'text', text: String(p || '') }))
+          });
+        }
+      } else {
+        // Direct image/text payload
+        payload = (imageUrl && imageUrl.startsWith('http')) ? {
+          messaging_product: 'whatsapp',
+          to: formattedPhone,
+          type: 'image',
+          image: {
+            link: imageUrl,
+            caption: messageText
+          }
+        } : {
+          messaging_product: 'whatsapp',
+          to: formattedPhone,
+          type: 'text',
+          text: { body: messageText }
+        };
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${config.apiKey}`,
+          'Authorization': `Bearer ${metaToken}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
@@ -179,48 +220,57 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
 async function sendFullWhatsAppInvitation(guest) {
   const db = readDB();
   const event = db.event || {};
-  const bride = event.brideName || 'Lilian';
-  const table = (db.tables || []).find(t => t.id === guest.tableId) || { name: 'Meza Maalumu' };
   const config = db.whatsappConfig || db.smsConfig || {};
   const systemUrl = config.systemUrl || 'https://lilian.nyisu.com';
   
-  const dateStr = '13 Oktoba 2026';
-  const timeStr = 'Kuanzia Saa 12:30 Jioni';
   const venue = event.receptionVenue || 'Bragging Social Hall, Goba, Dar es Salaam';
   const mapsUrl = event.googleMapsUrl || 'https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam';
+  const guestCode = guest.code || guest.id || '3001';
+  const isDouble = Number(guest.seats) >= 2;
   
-  // Attach personalized high-resolution invitation card with guest's name, seats & QR
+  // Attach personalized card image (base64 for instant delivery)
   const cardLocalPath = path.join(__dirname, '..', 'public', 'images', 'cards', `card_${guest.id}.jpg`);
-  const cardImageUrl = fs.existsSync(cardLocalPath)
-    ? `${systemUrl}/images/cards/card_${guest.id}.jpg`
-    : `${systemUrl}${event.bridePhoto || '/images/lilian_sendoff.jpg'}`;
-  const interactiveCardUrl = `${systemUrl}/invite/${guest.id}`;
+  let cardImagePayload = `${systemUrl}/images/cards/card_${guest.id}.jpg`;
+  if (fs.existsSync(cardLocalPath)) {
+    const base64Data = fs.readFileSync(cardLocalPath).toString('base64');
+    cardImagePayload = 'data:image/jpeg;base64,' + base64Data;
+  }
 
-  // Message 1: Official Invitation + Photo Card + 4-Digit Pass Code
-  const famName = event.familyName || 'Mzee Marcus Nyahende';
-  const seatTypeStr = Number(guest.seats) === 2 ? 'Double (Wewe na Mwenza wako)' : (Number(guest.seats) === 1 ? 'Single (Mtu 1)' : `Watu ${guest.seats}`);
-  const msg1 = `💍 *MWALIKO WA SHEREHE YA SEND-OFF YA ${bride.toUpperCase()}* 💍\n\nHabari Ndugu *${guest.name}*,\n\nFamilia ya ${famName} inayo heshima na furaha kubwa kukualika ${guest.seats > 1 ? 'wewe na mwenza wako' : ''} katika usiku wa sherehe ya kumuaga binti yao mpendwa *${bride}* (Send-off Party).\n\n🎟️ *Aina ya Kadi (Mwaliko):* ${seatTypeStr}\n📍 *Meza Yako:* ${table.name}\n🔑 *Kodi Yako ya Kuingilia Mlangoni:* *${guest.code || '4829'}*\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n🏛️ *Ukumbi:* ${venue}\n\n✨ Fungua Kadi Yako ya Kidijitali ya VIP hapa:\n👉 ${interactiveCardUrl}\n\nPicha ya kadi yako rasmi imeambatanishwa hapo juu. Karibu sana tufurahi pamoja! ✨🥂`;
+  const doubleNotice = isDouble 
+    ? '\n\n📲 *Kumbuka:* Kadi hii ni DOUBLE, unaweza kumtumia mpendwa wako mtakayeongozana naye ukumbini.'
+    : '';
 
-  // Message 2: Venue Location
-  const msg2 = `📍 *UKUMBI & MAHALI ILIPO (LOCATION)* 📍\n\nSherehe itafanyika:\n🏛️ *Ukumbi:* ${venue}\n📅 *Tarehe:* ${dateStr}\n⏰ *Muda:* ${timeStr}\n\nBonyeza link hii ya Google Maps itakuongoza moja kwa moja hadi ukumbini bila kupotea:\n👉 ${mapsUrl}\n\nKaribu sana!`;
+  const msg = `💍 *KADI YA MWALIKO - SEND-OFF YA LILIAN*
 
-  // Message 3: Dress Code & Schedule
-  const msg3 = `👗👔 *DRESS CODE & RATIBA YA USIKU WA SEND-OFF* 👗👔\n\n🎨 *Rangi Rasmi za Siku Hiyo (Dress Code):*\n• *Shades of Blue & Sterling Silver* (Vivuli vya Bluu na Fedha kung'aa) au vazi lolote nadhifu la heshima.\n• Rangi zinazopendekezwa: Midnight Blue, Navy Blue, Royal Blue, Cerulean, Sky Blue, na vito/aksesori za Sterling Silver.\n\n⏰ *Ratiba ya Matukio:*\n• Saa 12:00 Jioni: Milango ya ukumbi inafunguliwa & Mapokezi ya wageni\n• Saa 01:30 Usiku: Bibi Harusi (${bride}) anaingia ukumbini\n• Saa 02:30 Usiku: Chakula cha usiku (Dinner) & Shamrashamra\n\nTunakutakia maandalizi mema, uwepo wako utaleta nakshi na furaha kubwa! 🙏💐`;
+Habari Ndugu *${guest.name}*,
 
-  const results = [];
-  // Send 1st (Photo + Invite)
-  const r1 = await sendRawWhatsApp(guest.phone, msg1, cardImageUrl, 'Kadi ya Picha & Mwaliko', guest.name);
-  results.push(r1);
+Uthibitisho wa kadi yako ya mwaliko wa Send-off ya Lilian umeambatanishwa hapa. Tafadhali hifadhi kadi hii kwa ajili ya kuonyesha getini.
 
-  // Send 2nd (Location)
-  const r2 = await sendRawWhatsApp(guest.phone, msg2, '', 'Ramani ya Ukumbi (Location)', guest.name);
-  results.push(r2);
+📍 *Mahali Ukumbi Ulipo (Location):*
+${venue}
+👉 ${mapsUrl}
 
-  // Send 3rd (Dress Code)
-  const r3 = await sendRawWhatsApp(guest.phone, msg3, '', 'Dress Code & Ratiba', guest.name);
-  results.push(r3);
+📖 Bonyeza link hii kuona hadithi nzuri na picha za Lilian:
+👉 ${systemUrl}${doubleNotice}
 
-  return { success: true, results };
+Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
+
+  const publicCardUrl = `${systemUrl}/images/cards/card_${guest.id}.jpg`;
+  const sendOptions = {
+    useTemplate: config.provider === 'Meta',
+    templateName: config.templateName || 'sendoff_lilian_invite',
+    templateLanguage: config.templateLanguage || 'sw',
+    headerImageUrl: publicCardUrl,
+    templateParams: [
+      guest.name,
+      isDouble 
+        ? 'Kumbuka: Kadi hii ni DOUBLE, unaweza kumtumia mpendwa wako mtakayeongozana naye ukumbini.' 
+        : 'Karibu sana tufurahi na kusherehekea pamoja!'
+    ]
+  };
+
+  const res = await sendRawWhatsApp(guest.phone, msg, cardImagePayload, 'Kadi ya Mwaliko', guest.name, sendOptions);
+  return { success: res.success !== false, results: [res] };
 }
 
 /**

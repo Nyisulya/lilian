@@ -5,7 +5,7 @@ import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATE_PATH = os.path.join(BASE_DIR, 'public', 'images', 'card_template_dynamic.png')
+TEMPLATE_PATH = os.path.join(BASE_DIR, 'public', 'images', 'card_template_emerald.png')
 CARDS_DIR = os.path.join(BASE_DIR, 'public', 'images', 'cards')
 FONTS_DIR = os.path.join(BASE_DIR, 'public', 'fonts')
 
@@ -82,68 +82,82 @@ def render_guest_card(guest_id_or_code, output_path=None):
     gid = str(guest.get('id') or '1')
 
     if not os.path.exists(TEMPLATE_PATH):
-        raise FileNotFoundError(f"Template not found at {TEMPLATE_PATH}")
+        builder_script = os.path.join(BASE_DIR, 'scratch', 'build_emerald_template.py')
+        if os.path.exists(builder_script):
+            import subprocess
+            subprocess.run([sys.executable, builder_script], check=True)
 
-    card = Image.open(TEMPLATE_PATH).convert('RGBA')
-    cx = 341
+    card = Image.open(TEMPLATE_PATH).convert('RGB')
+    cx = card.width // 2
     d = ImageDraw.Draw(card)
 
-    # 1. Guest Name (Centered in emerald ribbon)
-    name_clean = name.upper()
-    if len(name_clean) <= 16:
-        fs = 22
-    elif len(name_clean) <= 22:
-        fs = 19
-    elif len(name_clean) <= 28:
-        fs = 16
-    else:
-        fs = 13.5
+    gold = (212, 175, 55)
+    gold_bright = (250, 225, 156)
+    white = (255, 255, 255)
 
+    # 1. Guest Name (BIGGER & BOLDER: 26-30pt)
+    name_clean = name.strip()
+    fs = 29 if len(name_clean) <= 18 else (24 if len(name_clean) <= 26 else 20)
     font_name = get_font('georgiab.ttf', fs)
     bb_n = d.textbbox((0, 0), name_clean, font=font_name)
     nw = bb_n[2] - bb_n[0]
-    nh = bb_n[3] - bb_n[1]
-    d.text((cx - nw // 2, 635 - nh // 2), name_clean, font=font_name, fill=(255, 255, 255, 255))
+    d.text((cx - nw // 2, 808), name_clean, font=font_name, fill=white)
 
-    # 2. Seat Badge: SINGLE / DOUBLE
-    seat_txt = 'DOUBLE' if seats >= 2 else 'SINGLE'
-    font_seat = get_font('georgiab.ttf', 13)
-    bb_s = d.textbbox((0, 0), seat_txt, font=font_seat)
-    sw = bb_s[2] - bb_s[0]
-    sh = bb_s[3] - bb_s[1]
-    d.text((295 - sw // 2, 695 - sh // 2), seat_txt, font=font_seat, fill=(5, 55, 35, 255))
-    # 3. LARGE QR Code for instant phone scanning (no zoom needed)
-    qr_payload = code  # Short pass code e.g. "3141" — scanner handles raw codes
+    # 2. Seat Badge: SINGLE / DOUBLE VIP (CLEAN TYPOGRAPHY - NO MISTARI/BOXES)
+    seat_label = 'MWALIKO WA WATU WAWILI (DOUBLE)' if seats >= 2 else 'MWALIKO WA MTU MMOJA (SINGLE)'
+    pill_txt = f"{seat_label}   •   VIP"
+    font_pill = get_font('arialbd.ttf', 13)
+    bb_p = d.textbbox((0, 0), pill_txt, font=font_pill)
+    d.text((cx - (bb_p[2] - bb_p[0]) // 2, 846), pill_txt, font=font_pill, fill=(167, 243, 208))
 
-    qr = qrcode.QRCode(
-        version=1,  # Force smallest version for maximum module size
-        error_correction=qrcode.constants.ERROR_CORRECT_M,  # Optimal balance for high-contrast instant decode
-        box_size=20,  # Very large native modules for clean downscale
-        border=2,  # ISO quiet zone
+    # 3. THE ORIGINAL PROVEN SCANNABLE QR CODE FRAME (CENTERED & HIGH CONTRAST)
+    qr_box_y = 1012
+    qr_outer_sz = 236
+    qr_inner_sz = 220
+    qr_code_sz = 200
+
+    # Luxury Gold Outer Frame
+    d.rounded_rectangle(
+        (cx - qr_outer_sz // 2, qr_box_y, cx + qr_outer_sz // 2, qr_box_y + qr_outer_sz),
+        radius=14,
+        fill=(195, 165, 80),
+        outline=(155, 130, 55),
+        width=2
     )
-    qr.add_data(qr_payload)
+    # Pure White Inner Square (Guarantees 100% Optical Quiet Zone for Hardware Scanners)
+    d.rounded_rectangle(
+        (cx - qr_inner_sz // 2, qr_box_y + (qr_outer_sz - qr_inner_sz) // 2,
+         cx + qr_inner_sz // 2, qr_box_y + (qr_outer_sz + qr_inner_sz) // 2),
+        radius=8,
+        fill=(255, 255, 255)
+    )
+
+    # Pixel-Perfect QR Code (25 modules * 8px = exactly 200px, 0% distortion, High Error Correction)
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=8,
+        border=2,
+    )
+    qr.add_data(str(code))
     qr.make(fit=True)
-    qr_img = qr.make_image(fill_color='#000000', back_color='#ffffff').convert('RGBA')
+    qr_img = qr.make_image(fill_color='#000000', back_color='#ffffff').convert('RGB')
+    card.paste(qr_img, (cx - qr_code_sz // 2, qr_box_y + (qr_outer_sz - qr_code_sz) // 2))
 
-    # 200x200 QR Code centered in the 220x220 gold frame (cx=341, cy=944)
-    qr_size = 200
-    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.NEAREST)
-    card.paste(qr_resized, (cx - qr_size // 2, 944 - qr_size // 2))
-
-
-    # 4. Bottom PASS Pill: ── PASS : {code} ──
-    pass_txt = f'──  PASS : {code}  ──'
+    # 4. BOTTOM PASS PILL & GUEST NUMBER
+    pass_y = qr_box_y + qr_outer_sz + 14
     font_pass = get_font('arialbd.ttf', 14)
-    bb_p = d.textbbox((0, 0), pass_txt, font=font_pass)
-    pw = bb_p[2] - bb_p[0]
-    ph = bb_p[3] - bb_p[1]
-    d.text((cx - pw // 2, 1090 - ph // 2), pass_txt, font=font_pass, fill=(250, 225, 156, 255))
+    pass_txt = f"──  PASS : {code}  ──"
+    bb_pass = d.textbbox((0, 0), pass_txt, font=font_pass)
+    pw = bb_pass[2] - bb_pass[0]
+    d.rounded_rectangle((cx - pw // 2 - 20, pass_y, cx + pw // 2 + 20, pass_y + 36), radius=16, fill=(4, 30, 20), outline=gold_bright, width=1)
+    d.text((cx - pw // 2, pass_y + 9), pass_txt, font=font_pass, fill=gold_bright)
 
     # Save output
     if not output_path:
         output_path = os.path.join(CARDS_DIR, f'card_{guest.get("id")}.jpg')
 
-    card.convert('RGB').save(output_path, quality=98)
+    card.save(output_path, quality=98)
     return output_path
 
 def render_all_guests():

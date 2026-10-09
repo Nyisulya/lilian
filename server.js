@@ -1020,10 +1020,10 @@ app.get('/api/qr/:id', async (req, res) => {
 
   try {
     const qrBuffer = await QRCode.toBuffer(verifyPayload, {
-      errorCorrectionLevel: 'H',
+      errorCorrectionLevel: 'M',
       type: 'png',
       margin: 2,
-      scale: 10,
+      scale: 12,
       version: 1,
       color: {
         dark: '#000000',

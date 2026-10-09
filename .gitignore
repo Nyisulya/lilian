@@ -11,5 +11,7 @@ data/backups/
 data/db.vps.backup.json
 .env
 .env.*
+__pycache__/
+*.pyc
 
 !public/images/cards/.gitkeep

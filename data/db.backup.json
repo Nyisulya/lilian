@@ -706,9 +706,9 @@
   ],
   "smsConfig": {
     "provider": "nextsms",
-    "username": "felicianjoseph575.6cd",
-    "password": "Nyisulya@2003",
-    "apiKey": "d94dc48d2a2d80f7137365afdbce6d90",
+    "username": "",
+    "password": "",
+    "apiKey": "",
     "senderId": "SENDOFF",
     "paymentDetails": "Lipa Namba M-Pesa: 552211 (Kamati ya Harusi) au NMB: 20110022334",
     "simulationMode": false
