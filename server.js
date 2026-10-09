@@ -720,7 +720,11 @@ app.post('/api/whatsapp/test', async (req, res) => {
 app.post('/api/rsvp', (req, res) => {
   const { guestId, rsvpStatus, guestCountAttending, drinkPreference, wishes } = req.body;
   const db = readDB();
-  const guest = (db.guests || []).find(g => g.id.toLowerCase() === (guestId || '').toLowerCase());
+  const search = String(guestId || '').trim().toLowerCase();
+  const guest = (db.guests || []).find(g =>
+    String(g.id).toLowerCase() === search ||
+    String(g.code || '').toLowerCase() === search
+  );
 
   if (!guest) {
     return res.status(404).json({ error: 'Mualikwa hakupatikana' });
@@ -1854,7 +1858,7 @@ app.get('/invite/:id', (req, res) => {
     );
     // 2. Direct download button href & filename
     modified = modified.replace(
-      /href="\/api\/card\/image\/1"/g,
+      /href="\/api\/card\/image\/1"\s+download="[^"]*"/g,
       `href="/api/card/image/${encodeURIComponent(guestId)}" download="Kadi_Sendoff_Lilian_${cleanGuestName}.jpg"`
     );
     // 3. Envelope guest name pre-filled
@@ -1865,6 +1869,32 @@ app.get('/invite/:id', (req, res) => {
     // 4. Inject preloaded JSON payload so client JS does not need any network roundtrip!
     const ssrScript = `<script>window.__INITIAL_GUEST__ = ${JSON.stringify(guest || null)}; window.__INITIAL_EVENT__ = ${JSON.stringify(event || null)};</script>\n</head>`;
     modified = modified.replace('</head>', ssrScript);
+
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.send(modified);
+  });
+});
+
+// Lightweight RSVP Confirmation Page (linked from SMS)
+app.get('/confirm/:id', (req, res) => {
+  const db = readDB();
+  const search = String(req.params.id).trim().toLowerCase();
+  const guest = (db.guests || []).find(g =>
+    String(g.id).toLowerCase() === search ||
+    String(g.code || '').toLowerCase() === search
+  );
+  const guestId = guest ? guest.id : req.params.id;
+  const guestName = guest ? guest.name : 'Mualikwa Maalumu';
+
+  const filePath = path.join(__dirname, 'public', 'confirm.html');
+  fs.readFile(filePath, 'utf8', (err, html) => {
+    if (err) return res.sendFile(filePath);
+
+    const safeGuestName = String(guestName).replace(/[<>&"]/g, c => ({'<':'<','>':'>','&':'&','"':'"'}[c]));
+    const inject = `<script>window.__GUEST_ID__ = ${JSON.stringify(String(guestId))}; window.__GUEST_NAME__ = ${JSON.stringify(safeGuestName)};</script>\n</head>`;
+    const modified = html.replace('</head>', inject);
 
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     res.setHeader('Pragma', 'no-cache');

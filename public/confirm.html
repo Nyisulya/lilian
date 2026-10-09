@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Thibitisha Uwepo — Send-off ya Lilian</title>
+<meta name="theme-color" content="#071510">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(circle at 50% 0%,#0d2b20 0%,#071510 55%,#040d09 100%);
+    color:#f4efe2;display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:20px;line-height:1.5;
+  }
+  .card{
+    width:100%;max-width:440px;background:linear-gradient(160deg,#0b241a 0%,#081a12 100%);
+    border:1px solid rgba(212,175,55,.35);border-radius:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04);
+    padding:34px 26px 30px;text-align:center;position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,transparent,#d4af37,transparent);
+  }
+  .crown{font-size:34px;line-height:1;margin-bottom:10px}
+  .eyebrow{
+    font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+    color:#d4af37;font-weight:700;margin-bottom:6px;
+  }
+  h1{
+    font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;
+    letter-spacing:.3px;
+  }
+  .sub{font-size:13px;color:#9fb8ac;margin-bottom:22px}
+  .guest{
+    background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.25);
+    border-radius:14px;padding:14px 16px;margin-bottom:22px;
+  }
+  .guest-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#d4af37;font-weight:700;margin-bottom:4px}
+  .guest-name{font-size:19px;font-weight:800;color:#fff;word-break:break-word}
+  .details{font-size:12.5px;color:#b9cdc3;margin-bottom:24px;line-height:1.7}
+  .details b{color:#e9d9a8;font-weight:700}
+  .question{font-size:15px;font-weight:700;color:#fff;margin-bottom:16px}
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;padding:17px 18px;border:none;border-radius:14px;
+    font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:transform .12s ease,box-shadow .2s ease,opacity .2s ease;
+    margin-bottom:12px;letter-spacing:.3px;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn-yes{
+    background:linear-gradient(135deg,#1f9d55,#157a41);color:#fff;
+    box-shadow:0 8px 22px rgba(31,157,85,.35);
+  }
+  .btn-no{
+    background:linear-gradient(135deg,#8a2b2b,#5f1c1c);color:#fff;
+    box-shadow:0 8px 22px rgba(138,43,43,.3);
+  }
+  .btn:disabled{opacity:.55;cursor:default;transform:none}
+  .btn .ico{font-size:19px}
+  .foot{font-size:11px;color:#6f8a7d;margin-top:14px}
+  .result{display:none;padding:8px 0 4px}
+  .result .big{font-size:46px;margin-bottom:12px}
+  .result h2{font-size:20px;color:#fff;margin-bottom:8px}
+  .result p{font-size:13.5px;color:#b9cdc3}
+  .spinner{
+    width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);
+    border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .fade{animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+  <main class="card">
+    <div id="form-view">
+      <div class="crown">👑</div>
+      <div class="eyebrow">Send-off ya Lilian</div>
+      <h1>Thibitisha Uwepo Wako</h1>
+      <div class="sub">Tafadhali tujulishe kama utahudhuria</div>
+
+      <div class="guest">
+        <div class="guest-label">Mwalikwa</div>
+        <div class="guest-name" id="guest-name">Mualikwa Maalumu</div>
+      </div>
+
+      <div class="details">
+        📅 <b>Jumanne, 13 Oktoba 2026</b><br>
+        🕐 Kuanzia Saa 12:30 Jioni<br>
+        📍 Bragging Social Hall, Goba, Dar es Salaam
+      </div>
+
+      <div class="question">Je, utahudhuria Send-off?</div>
+
+      <button class="btn btn-yes" id="btn-yes" onclick="confirmRsvp('confirmed')">
+        <span class="ico">✅</span> Ndiyo, Nitakuja
+      </button>
+      <button class="btn btn-no" id="btn-no" onclick="confirmRsvp('declined')">
+        <span class="ico">❌</span> Hapana, Sitafika
+      </button>
+
+      <div class="foot">Familia ya Mr & Mrs Marcus Nyahende</div>
+    </div>
+
+    <div class="result" id="result-view">
+      <div class="big" id="result-icon">🎉</div>
+      <h2 id="result-title">Asante!</h2>
+      <p id="result-text">Uthibitisho wako umepokelewa.</p>
+    </div>
+  </main>
+
+<script>
+  var GUEST_ID = (window.__GUEST_ID__ || new URLSearchParams(location.search).get('id') || '').toString();
+  var guestNameEl = document.getElementById('guest-name');
+  if (window.__GUEST_NAME__) guestNameEl.textContent = window.__GUEST_NAME__;
+
+  function confirmRsvp(status) {
+    var yes = document.getElementById('btn-yes');
+    var no = document.getElementById('btn-no');
+    yes.disabled = true;
+    no.disabled = true;
+
+    var clicked = status === 'confirmed' ? yes : no;
+    var orig = clicked.innerHTML;
+    clicked.innerHTML = '<span class="spinner"></span> Inatuma...';
+
+    fetch('/api/rsvp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ guestId: GUEST_ID, rsvpStatus: status })
+    })
+    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.data && res.data.error ? res.data.error : 'Hitilafu');
+      showResult(status);
+    })
+    .catch(function (err) {
+      yes.disabled = false;
+      no.disabled = false;
+      clicked.innerHTML = orig;
+      alert('Samahani, kuna hitilafu: ' + err.message + '\nTafadhali jaribu tena.');
+    });
+  }
+
+  function showResult(status) {
+    document.getElementById('form-view').style.display = 'none';
+    var view = document.getElementById('result-view');
+    view.style.display = 'block';
+    view.classList.add('fade');
+    if (status === 'confirmed') {
+      document.getElementById('result-icon').textContent = '🎉';
+      document.getElementById('result-title').textContent = 'Karibu Sana!';
+      document.getElementById('result-text').textContent = 'Asante kwa kuthibitisha. Tunakusubiri kwa furaha kwenye Send-off ya Lilian!';
+    } else {
+      document.getElementById('result-icon').textContent = '💚';
+      document.getElementById('result-title').textContent = 'Asante kwa Taarifa';
+      document.getElementById('result-text').textContent = 'Tumepokea taarifa yako. Tutakukumbuka kwa sala na upendo.';
+    }
+  }
+</script>
+</body>
+</html>

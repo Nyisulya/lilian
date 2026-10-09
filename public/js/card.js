@@ -57,7 +57,7 @@ async function loadGuestCard(guestId) {
   }
 }
 
-// Render Royal Card (Royal Emerald Masterpiece Theme)
+// Render Royal Card (Official High-Resolution Masterpiece Image)
 function renderRoyalCard(data) {
   const { event, guest } = data;
   if (!guest) return;
@@ -72,101 +72,22 @@ function renderRoyalCard(data) {
   const envGuest = document.getElementById('envelope-guest-name');
   if (envGuest) envGuest.textContent = guest.name;
 
-  // 2. Card Header
-  const titleDisplay = document.getElementById('card-title-display');
-  if (titleDisplay) titleDisplay.textContent = `SEND-OFF YA ${brideName.toUpperCase()}`;
-
-  const familyDisplay = document.getElementById('card-family-name');
-  if (familyDisplay) {
-    const fam = event?.familyName || 'FAMILIA YA MR & MRS MARCUS NYAHENDE';
-    familyDisplay.textContent = fam.toUpperCase();
+  // 2. Official High-Resolution Card Image (Matches pristine local card exactly)
+  const officialCardImg = document.getElementById('official-card-img');
+  if (officialCardImg) {
+    officialCardImg.src = `/api/card/image/${encodeURIComponent(guest.id)}?v=20261013g`;
+    officialCardImg.alt = `Kadi Rasmi ya Mwaliko: Send-off ya ${brideName} - ${guest.name}`;
   }
 
-  // 3. Bride Image (Official Send-Off Portrait)
-  const brideImg = document.getElementById('bride-hero-img');
-  if (brideImg) {
-    brideImg.src = event?.bridePhoto || '/images/lilian_portrait_no_mic.jpg';
-    brideImg.alt = `Send-off ya ${brideName}`;
-  }
-
-  // 4. Guest Details Box
-  const guestNameEl = document.getElementById('guest-honor-name');
-  if (guestNameEl) guestNameEl.textContent = guest.name;
-
-  const guestTitleEl = document.getElementById('guest-honor-title');
-  if (guestTitleEl) {
-    if (guest.title && guest.title.trim() && guest.title !== 'Mualikwa') {
-      guestTitleEl.textContent = guest.title;
-      guestTitleEl.style.display = 'block';
-    } else {
-      guestTitleEl.style.display = 'none';
-    }
-  }
-
-  // 5. Seat Pill: Single or Double
-  const seatCount = Number(guest.seats) || 1;
-  const seatLabel = seatCount >= 2 ? 'MWALIKO: DOUBLE' : 'MWALIKO: SINGLE';
-  const seatTextEl = document.getElementById('guest-seat-text');
-  if (seatTextEl) seatTextEl.textContent = seatLabel;
-
-  // 6. Event Date & Time & Venue
-  let dateFormatted = 'Jumanne, 13 Oktoba 2026';
-  if (event?.weddingDate) {
-    const rawParts = String(event.weddingDate).split('T')[0].split('-');
-    let dateObj;
-    if (rawParts.length === 3) {
-      dateObj = new Date(Number(rawParts[0]), Number(rawParts[1]) - 1, Number(rawParts[2]), 12, 0, 0);
-    } else {
-      dateObj = new Date(event.weddingDate);
-    }
-    const days = ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'];
-    const months = ['Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni', 'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba'];
-    const dayName = days[dateObj.getDay()] || 'Jumanne';
-    const day = dateObj.getDate();
-    const monthName = months[dateObj.getMonth()] || 'Oktoba';
-    const year = dateObj.getFullYear();
-    dateFormatted = `${dayName}, ${day} ${monthName} ${year}`;
-  }
-
-  const timeFormatted = event?.receptionTime || 'Kuanzia Saa 18:30 Jioni';
-  const dtEl = document.getElementById('event-datetime-display');
-  if (dtEl) {
-    dtEl.innerHTML = `📅 ${dateFormatted} &bull; ⏰ ${timeFormatted}`;
-  }
-
-  const venueEl = document.getElementById('event-venue-display');
-  if (venueEl) {
-    venueEl.textContent = event?.receptionVenue || 'BRAGGING SOCIAL HALL, GOBA, DAR ES SALAAM';
-  }
-
-  const contactEl = document.getElementById('event-contact-display');
-  if (contactEl) {
-    const contact = event?.contactPhone || '0713 980 004';
-    contactEl.textContent = `Mawasiliano: ${contact}`;
-  }
-
-  // 7. Security Pass Code (Chini Kabisa) & Guest Number
-  const codeDigitsEl = document.getElementById('guest-code-digits');
-  if (codeDigitsEl) codeDigitsEl.textContent = guest.code || guest.id || '3001';
-
-  const guestNumEl = document.getElementById('guest-num-tag');
-  if (guestNumEl) guestNumEl.textContent = `• Namba ya Mgeni: #${guest.id || '1'}`;
-
-  // 8. CENTERED QR Pass Image (Uses instant-scan /api/qr/:id)
-  const qrImg = document.getElementById('qr-pass-img');
-  if (qrImg) {
-    qrImg.src = `/api/qr/${encodeURIComponent(guest.id)}`;
-    qrImg.alt = `QR Pass ya ${guest.name}`;
-  }
-
-  // 9. Download Button
+  // 3. Download Button
   const downloadBtn = document.getElementById('btn-download-card');
   if (downloadBtn) {
     const cleanGuestName = String(guest.name || 'Mualikwa').replace(/[^a-zA-Z0-9_-]/g, '_');
-    downloadBtn.href = `/api/card/image/${encodeURIComponent(guest.id)}`;
+    downloadBtn.href = `/api/card/image/${encodeURIComponent(guest.id)}?v=20261013g`;
     downloadBtn.download = `Kadi_Sendoff_Lilian_${cleanGuestName}.jpg`;
   }
 }
+
 
 // Background Music Player
 function setupMusicPlayer() {
