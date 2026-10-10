@@ -64,7 +64,16 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
   }
 
   // 2. WasenderAPI Gateway (Direct WhatsApp Web Session via wasenderapi.com)
-  if (waProvider === 'Wasender' && wasenderApiKey) {
+  if (waProvider === 'Wasender') {
+    if (!wasenderApiKey) {
+      logEntry.status = 'failed';
+      logEntry.provider = 'Wasender';
+      logEntry.responseMessage = 'WASENDER_API_KEY haipo. Weka API key ya Wasender kwenye .env au kwenye Mipangilio ya WhatsApp.';
+      db.whatsappLogs = db.whatsappLogs || [];
+      db.whatsappLogs.unshift(logEntry);
+      writeDB(db);
+      return { success: false, error: logEntry.responseMessage, log: logEntry };
+    }
     try {
       const endpoint = 'https://wasenderapi.com/api/send-message';
       const recipientNumber = formattedPhone.startsWith('+') ? formattedPhone : `+${formattedPhone}`;
@@ -285,12 +294,12 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
   }
 
   // Fallback if provider not matched
-  logEntry.status = 'delivered';
-  logEntry.responseMessage = 'Imesajiliwa kwenye kumbukumbu';
+  logEntry.status = 'failed';
+  logEntry.responseMessage = `Mtoa huduma '${waProvider}' hajatambuliwa au hana credentials sahihi. Ujumbe HAUJATUMWA.`;
   db.whatsappLogs = db.whatsappLogs || [];
   db.whatsappLogs.unshift(logEntry);
   writeDB(db);
-  return { success: true, mode: 'logged', log: logEntry };
+  return { success: false, mode: 'unmatched', error: logEntry.responseMessage, log: logEntry };
 }
 
 /**

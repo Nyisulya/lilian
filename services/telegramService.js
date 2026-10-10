@@ -269,6 +269,43 @@ function startPolling(intervalMs = 30000) {
   }, intervalMs);
 }
 
+/**
+ * Send RSVP confirmation notification to all registered Telegram chats
+ */
+async function sendRsvpNotification(guest, rsvpStatus) {
+  try {
+    const db = readDB();
+    const config = db.telegramConfig || {};
+    const chatIds = config.chatIds || [];
+    if (!chatIds.length) return;
+
+    const isYes = rsvpStatus === 'confirmed';
+    const statusText = isYes ? '✅ Ndiyo, Atahudhuria!' : '❌ Hatahudhuria';
+    const timeStr = new Date().toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' });
+    const table = (db.tables || []).find(t => t.id === guest.tableId);
+
+    const msg = `💌 <b>UTHIBITISHO MPYA WA MWALIKWA (RSVP)</b> 💌
+💍 <b>Send-off ya Lilian</b>
+
+👤 <b>Mualikwa:</b> ${escapeHtml(guest.name)}
+📱 <b>Simu:</b> ${escapeHtml(guest.phone || '-')}
+🔑 <b>Kodi ya Getini:</b> <code>${escapeHtml(guest.code || guest.id)}</code>
+📊 <b>Uthibitisho:</b> <b>${statusText}</b>
+🎟️ <b>Mwaliko:</b> ${Number(guest.seats) === 2 ? '👥 Double (Watu 2)' : '👤 Single (Mtu 1)'}
+📍 <b>Meza:</b> ${escapeHtml(table?.name || 'Haijapangwa')}
+⏰ <b>Muda:</b> ${timeStr}
+${guest.wishes ? `\n💬 <b>Ujumbe/Salamu:</b> <i>"${escapeHtml(guest.wishes)}"</i>` : ''}
+
+<i>Taarifa zimesasishwa moja kwa moja kwenye Dashibodi ya Kamati.</i>`;
+
+    for (const cid of chatIds) {
+      await sendTelegramMessage(cid, msg).catch(() => {});
+    }
+  } catch (e) {
+    console.error('Telegram RSVP notification error:', e.message);
+  }
+}
+
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
@@ -284,6 +321,7 @@ module.exports = {
   syncTelegramUpdates,
   sendTelegramMessage,
   sendDrinkOrderNotification,
+  sendRsvpNotification,
   sendTestNotification,
   startPolling,
   BOT_USERNAME

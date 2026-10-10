@@ -398,7 +398,7 @@ function renderGuestTable(guests) {
   const total = items.length;
 
   if (total === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px;">Hakuna mualikwa aliyepatikana.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px;">Hakuna mualikwa aliyepatikana.</td></tr>`;
     renderPaginationBar('pagination-guests', 0, 1, paginationState.guests.pageSize, 'setGuestsPage', 'setGuestsPageSize');
     return;
   }
@@ -425,6 +425,15 @@ function renderGuestTable(guests) {
       paymentBadge = `<span class="badge badge-warning">Anadaiwa Tsh ${balance.toLocaleString('sw-TZ')}</span>`;
     }
 
+    // RSVP Attendance Badge
+    let rsvpBadge = `<span class="badge" style="background: rgba(255,255,255,0.07); color: var(--text-muted); font-size: 0.74rem;">⏳ Hajajibu</span>`;
+    if (g.rsvpStatus === 'confirmed') {
+      rsvpBadge = `<span class="badge badge-success" style="font-weight: 700; font-size: 0.74rem;" title="Mgeni amethibitisha atahudhuria Send-off">✅ Ndiyo, Atakuja</span>`;
+    } else if (g.rsvpStatus === 'declined') {
+      rsvpBadge = `<span class="badge badge-danger" style="font-weight: 700; font-size: 0.74rem;" title="Mgeni amethibitisha hatahudhuria">❌ Hatafika</span>`;
+    }
+    const wishesHtml = g.wishes ? `<div style="font-size: 0.72rem; color: var(--gold-light); margin-top: 3px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(g.wishes)}">💬 "${escapeHtml(g.wishes)}"</div>` : '';
+
     return `
       <tr>
         <td style="font-weight: 700; color: var(--gold-light);">#${g.id}</td>
@@ -447,6 +456,10 @@ function renderGuestTable(guests) {
           </div>
         </td>
         <td>${paymentBadge}</td>
+        <td>
+          ${rsvpBadge}
+          ${wishesHtml}
+        </td>
         <td>
           <div class="table-actions">
             <button type="button" class="btn-action-wa" onclick="sendWhatsAppCard('${g.id}')" title="Tuma Kadi ya Picha kwa WhatsApp ya ${escapeHtml(g.name)}">

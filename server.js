@@ -157,6 +157,11 @@ app.get('/api/stats', (req, res) => {
     tableOccupancy[t.id] = { id: t.id, name: t.name, capacity: t.capacity, assigned: 0, checkedIn: 0 };
   });
 
+  let rsvpConfirmed = 0;
+  let rsvpDeclined = 0;
+  let rsvpPending = 0;
+  let rsvpConfirmedSeats = 0;
+
   guests.forEach(g => {
     const seats = Number(g.seats) || 1;
     const pledge = Number(g.pledgeAmount) || 0;
@@ -168,6 +173,16 @@ app.get('/api/stats', (req, res) => {
     totalPledges += pledge;
     totalPaid += paid;
     confirmedSeats += seats;
+
+    // RSVP Attendance counting
+    if (g.rsvpStatus === 'confirmed') {
+      rsvpConfirmed++;
+      rsvpConfirmedSeats += seats;
+    } else if (g.rsvpStatus === 'declined') {
+      rsvpDeclined++;
+    } else {
+      rsvpPending++;
+    }
 
     // Calculate actual seats entered
     const entered = (g.seatsCheckedIn !== undefined && g.seatsCheckedIn !== null)
@@ -211,6 +226,12 @@ app.get('/api/stats', (req, res) => {
     debtorsCount,
     totalDebtorsBalance,
     completedAmount,
+    rsvpStats: {
+      confirmed: rsvpConfirmed,
+      confirmedSeats: rsvpConfirmedSeats,
+      declined: rsvpDeclined,
+      pending: rsvpPending
+    },
     financials: {
       totalPledges,
       totalPaid,
@@ -731,6 +752,7 @@ app.post('/api/rsvp', (req, res) => {
   }
 
   guest.rsvpStatus = rsvpStatus || 'confirmed';
+  guest.rsvpAt = new Date().toISOString();
   if (guestCountAttending) {
     guest.guestCountAttending = Math.min(parseInt(guestCountAttending, 10), guest.seats);
   }
@@ -750,6 +772,12 @@ app.post('/api/rsvp', (req, res) => {
   }
 
   writeDB(db);
+
+  // Send instant real-time notification to Telegram bot
+  try {
+    telegramService.sendRsvpNotification(guest, guest.rsvpStatus).catch(() => {});
+  } catch (e) {}
+
   res.json({ success: true, message: 'Uthibitisho wako umepokelewa kikamilifu!', guest });
 });
 

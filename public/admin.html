@@ -278,6 +278,28 @@
               </a>
             </div>
 
+            <!-- 💌 Uthibitisho wa Uwepo (RSVP) Snapshot -->
+            <div class="dashboard-widget-card" style="border: 1px solid rgba(46, 204, 113, 0.45); background: linear-gradient(145deg, rgba(10, 36, 26, 0.9) 0%, rgba(4, 18, 12, 0.95) 100%);">
+              <div>
+                <div class="widget-card-header">
+                  <h4>💌 Uthibitisho wa Uwepo (RSVP)</h4>
+                  <span class="badge badge-success" id="dash-rsvp-confirmed-badge">0 Watakuja</span>
+                </div>
+                <div class="widget-main-stat" id="dash-rsvp-stat" style="color: #2ecc71;">0 Wamethibitisha</div>
+                <p class="widget-subtext">Wageni waliothibitisha au kukataa kuhudhuria kupitia link ya kadi.</p>
+                <div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
+                  <span class="badge badge-success" id="dash-rsvp-yes-count">✅ 0 Watakuja</span>
+                  <span class="badge badge-danger" id="dash-rsvp-no-count">❌ 0 Hawatofika</span>
+                  <span class="badge" id="dash-rsvp-pending-count" style="background: rgba(255,255,255,0.08); color: var(--text-muted);">⏳ 0 Bado</span>
+                </div>
+              </div>
+              <div style="margin-top: 14px;">
+                <a href="javascript:void(0)" onclick="filterGuestsByRsvp('confirmed')" class="widget-action-link" style="color: #2ecc71; font-weight: 700;">
+                  Onyesha Waliothibitisha Kuja (Jedwalini) ➔
+                </a>
+              </div>
+            </div>
+
             <!-- Taarifa za Benki & Malipo Snapshot -->
             <div class="dashboard-widget-card">
               <div>
@@ -346,6 +368,13 @@
           <option value="unpaid">Hawajalipa Kabisa</option>
         </select>
 
+        <select id="filter-guest-rsvp-select" class="form-control" style="width: auto;">
+          <option value="all">Hali Zote za Uwepo (RSVP)</option>
+          <option value="confirmed">✅ Ndiyo, Atakuja</option>
+          <option value="declined">❌ Hapana, Hatafika</option>
+          <option value="pending">⏳ Bado Hajajibu</option>
+        </select>
+
         <button class="btn btn-emerald btn-sm" onclick="openBulkInvitationModal()" title="Tuma SMS za mwaliko zenye kodi ya mlangoni kwa wageni wote 500 kwa mkupuo mmoja">
           🚀 Tuma SMS za Mwaliko (Wote)
         </button>
@@ -377,6 +406,7 @@
               <th>Namba ya Simu</th>
               <th>Meza & Mwaliko</th>
               <th>Hali ya Mchango</th>
+              <th>Uthibitisho (RSVP)</th>
               <th>Vitendo</th>
             </tr>
           </thead>
