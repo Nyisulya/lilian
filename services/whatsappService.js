@@ -41,8 +41,9 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
     responseMessage: ''
   };
 
-  const waProvider = config.provider || 'UltraMsg';
-  const waApiKey = process.env.WHATSAPP_API_KEY || (waProvider === 'UltraMsg'
+  const wasenderApiKey = process.env.WASENDER_API_KEY || config.wasenderApiKey || (config.provider === 'Wasender' ? config.apiKey : '');
+  const waProvider = config.provider || (wasenderApiKey ? 'Wasender' : 'UltraMsg');
+  const waApiKey = (waProvider === 'Wasender' ? wasenderApiKey : '') || process.env.WHATSAPP_API_KEY || (waProvider === 'UltraMsg'
     ? (config.ultraMsgApiKey || config.apiKey)
     : config.apiKey);
   const waInstanceId = process.env.WHATSAPP_INSTANCE_ID || config.instanceId;
@@ -62,7 +63,59 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
     return { success: true, mode: 'simulation', log: logEntry };
   }
 
-  // 2. UltraMsg Gateway (Easiest & Most Popular in Tanzania for Auto WhatsApp)
+  // 2. WasenderAPI Gateway (Direct WhatsApp Web Session via wasenderapi.com)
+  if (waProvider === 'Wasender' && wasenderApiKey) {
+    try {
+      const endpoint = 'https://wasenderapi.com/api/send-message';
+      const recipientNumber = formattedPhone.startsWith('+') ? formattedPhone : `+${formattedPhone}`;
+      
+      const payload = {
+        to: recipientNumber,
+        text: messageText
+      };
+
+      if (imageUrl && imageUrl.startsWith('http')) {
+        payload.imageUrl = imageUrl;
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${wasenderApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const resData = await response.json().catch(() => ({}));
+      if (response.ok && (resData.success === true || resData.data?.msgId)) {
+        logEntry.status = 'delivered';
+        logEntry.provider = 'Wasender';
+        logEntry.responseMessage = 'Imetumwa WhatsApp kwa mafanikio kupitia WasenderAPI';
+      } else {
+        logEntry.status = 'failed';
+        logEntry.provider = 'Wasender';
+        logEntry.responseMessage = resData.message || resData.error || `Hitilafu ya WasenderAPI (${response.status})`;
+      }
+
+      db.whatsappLogs = db.whatsappLogs || [];
+      db.whatsappLogs.unshift(logEntry);
+      writeDB(db);
+
+      return { success: response.ok && resData.success !== false, data: resData, log: logEntry };
+    } catch (err) {
+      console.error('WasenderAPI Exception:', err);
+      logEntry.status = 'failed';
+      logEntry.provider = 'Wasender';
+      logEntry.responseMessage = err.message || 'Hitilafu ya mtandao';
+      db.whatsappLogs = db.whatsappLogs || [];
+      db.whatsappLogs.unshift(logEntry);
+      writeDB(db);
+      return { success: false, error: err.message, log: logEntry };
+    }
+  }
+
+  // 3. UltraMsg Gateway (Easiest & Most Popular in Tanzania for Auto WhatsApp)
   if (waProvider === 'UltraMsg' && waInstanceId && waApiKey) {
     try {
       const rawInst = String(waInstanceId).trim();

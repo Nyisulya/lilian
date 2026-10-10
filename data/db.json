@@ -8321,13 +8321,9 @@
     ]
   },
   "whatsappConfig": {
-    "provider": "Meta",
+    "provider": "Wasender",
+    "wasenderApiKey": "",
     "simulationMode": false,
-    "phoneNumberId": "1366157206586450",
-    "wabaId": "984180751370116",
-    "apiKey": "",
-    "systemUrl": "https://lilian.nyisu.com",
-    "instanceId": "instance193809",
-    "ultraMsgApiKey": ""
+    "systemUrl": "https://lilian.nyisu.com"
   }
 }
