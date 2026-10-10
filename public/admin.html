@@ -743,36 +743,74 @@
 
     <!-- TAB: SMS LOGS & NEXTSMS OUTBOX -->
     <div class="tab-panel" id="tab-sms">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
         <div>
-          <h3 class="font-serif gold-text">Daftari la SMS Zilizotumwa (SMS Outbox)</h3>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">
-            Fuatilia SMS zote zilizotumwa kiotomatiki kwa ajili ya malipo ya awali, kukamilisha ahadi, au kukumbusha madeni.
-          </p>
+          <h3 class="font-serif gold-text" id="logs-panel-title">Daftari la Ujumbe Uliotumwa (Outbox)</h3>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button type="button" class="btn btn-sm btn-whatsapp" id="btn-show-wa-logs" onclick="switchLogsType('whatsapp')" style="font-weight: 700;">
+              💬 Daftari la WhatsApp
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-gold" id="btn-show-sms-logs" onclick="switchLogsType('sms')" style="font-weight: 600;">
+              📨 Daftari la SMS
+            </button>
+          </div>
         </div>
-        <button class="btn btn-emerald btn-sm" onclick="loadSmsLogs()">
-          🔄 Sasisha Daftari la SMS
-        </button>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <div id="wa-filter-buttons" style="display: flex; gap: 6px;">
+            <button type="button" class="btn btn-sm btn-gold" id="wa-filter-all" onclick="filterWaLogs('all')">Wote (<span id="wa-count-all">0</span>)</button>
+            <button type="button" class="btn btn-sm btn-outline-gold" id="wa-filter-delivered" onclick="filterWaLogs('delivered')">✓ Zilizofika (<span id="wa-count-delivered">0</span>)</button>
+            <button type="button" class="btn btn-sm btn-outline-gold" id="wa-filter-failed" onclick="filterWaLogs('failed')">✕ Zilizokwama (<span id="wa-count-failed">0</span>)</button>
+          </div>
+          <button class="btn btn-emerald btn-sm" id="btn-refresh-logs" onclick="refreshCurrentLogs()">
+            🔄 Sasisha Daftari
+          </button>
+        </div>
       </div>
 
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Muda</th>
-              <th>Mpokeaji</th>
-              <th>Namba ya Simu</th>
-              <th>Aina ya SMS</th>
-              <th>Ujumbe Uliotumwa</th>
-              <th>Hali (Status)</th>
-            </tr>
-          </thead>
-          <tbody id="sms-logs-table-body">
-            <!-- Populated by admin.js -->
-          </tbody>
-        </table>
+      <!-- WHATSAPP LOGS TABLE -->
+      <div id="wa-logs-section">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Muda</th>
+                <th>Mgeni</th>
+                <th>Namba ya WhatsApp</th>
+                <th>Mtoa Huduma</th>
+                <th>Aina ya Ujumbe</th>
+                <th>Hali (Status)</th>
+                <th>Majibu / Hitilafu</th>
+              </tr>
+            </thead>
+            <tbody id="wa-logs-table-body">
+              <!-- Populated by admin.js -->
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination-bar" id="pagination-wa"></div>
       </div>
-      <div class="table-pagination-bar" id="pagination-sms"></div>
+
+      <!-- SMS LOGS SECTION -->
+      <div id="sms-logs-section" style="display: none;">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Muda</th>
+                <th>Mpokeaji</th>
+                <th>Namba ya Simu</th>
+                <th>Aina ya SMS</th>
+                <th>Ujumbe Uliotumwa</th>
+                <th>Hali (Status)</th>
+              </tr>
+            </thead>
+            <tbody id="sms-logs-table-body">
+              <!-- Populated by admin.js -->
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination-bar" id="pagination-sms"></div>
+      </div>
     </div>
 
     <!-- TAB 3: SEATING & TABLE ALLOCATION -->

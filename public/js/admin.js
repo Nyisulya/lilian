@@ -13,6 +13,7 @@ const paginationState = {
   guests: { page: 1, pageSize: 10, data: [] },
   pledges: { page: 1, pageSize: 10, data: [] },
   sms: { page: 1, pageSize: 10, data: [] },
+  whatsapp: { page: 1, pageSize: 10, data: [], allLogs: [], filter: 'all' },
   orders: { page: 1, pageSize: 10, data: [] },
   finLedger: { page: 1, pageSize: 10, data: [] },
   finContributors: { page: 1, pageSize: 10, data: [] }
@@ -1699,6 +1700,171 @@ function renderSmsLogsTable() {
   renderSmsLogs();
 }
 
+// -------------------------------------------------------------
+// WhatsApp Logs Management & UI
+// -------------------------------------------------------------
+let currentLogsType = 'whatsapp';
+
+function switchLogsType(type) {
+  currentLogsType = type;
+  const waSec = document.getElementById('wa-logs-section');
+  const smsSec = document.getElementById('sms-logs-section');
+  const btnWa = document.getElementById('btn-show-wa-logs');
+  const btnSms = document.getElementById('btn-show-sms-logs');
+  const waFilters = document.getElementById('wa-filter-buttons');
+  const title = document.getElementById('logs-panel-title');
+
+  if (type === 'whatsapp') {
+    if (waSec) waSec.style.display = 'block';
+    if (smsSec) smsSec.style.display = 'none';
+    if (btnWa) { btnWa.className = 'btn btn-sm btn-whatsapp'; btnWa.style.fontWeight = '700'; }
+    if (btnSms) { btnSms.className = 'btn btn-sm btn-outline-gold'; btnSms.style.fontWeight = '600'; }
+    if (waFilters) waFilters.style.display = 'flex';
+    if (title) title.innerText = 'Daftari la WhatsApp (Meta & Wasender Outbox)';
+    loadWhatsAppLogs();
+  } else {
+    if (waSec) waSec.style.display = 'none';
+    if (smsSec) smsSec.style.display = 'block';
+    if (btnWa) { btnWa.className = 'btn btn-sm btn-outline-gold'; btnWa.style.fontWeight = '600'; }
+    if (btnSms) { btnSms.className = 'btn btn-sm btn-emerald'; btnSms.style.fontWeight = '700'; }
+    if (waFilters) waFilters.style.display = 'none';
+    if (title) title.innerText = 'Daftari la SMS Zilizotumwa (NextSMS Outbox)';
+    loadSmsLogs();
+  }
+}
+
+function refreshCurrentLogs() {
+  if (currentLogsType === 'whatsapp') {
+    loadWhatsAppLogs();
+  } else {
+    loadSmsLogs();
+  }
+}
+
+async function loadWhatsAppLogs() {
+  try {
+    const res = await fetch('/api/whatsapp/logs');
+    const logs = await res.json();
+    paginationState.whatsapp.allLogs = logs || [];
+
+    // Calculate status counts
+    const total = logs.length;
+    const delivered = logs.filter(l => l.status === 'delivered').length;
+    const failed = logs.filter(l => l.status === 'failed').length;
+
+    const elTotal = document.getElementById('wa-count-all');
+    const elDelivered = document.getElementById('wa-count-delivered');
+    const elFailed = document.getElementById('wa-count-failed');
+    if (elTotal) elTotal.innerText = total;
+    if (elDelivered) elDelivered.innerText = delivered;
+    if (elFailed) elFailed.innerText = failed;
+
+    applyWaFilter();
+  } catch (err) {
+    console.error('Error loading WhatsApp logs:', err);
+  }
+}
+
+function filterWaLogs(filter) {
+  paginationState.whatsapp.filter = filter;
+  paginationState.whatsapp.page = 1;
+
+  ['all', 'delivered', 'failed'].forEach(f => {
+    const btn = document.getElementById(`wa-filter-${f}`);
+    if (btn) {
+      btn.className = (f === filter) ? 'btn btn-sm btn-gold' : 'btn btn-sm btn-outline-gold';
+    }
+  });
+
+  applyWaFilter();
+}
+
+function applyWaFilter() {
+  const filter = paginationState.whatsapp.filter || 'all';
+  const all = paginationState.whatsapp.allLogs || [];
+  let filtered = all;
+  if (filter === 'delivered') {
+    filtered = all.filter(l => l.status === 'delivered');
+  } else if (filter === 'failed') {
+    filtered = all.filter(l => l.status === 'failed');
+  }
+  paginationState.whatsapp.data = filtered;
+  renderWhatsAppLogs();
+}
+
+function renderWhatsAppLogs() {
+  const tbody = document.getElementById('wa-logs-table-body');
+  if (!tbody) return;
+
+  const items = paginationState.whatsapp.data || [];
+  const total = items.length;
+
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Bado hakuna kumbukumbu za WhatsApp zilizopatikana kwenye kundi hili.</td></tr>`;
+    renderPaginationBar('pagination-wa', 0, 1, paginationState.whatsapp.pageSize, 'setWaPage', 'setWaPageSize');
+    return;
+  }
+
+  const totalPages = Math.ceil(total / paginationState.whatsapp.pageSize) || 1;
+  if (paginationState.whatsapp.page > totalPages) paginationState.whatsapp.page = totalPages;
+  if (paginationState.whatsapp.page < 1) paginationState.whatsapp.page = 1;
+
+  const paginated = paginateArray(items, paginationState.whatsapp.page, paginationState.whatsapp.pageSize);
+
+  tbody.innerHTML = paginated.map(l => {
+    const timeStr = new Date(l.timestamp).toLocaleString('sw-TZ', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const prov = l.provider || 'WhatsApp';
+    let provBadge = `<span class="badge badge-gold">${escapeHtml(prov)}</span>`;
+    if (prov === 'Meta') {
+      provBadge = `<span class="badge badge-success">✓ Meta Cloud</span>`;
+    } else if (prov === 'Wasender') {
+      provBadge = `<span class="badge badge-info">Wasender</span>`;
+    } else if (prov === 'UltraMsg') {
+      provBadge = `<span class="badge badge-secondary">UltraMsg</span>`;
+    }
+
+    const statusBadge = l.status === 'delivered'
+      ? `<span class="badge badge-success">✓ Imefika</span>`
+      : `<span class="badge badge-danger">✕ Imekwama</span>`;
+
+    let respMsg = l.responseMessage || '';
+    if (typeof respMsg === 'object') {
+      respMsg = JSON.stringify(respMsg);
+    }
+
+    return `
+      <tr>
+        <td style="white-space: nowrap; font-size: 0.8rem;">${timeStr}</td>
+        <td><strong>${escapeHtml(l.recipientName || 'Mualikwa')}</strong></td>
+        <td><code style="color: var(--gold-light);">${escapeHtml(l.recipientPhone || '')}</code></td>
+        <td>${provBadge}</td>
+        <td style="font-size: 0.82rem;">${escapeHtml(l.messageType || 'Mwaliko wa Kadi')}</td>
+        <td>${statusBadge}</td>
+        <td style="font-size: 0.8rem; color: var(--text-secondary); max-width: 280px; word-break: break-word;">${escapeHtml(respMsg)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  renderPaginationBar('pagination-wa', total, paginationState.whatsapp.page, paginationState.whatsapp.pageSize, 'setWaPage', 'setWaPageSize');
+}
+
+function setWaPage(p) {
+  paginationState.whatsapp.page = p;
+  renderWhatsAppLogs();
+}
+
+function setWaPageSize(s) {
+  paginationState.whatsapp.pageSize = s;
+  paginationState.whatsapp.page = 1;
+  renderWhatsAppLogs();
+}
+
 // Load SMS Configuration
 async function loadSmsConfig() {
   try {
@@ -1854,7 +2020,11 @@ function setupTabs() {
       if (btn.dataset.target === 'tab-dashboard') {
         renderDashboardOverview();
       } else if (btn.dataset.target === 'tab-sms') {
-        loadSmsLogs();
+        if (currentLogsType === 'whatsapp') {
+          loadWhatsAppLogs();
+        } else {
+          loadSmsLogs();
+        }
       } else if (btn.dataset.target === 'tab-finance-report') {
         renderFinancialReportView();
       } else if (btn.dataset.target === 'tab-drinks') {
