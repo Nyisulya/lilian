@@ -204,12 +204,12 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
   // 3. Meta Official Cloud API
   const metaToken = process.env.WHATSAPP_TOKEN || config.apiKey;
   const metaPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || config.phoneNumberId;
-  const useTemplate = options.useTemplate ?? config.useTemplate ?? (config.provider === 'Meta');
-  const metaTemplate = options.templateName || config.templateName || 'sendoff_lilian_invite';
+  const useTemplate = options.useTemplate ?? config.useTemplate ?? (waProvider === 'Meta');
+  const metaTemplate = options.templateName || config.templateName || 'mwaliko_wa_sherehe';
   const metaLang = options.templateLanguage || config.templateLanguage || 'sw';
   const metaParams = options.templateParams || config.templateParams;
 
-  if (config.provider === 'Meta' && metaPhoneId && metaToken) {
+  if (waProvider === 'Meta' && metaPhoneId && metaToken) {
     try {
       const endpoint = `https://graph.facebook.com/v19.0/${metaPhoneId}/messages`;
       
@@ -350,7 +350,7 @@ Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
   const sendOptions = {
     cardLocalPath: fs.existsSync(cardLocalPath) ? cardLocalPath : null,
     useTemplate: config.provider === 'Meta',
-    templateName: config.templateName || 'sendoff_lilian_invite',
+    templateName: config.templateName || 'mwaliko_wa_sherehe',
     templateLanguage: config.templateLanguage || 'sw',
     headerImageUrl: publicCardUrl,
     templateParams: [

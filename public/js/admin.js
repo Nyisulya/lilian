@@ -1120,7 +1120,7 @@ async function sendSingleGuestWhatsAppViaApi() {
   const origHtml = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '⏳ Inatuma kupitia Wasender API...';
+    btn.innerHTML = '⏳ Inatuma kupitia WhatsApp API...';
   }
 
   try {
@@ -1130,7 +1130,7 @@ async function sendSingleGuestWhatsAppViaApi() {
     });
     const data = await res.json();
     if (res.ok && data.success) {
-      alert(`🎉 MAFANIKIO!\n\nKadi ya Picha na ujumbe wa mwaliko vimetumwa kiotomatiki kwa ${guest.name} (${guest.phone}) kupitia Wasender API!`);
+      alert(`🎉 MAFANIKIO!\n\nKadi ya Picha na ujumbe wa mwaliko vimetumwa kiotomatiki kwa ${guest.name} (${guest.phone}) kupitia WhatsApp API!`);
     } else {
       alert(`Hitilafu ya utumaji: ${data.error || data.message || 'Haikufanikiwa'}`);
     }
