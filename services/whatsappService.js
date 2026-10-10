@@ -69,13 +69,34 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
       const endpoint = 'https://wasenderapi.com/api/send-message';
       const recipientNumber = formattedPhone.startsWith('+') ? formattedPhone : `+${formattedPhone}`;
       
+      let finalImageUrl = imageUrl;
+      if (options.cardLocalPath && fs.existsSync(options.cardLocalPath)) {
+        try {
+          const fileBuf = fs.readFileSync(options.cardLocalPath);
+          const upRes = await fetch('https://wasenderapi.com/api/upload', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${wasenderApiKey}`,
+              'Content-Type': 'image/jpeg'
+            },
+            body: fileBuf
+          });
+          const upData = await upRes.json().catch(() => ({}));
+          if (upData && upData.publicUrl) {
+            finalImageUrl = upData.publicUrl;
+          }
+        } catch (e) {
+          console.warn('Wasender direct upload fallback:', e);
+        }
+      }
+
       const payload = {
         to: recipientNumber,
         text: messageText
       };
 
-      if (imageUrl && imageUrl.startsWith('http')) {
-        payload.imageUrl = imageUrl;
+      if (finalImageUrl && finalImageUrl.startsWith('http')) {
+        payload.imageUrl = finalImageUrl;
       }
 
       const response = await fetch(endpoint, {
@@ -308,6 +329,9 @@ Uthibitisho wa kadi yako ya mwaliko wa Send-off ya Lilian umeambatanishwa hapa. 
 ${venue}
 👉 ${mapsUrl}
 
+✍️ *Tafadhali bofya link hii kuthibitisha uwepo wako:*
+👉 ${systemUrl}/confirm/${guestCode}
+
 📖 Bonyeza link hii kuona hadithi nzuri na picha za Lilian:
 👉 ${systemUrl}
 
@@ -315,6 +339,7 @@ Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
 
   const publicCardUrl = `${systemUrl}/images/cards/card_${guest.id}.jpg`;
   const sendOptions = {
+    cardLocalPath: fs.existsSync(cardLocalPath) ? cardLocalPath : null,
     useTemplate: config.provider === 'Meta',
     templateName: config.templateName || 'sendoff_lilian_invite',
     templateLanguage: config.templateLanguage || 'sw',
