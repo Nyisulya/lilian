@@ -1092,6 +1092,46 @@ async function shareCardToWhatsApp() {
 }
 
 /**
+ * Automated Direct Dispatch via Wasender API for a single active guest
+ */
+async function sendSingleGuestWhatsAppViaApi() {
+  if (!activeSendoffGuest) return;
+  const guest = activeSendoffGuest;
+  const phone = (guest.phone || '').trim();
+  if (!phone || phone.replace(/[^0-9]/g, '').length < 9) {
+    alert(`Mgeni huyu (${guest.name}) hana namba sahihi ya WhatsApp.`);
+    return;
+  }
+
+  const btn = document.getElementById('btn-api-send-wa');
+  const origHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Inatuma kupitia Wasender API...';
+  }
+
+  try {
+    const res = await fetch(`/api/whatsapp/send-invitation/${encodeURIComponent(guest.id)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert(`🎉 MAFANIKIO!\n\nKadi ya Picha na ujumbe wa mwaliko vimetumwa kiotomatiki kwa ${guest.name} (${guest.phone}) kupitia Wasender API!`);
+    } else {
+      alert(`Hitilafu ya utumaji: ${data.error || data.message || 'Haikufanikiwa'}`);
+    }
+  } catch (err) {
+    alert(`Hitilafu ya mtandao: ${err.message}`);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
+    }
+  }
+}
+
+/**
  * Convert JPG blob to PNG blob (needed for clipboard API which requires PNG)
  */
 function convertJpgToPng(jpgBlob) {

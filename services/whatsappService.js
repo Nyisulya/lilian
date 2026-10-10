@@ -377,8 +377,8 @@ async function sendAllCompletedWhatsAppInvitations() {
     try {
       const res = await sendFullWhatsAppInvitation(guest);
       results.push({ guestId: guest.id, name: guest.name, phone: guest.phone, success: res.success });
-      // 1.5s delay to be safe and avoid rate limiting
-      await new Promise(r => setTimeout(r, 1500));
+      // 5.0s delay for Wasender account protection and anti-ban policy
+      await new Promise(r => setTimeout(r, 5000));
     } catch (err) {
       results.push({ guestId: guest.id, name: guest.name, phone: guest.phone, success: false, error: err.message });
     }
