@@ -769,9 +769,8 @@ app.post('/api/whatsapp/webhook', (req, res) => {
   res.sendStatus(200);
 
   const body = req.body;
-  if (!body || body.object !== 'whatsapp_business_account') {
-    return;
-  }
+  if (!body) return;
+  console.log('📥 [WHATSAPP WEBHOOK POST RECEIVED]:', JSON.stringify(body).slice(0, 300));
 
   try {
     const entries = body.entry || [];
