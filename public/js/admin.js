@@ -1709,35 +1709,51 @@ function switchLogsType(type) {
   currentLogsType = type;
   const waSec = document.getElementById('wa-logs-section');
   const smsSec = document.getElementById('sms-logs-section');
+  const inboxSec = document.getElementById('wa-inbox-section');
   const btnWa = document.getElementById('btn-show-wa-logs');
   const btnSms = document.getElementById('btn-show-sms-logs');
+  const btnInbox = document.getElementById('btn-show-inbox');
   const waFilters = document.getElementById('wa-filter-buttons');
+  const inboxFilters = document.getElementById('inbox-filter-buttons');
   const title = document.getElementById('logs-panel-title');
+
+  if (waSec) waSec.style.display = 'none';
+  if (smsSec) smsSec.style.display = 'none';
+  if (inboxSec) inboxSec.style.display = 'none';
+  if (waFilters) waFilters.style.display = 'none';
+  if (inboxFilters) inboxFilters.style.display = 'none';
+
+  if (btnWa) { btnWa.className = 'btn btn-sm btn-outline-gold'; btnWa.style.fontWeight = '600'; }
+  if (btnSms) { btnSms.className = 'btn btn-sm btn-outline-gold'; btnSms.style.fontWeight = '600'; }
+  if (btnInbox) { btnInbox.className = 'btn btn-sm btn-outline-gold'; btnInbox.style.fontWeight = '600'; }
 
   if (type === 'whatsapp') {
     if (waSec) waSec.style.display = 'block';
-    if (smsSec) smsSec.style.display = 'none';
     if (btnWa) { btnWa.className = 'btn btn-sm btn-whatsapp'; btnWa.style.fontWeight = '700'; }
-    if (btnSms) { btnSms.className = 'btn btn-sm btn-outline-gold'; btnSms.style.fontWeight = '600'; }
     if (waFilters) waFilters.style.display = 'flex';
     if (title) title.innerText = 'Daftari la WhatsApp (Meta & Wasender Outbox)';
     loadWhatsAppLogs();
-  } else {
-    if (waSec) waSec.style.display = 'none';
+  } else if (type === 'sms') {
     if (smsSec) smsSec.style.display = 'block';
-    if (btnWa) { btnWa.className = 'btn btn-sm btn-outline-gold'; btnWa.style.fontWeight = '600'; }
     if (btnSms) { btnSms.className = 'btn btn-sm btn-emerald'; btnSms.style.fontWeight = '700'; }
-    if (waFilters) waFilters.style.display = 'none';
     if (title) title.innerText = 'Daftari la SMS Zilizotumwa (NextSMS Outbox)';
     loadSmsLogs();
+  } else if (type === 'inbox') {
+    if (inboxSec) inboxSec.style.display = 'block';
+    if (btnInbox) { btnInbox.className = 'btn btn-sm btn-gold'; btnInbox.style.fontWeight = '700'; }
+    if (inboxFilters) inboxFilters.style.display = 'flex';
+    if (title) title.innerText = 'Majibu ya Wageni (WhatsApp Inbox)';
+    loadWhatsAppInbox();
   }
 }
 
 function refreshCurrentLogs() {
   if (currentLogsType === 'whatsapp') {
     loadWhatsAppLogs();
-  } else {
+  } else if (currentLogsType === 'sms') {
     loadSmsLogs();
+  } else if (currentLogsType === 'inbox') {
+    loadWhatsAppInbox();
   }
 }
 
@@ -1863,6 +1879,190 @@ function setWaPageSize(s) {
   paginationState.whatsapp.pageSize = s;
   paginationState.whatsapp.page = 1;
   renderWhatsAppLogs();
+}
+
+// -------------------------------------------------------------
+// WhatsApp Inbox (Majibu na Malalamiko ya Wageni)
+// -------------------------------------------------------------
+let allInboxData = [];
+let inboxFilter = 'all';
+
+async function loadWhatsAppInbox() {
+  try {
+    const res = await fetch('/api/whatsapp/inbox');
+    const inbox = await res.json();
+    allInboxData = inbox || [];
+
+    const total = allInboxData.length;
+    const unread = allInboxData.filter(m => m.status === 'unread').length;
+    const replied = allInboxData.filter(m => m.status === 'replied').length;
+
+    const elTotal = document.getElementById('inbox-count-all');
+    const elUnread = document.getElementById('inbox-count-unread');
+    const elReplied = document.getElementById('inbox-count-replied');
+    const elBadge = document.getElementById('wa-inbox-badge');
+
+    if (elTotal) elTotal.innerText = total;
+    if (elUnread) elUnread.innerText = unread;
+    if (elReplied) elReplied.innerText = replied;
+
+    if (elBadge) {
+      if (unread > 0) {
+        elBadge.innerText = unread;
+        elBadge.style.display = 'inline-block';
+      } else {
+        elBadge.style.display = 'none';
+      }
+    }
+
+    renderWhatsAppInbox();
+  } catch (err) {
+    console.error('Error loading WhatsApp inbox:', err);
+  }
+}
+
+function filterInboxLogs(filter) {
+  inboxFilter = filter;
+  ['all', 'unread', 'replied'].forEach(f => {
+    const btn = document.getElementById(`inbox-filter-${f}`);
+    if (btn) {
+      btn.className = (f === filter) ? 'btn btn-sm btn-gold' : 'btn btn-sm btn-outline-gold';
+    }
+  });
+  renderWhatsAppInbox();
+}
+
+function renderWhatsAppInbox() {
+  const tbody = document.getElementById('wa-inbox-table-body');
+  if (!tbody) return;
+
+  let items = allInboxData;
+  if (inboxFilter === 'unread') {
+    items = items.filter(m => m.status === 'unread');
+  } else if (inboxFilter === 'replied') {
+    items = items.filter(m => m.status === 'replied');
+  }
+
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--text-muted);">
+      <div style="font-size: 1.6rem; margin-bottom: 8px;">📭</div>
+      Bado hakuna meseji zilizopokelewa kwenye kundi hili.<br>
+      <small style="color: var(--text-secondary); display: inline-block; margin-top: 6px;">Hakikisha umeunganisha Callback URL kwenye Meta Developer Portal ili meseji zianze kumiminika hapa.</small>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = items.map(m => {
+    const timeStr = new Date(m.timestamp).toLocaleString('sw-TZ', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    let statusBadge = '<span class="badge badge-danger">🔴 Mpya</span>';
+    if (m.status === 'replied') {
+      statusBadge = '<span class="badge badge-success">✓ Amejibiwa</span>';
+    } else if (m.status === 'read') {
+      statusBadge = '<span class="badge badge-secondary">Imeonekana</span>';
+    }
+
+    const tableBadge = m.guestTable 
+      ? `<span class="badge badge-gold">${escapeHtml(m.guestTable)}</span>`
+      : `<span style="color: var(--text-muted); font-size: 0.8rem;">-</span>`;
+
+    const phoneClean = escapeHtml(m.senderPhone || '');
+    const guestName = escapeHtml(m.senderName || 'Mgeni');
+    const msgEscaped = escapeHtml(m.messageText || '');
+
+    return `
+      <tr style="${m.status === 'unread' ? 'background: rgba(255, 215, 0, 0.04);' : ''}">
+        <td style="white-space: nowrap; font-size: 0.8rem;">${timeStr}</td>
+        <td><strong>${guestName}</strong></td>
+        <td><code style="color: var(--gold-light);">${phoneClean}</code></td>
+        <td>${tableBadge}</td>
+        <td style="font-size: 0.9rem; max-width: 320px; word-break: break-word;">
+          <div style="font-weight: 500;">${msgEscaped}</div>
+          ${m.replyText ? `<div style="font-size: 0.78rem; color: #25D366; margin-top: 5px;">↳ Jibu lako: ${escapeHtml(m.replyText)}</div>` : ''}
+        </td>
+        <td>${statusBadge}</td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="btn btn-sm btn-whatsapp" onclick="replyWhatsAppGuest('${phoneClean}', '${guestName.replace(/'/g, "\\'")}', '${m.id}')" title="Mwandikie mgeni jibu la haraka">
+            💬 Jibu
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteInboxMessage('${m.id}')" title="Futa ujumbe huu" style="margin-left: 4px; padding: 4px 8px;">
+            🗑️
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function replyWhatsAppGuest(phone, guestName, inboxId) {
+  const replyText = prompt(`Mwandikie ${guestName} (${phone}) jibu:\n\n(Ujumbe utatumwa bure moja kwa moja kwenye WhatsApp yake kupitia Meta API):`);
+  if (!replyText || !replyText.trim()) return;
+
+  try {
+    showToast('Inatuma jibu kwa mgeni...', 'info');
+    const res = await fetch('/api/whatsapp/inbox/reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: phone,
+        message: replyText.trim(),
+        inboxId: inboxId
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`Jibu limetumwa kikamilifu kwa ${guestName}!`, 'success');
+      loadWhatsAppInbox();
+    } else {
+      showToast(data.error || data.message || 'Hitilafu ya utumaji', 'error');
+    }
+  } catch (err) {
+    showToast('Hitilafu ya mtandao: ' + err.message, 'error');
+  }
+}
+
+async function markAllInboxRead() {
+  try {
+    await fetch('/api/whatsapp/inbox/mark-read', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: 'all' })
+    });
+    showToast('Meseji zote zimewekwa kuwa zimesomwa.', 'success');
+    loadWhatsAppInbox();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function deleteInboxMessage(id) {
+  if (!confirm('Una uhakika unataka kufuta ujumbe huu?')) return;
+  try {
+    await fetch(`/api/whatsapp/inbox/${id}`, { method: 'DELETE' });
+    showToast('Ujumbe umefutwa.', 'info');
+    loadWhatsAppInbox();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function copyWebhookUrl() {
+  const el = document.getElementById('webhook-callback-url');
+  const url = el ? el.innerText : 'https://lilian.nyisu.com/api/whatsapp/webhook';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Callback URL imenakiliwa kwenye clipboard!', 'success');
+    }).catch(() => {
+      prompt('Nakili Callback URL hii:', url);
+    });
+  } else {
+    prompt('Nakili Callback URL hii:', url);
+  }
 }
 
 // Load SMS Configuration
@@ -3854,6 +4054,14 @@ window.openAddGuestModal = openAddGuestModal;
 window.openEditGuestModal = openEditGuestModal;
 window.openPaymentModal = openPaymentModal;
 window.syncGitDatabase = syncGitDatabase;
+window.switchLogsType = switchLogsType;
+window.filterWaLogs = filterWaLogs;
+window.filterInboxLogs = filterInboxLogs;
+window.replyWhatsAppGuest = replyWhatsAppGuest;
+window.markAllInboxRead = markAllInboxRead;
+window.deleteInboxMessage = deleteInboxMessage;
+window.copyWebhookUrl = copyWebhookUrl;
+window.loadWhatsAppInbox = loadWhatsAppInbox;
 
 
 

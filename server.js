@@ -737,6 +737,212 @@ app.post('/api/whatsapp/test', async (req, res) => {
   }
 });
 
+// ============================================================
+// META WHATSAPP CLOUD API - WEBHOOK & INBOX
+// ============================================================
+
+// Webhook Verification (Meta GET Challenge)
+app.get('/api/whatsapp/webhook', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  const db = readDB();
+  const config = db.whatsappConfig || {};
+  const expectedToken = process.env.WHATSAPP_VERIFY_TOKEN || config.verifyToken || 'harusi_whatsapp_token_2026';
+
+  if (mode && token) {
+    if (mode === 'subscribe' && token === expectedToken) {
+      console.log('✅ [WHATSAPP WEBHOOK] Verified successfully by Meta!');
+      return res.status(200).send(challenge);
+    } else {
+      console.warn('❌ [WHATSAPP WEBHOOK] Verification token mismatch:', { received: token, expected: expectedToken });
+      return res.sendStatus(403);
+    }
+  }
+  res.status(400).send('Invalid verification request');
+});
+
+// Incoming Message Receiver (Meta POST Webhook)
+app.post('/api/whatsapp/webhook', (req, res) => {
+  // Always return 200 immediately to prevent Meta retry floods
+  res.sendStatus(200);
+
+  const body = req.body;
+  if (!body || body.object !== 'whatsapp_business_account') {
+    return;
+  }
+
+  try {
+    const entries = body.entry || [];
+    for (const entry of entries) {
+      const changes = entry.changes || [];
+      for (const change of changes) {
+        const val = change.value;
+        if (!val) continue;
+
+        // Process incoming messages
+        if (val.messages && Array.isArray(val.messages)) {
+          const contacts = val.contacts || [];
+          const contactMap = {};
+          contacts.forEach(c => {
+            if (c.wa_id) contactMap[c.wa_id] = c.profile?.name || '';
+          });
+
+          const db = readDB();
+          db.whatsappInbox = db.whatsappInbox || [];
+
+          for (const msg of val.messages) {
+            const senderPhone = String(msg.from || '').trim();
+            const senderName = contactMap[senderPhone] || '';
+            const msgId = msg.id || `inbox-msg-${Date.now()}`;
+            const timestamp = msg.timestamp ? new Date(parseInt(msg.timestamp, 10) * 1000).toISOString() : new Date().toISOString();
+
+            let text = '';
+            const msgType = msg.type || 'text';
+            if (msg.type === 'text') {
+              text = msg.text?.body || '';
+            } else if (msg.type === 'button') {
+              text = msg.button?.text || '[Kitufe kilichobonyezwa]';
+            } else if (msg.type === 'interactive') {
+              text = msg.interactive?.button_reply?.title || msg.interactive?.list_reply?.title || '[Jibu la Kitufe]';
+            } else if (msg.type === 'image') {
+              text = msg.image?.caption ? `📷 [Picha]: ${msg.image.caption}` : '📷 [Picha imetumwa]';
+            } else if (msg.type === 'audio') {
+              text = '🎙️ [Ujumbe wa sauti / Voice note]';
+            } else if (msg.type === 'video') {
+              text = '🎥 [Video imetumwa]';
+            } else if (msg.type === 'document') {
+              text = '📄 [Waraka / Faili limetumwa]';
+            } else if (msg.type === 'location') {
+              text = `📍 [Eneo / Mahali]: ${msg.location?.name || ''} (${msg.location?.latitude}, ${msg.location?.longitude})`;
+            } else {
+              text = `[${msgType}]`;
+            }
+
+            // Match guest from database by phone
+            const cleanSender = senderPhone.replace(/[^0-9]/g, '');
+            const guest = (db.guests || []).find(g => {
+              const p = String(g.phone || '').replace(/[^0-9]/g, '');
+              return p && (p === cleanSender || cleanSender.endsWith(p) || p.endsWith(cleanSender));
+            });
+
+            // Prevent duplicate message entries
+            if (!db.whatsappInbox.some(m => m.msgId === msgId)) {
+              db.whatsappInbox.unshift({
+                id: `inbox-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                msgId: msgId,
+                timestamp: timestamp,
+                senderPhone: senderPhone,
+                senderName: senderName || (guest ? guest.name : 'Mgeni'),
+                guestId: guest ? guest.id : null,
+                guestTable: guest ? (guest.table || guest.tableName || 'Haijatengwa') : null,
+                guestSeats: guest ? guest.seats : null,
+                messageText: text,
+                rawType: msgType,
+                status: 'unread'
+              });
+              console.log(`📩 [WHATSAPP INBOX] Ujumbe kutoka kwa ${senderName || (guest ? guest.name : senderPhone)}: "${text}"`);
+            }
+          }
+          writeDB(db);
+        }
+
+        // Process message delivery status updates from Meta
+        if (val.statuses && Array.isArray(val.statuses)) {
+          const db = readDB();
+          let updated = false;
+          db.whatsappLogs = db.whatsappLogs || [];
+          for (const st of val.statuses) {
+            const stId = st.id;
+            const newStatus = st.status; // 'sent', 'delivered', 'read', 'failed'
+            const logItem = db.whatsappLogs.find(l => l.id === stId || (l.rawResponse && String(l.rawResponse).includes(stId)));
+            if (logItem) {
+              if (newStatus === 'delivered' || newStatus === 'read') {
+                logItem.status = 'delivered';
+                logItem.metaDeliveryStatus = newStatus;
+                updated = true;
+              } else if (newStatus === 'failed') {
+                logItem.status = 'failed';
+                const errDetail = st.errors && st.errors[0] ? st.errors[0].title || st.errors[0].message : 'Meta delivery failed';
+                logItem.responseMessage = errDetail;
+                updated = true;
+              }
+            }
+          }
+          if (updated) {
+            writeDB(db);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error processing Meta WhatsApp webhook payload:', err);
+  }
+});
+
+// WhatsApp Inbox List Endpoint
+app.get('/api/whatsapp/inbox', (req, res) => {
+  const db = readDB();
+  res.json(db.whatsappInbox || []);
+});
+
+// WhatsApp Quick Reply Endpoint (24-Hour Customer Care Window)
+app.post('/api/whatsapp/inbox/reply', async (req, res) => {
+  const { phone, message, inboxId } = req.body || {};
+  if (!phone || !message) {
+    return res.status(400).json({ error: 'Namba ya simu na ujumbe vinahitajika.' });
+  }
+
+  const db = readDB();
+  db.whatsappInbox = db.whatsappInbox || [];
+  if (inboxId) {
+    const item = db.whatsappInbox.find(m => m.id === inboxId);
+    if (item) {
+      item.status = 'replied';
+      item.repliedAt = new Date().toISOString();
+      item.replyText = message;
+    }
+    writeDB(db);
+  }
+
+  try {
+    // Send direct text (free-form message inside 24-hr customer service window)
+    const result = await whatsappService.sendRawWhatsApp(phone, message, '', 'Jibu la Huduma', '', { useTemplate: false });
+    res.json({
+      success: result.success,
+      message: result.success ? 'Jibu limetumwa kikamilifu kwa mgeni!' : (result.log?.responseMessage || 'Hitilafu ya utumaji'),
+      result
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Mark WhatsApp Inbox as Read
+app.post('/api/whatsapp/inbox/mark-read', (req, res) => {
+  const { id } = req.body || {};
+  const db = readDB();
+  db.whatsappInbox = db.whatsappInbox || [];
+  if (id === 'all') {
+    db.whatsappInbox.forEach(m => { if (m.status === 'unread') m.status = 'read'; });
+  } else if (id) {
+    const item = db.whatsappInbox.find(m => m.id === id);
+    if (item && item.status === 'unread') item.status = 'read';
+  }
+  writeDB(db);
+  res.json({ success: true, count: db.whatsappInbox.filter(m => m.status === 'unread').length });
+});
+
+// Delete message from inbox
+app.delete('/api/whatsapp/inbox/:id', (req, res) => {
+  const { id } = req.params;
+  const db = readDB();
+  db.whatsappInbox = (db.whatsappInbox || []).filter(m => m.id !== id);
+  writeDB(db);
+  res.json({ success: true });
+});
+
 // 4. RSVP & Drink Preference Submission (From Guest E-Card)
 app.post('/api/rsvp', (req, res) => {
   const { guestId, rsvpStatus, guestCountAttending, drinkPreference, wishes } = req.body;

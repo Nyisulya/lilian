@@ -41,11 +41,10 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
     responseMessage: ''
   };
 
+  const metaToken = process.env.WHATSAPP_TOKEN || config.apiKey;
   const wasenderApiKey = process.env.WASENDER_API_KEY || config.wasenderApiKey || (config.provider === 'Wasender' ? config.apiKey : '');
-  const waProvider = config.provider || (wasenderApiKey ? 'Wasender' : 'UltraMsg');
-  const waApiKey = (waProvider === 'Wasender' ? wasenderApiKey : '') || process.env.WHATSAPP_API_KEY || (waProvider === 'UltraMsg'
-    ? (config.ultraMsgApiKey || config.apiKey)
-    : config.apiKey);
+  const waProvider = config.provider || (metaToken ? 'Meta' : (wasenderApiKey ? 'Wasender' : 'UltraMsg'));
+  const waApiKey = (waProvider === 'Meta' ? metaToken : (waProvider === 'Wasender' ? wasenderApiKey : (config.ultraMsgApiKey || config.apiKey || process.env.WHATSAPP_API_KEY)));
   const waInstanceId = process.env.WHATSAPP_INSTANCE_ID || config.instanceId;
 
   // 1. Simulation Mode or Missing Credentials
@@ -202,7 +201,6 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
   }
 
   // 3. Meta Official Cloud API
-  const metaToken = process.env.WHATSAPP_TOKEN || config.apiKey;
   const metaPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || config.phoneNumberId;
   const useTemplate = options.useTemplate ?? config.useTemplate ?? (waProvider === 'Meta');
   const metaTemplate = options.templateName || config.templateName || 'mwaliko_wa_sherehe';
