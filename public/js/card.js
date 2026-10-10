@@ -206,6 +206,8 @@ async function shareCardViaWhatsApp() {
     `📍 *Mahali Ukumbi Ulipo (Location):*\n` +
     `Bragging Social Hall, Goba, Dar es Salaam\n` +
     `👉 https://maps.google.com/?q=Bragging+Social+Hall+Goba+Dar+es+Salaam\n\n` +
+    `✍️ *Thibitisha kama utakuwepo (RSVP):*\n` +
+    `👉 https://lilian.nyisu.com/confirm/${guestCode}\n\n` +
     `📖 Bonyeza link hii kuona hadithi nzuri na picha za ${bride}:\n` +
     `👉 https://lilian.nyisu.com\n\n` +
     `Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;

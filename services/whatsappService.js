@@ -48,9 +48,9 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
   const waInstanceId = process.env.WHATSAPP_INSTANCE_ID || config.instanceId;
 
   // 1. Simulation Mode or Missing Credentials
-  if (config.simulationMode !== false || !waApiKey) {
+  if (config.simulationMode === true || !waApiKey) {
     logEntry.status = 'delivered';
-    logEntry.responseMessage = config.simulationMode !== false 
+    logEntry.responseMessage = config.simulationMode === true 
       ? 'Imetumwa WhatsApp kwa mafanikio (Simulation Mode)' 
       : 'Imehifadhiwa (Tafadhali weka WhatsApp API Token kwenye Mipangilio)';
 
@@ -71,10 +71,15 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
         ? `https://api.ultramsg.com/${instId}/messages/image`
         : `https://api.ultramsg.com/${instId}/messages/chat`;
 
+      let cleanImage = imageUrl;
+      if (cleanImage && cleanImage.startsWith('data:')) {
+        cleanImage = cleanImage.replace(/^data:image\/[a-zA-Z0-9]+;base64,/, '');
+      }
+
       const payload = imageUrl ? {
         token: waApiKey,
         to: formattedPhone,
-        image: imageUrl,
+        image: cleanImage,
         caption: messageText
       } : {
         token: waApiKey,
@@ -246,9 +251,15 @@ Habari Ndugu *${guest.name}*,
 
 Uthibitisho wa kadi yako ya mwaliko wa Send-off ya Lilian umeambatanishwa hapa. Tafadhali hifadhi kadi hii kwa ajili ya kuonyesha getini.
 
+🎟️ *Mwaliko:* ${isDouble ? 'Double (Watu Wawili - VIP)' : 'Single (Mtu Mmoja)'}
+🔢 *Namba ya Kuingilia Getini:* ${guestCode}
+
 📍 *Mahali Ukumbi Ulipo (Location):*
 ${venue}
 👉 ${mapsUrl}
+
+✍️ *Thibitisha kama utakuwepo (RSVP):*
+👉 ${systemUrl}/confirm/${guestCode}
 
 📖 Bonyeza link hii kuona hadithi nzuri na picha za Lilian:
 👉 ${systemUrl}${doubleNotice}

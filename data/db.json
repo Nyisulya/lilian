@@ -6366,6 +6366,28 @@
       "reminderCount": 0,
       "wishes": null,
       "createdAt": "2026-10-09T12:34:43.433307"
+    },
+    {
+      "id": "279",
+      "code": "1279",
+      "name": "Felician Joseph",
+      "title": "Mualikwa Maalumu",
+      "phone": "255787661560",
+      "committeeMember": "IT & Systems Specialist",
+      "tableId": "",
+      "seats": 2,
+      "cardType": "Double",
+      "pledgeAmount": 100000,
+      "paidAmount": 100000,
+      "isCompleted": true,
+      "rsvpStatus": "pending",
+      "guestCountAttending": 2,
+      "drinkPreference": null,
+      "checkedIn": false,
+      "checkInTime": null,
+      "reminderCount": 0,
+      "wishes": null,
+      "createdAt": "2026-10-09T22:30:00.000Z"
     }
   ],
   "payments": [

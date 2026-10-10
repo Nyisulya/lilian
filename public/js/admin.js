@@ -710,6 +710,8 @@ function openSendoffWhatsAppModal(guestId) {
     `📍 *Mahali Ukumbi Ulipo (Location):*\n` +
     `${venue}\n` +
     `👉 ${mapsUrl}\n\n` +
+    `✍️ *Thibitisha kama utakuwepo (RSVP):*\n` +
+    `👉 https://lilian.nyisu.com/confirm/${guest.code || guest.id}\n\n` +
     `📖 Bonyeza link hii kuona hadithi nzuri na picha za ${bride}:\n` +
     `👉 https://lilian.nyisu.com\n\n` +
     `Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
@@ -1020,6 +1022,8 @@ async function shareCardToWhatsApp() {
       `📍 *Mahali Ukumbi Ulipo (Location):*\n` +
       `${venueName}\n` +
       `👉 ${mapsLink}\n\n` +
+      `✍️ *Thibitisha kama utakuwepo (RSVP):*\n` +
+      `👉 https://lilian.nyisu.com/confirm/${guestCode}\n\n` +
       `📖 Bonyeza link hii kuona hadithi nzuri na picha za ${bride}:\n` +
       `👉 https://lilian.nyisu.com\n\n` +
       `Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
