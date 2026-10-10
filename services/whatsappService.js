@@ -304,18 +304,12 @@ Habari Ndugu *${guest.name}*,
 
 Uthibitisho wa kadi yako ya mwaliko wa Send-off ya Lilian umeambatanishwa hapa. Tafadhali hifadhi kadi hii kwa ajili ya kuonyesha getini.
 
-🎟️ *Mwaliko:* ${isDouble ? 'Double (Watu Wawili - VIP)' : 'Single (Mtu Mmoja)'}
-🔢 *Namba ya Kuingilia Getini:* ${guestCode}
-
 📍 *Mahali Ukumbi Ulipo (Location):*
 ${venue}
 👉 ${mapsUrl}
 
-✍️ *Thibitisha kama utakuwepo (RSVP):*
-👉 ${systemUrl}/confirm/${guestCode}
-
 📖 Bonyeza link hii kuona hadithi nzuri na picha za Lilian:
-👉 ${systemUrl}${doubleNotice}
+👉 ${systemUrl}
 
 Karibu sana tufurahi na kusherehekea pamoja! ✨🥂`;
 
