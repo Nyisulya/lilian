@@ -2005,11 +2005,13 @@ function setupEventListeners() {
   if (waConfigForm) {
     waConfigForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const tokenVal = document.getElementById('set-wa-token').value.trim();
       const payload = {
         provider: document.getElementById('set-wa-provider').value,
         simulationMode: document.getElementById('set-wa-simulation').value === 'true',
         instanceId: document.getElementById('set-wa-instance').value.trim(),
-        apiKey: document.getElementById('set-wa-token').value.trim(),
+        apiKey: tokenVal,
+        wasenderApiKey: tokenVal,
         systemUrl: document.getElementById('set-sms-systemurl')?.value.trim() || window.location.origin
       };
 

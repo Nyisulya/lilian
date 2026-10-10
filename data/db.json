@@ -8322,7 +8322,8 @@
   },
   "whatsappConfig": {
     "provider": "Wasender",
-    "wasenderApiKey": "",
+    "wasenderApiKey": "9b22aaf05dbc43f34b0fa7de668898d7f4b41172a78d7a223fb6230325d17101",
+    "apiKey": "9b22aaf05dbc43f34b0fa7de668898d7f4b41172a78d7a223fb6230325d17101",
     "simulationMode": false,
     "systemUrl": "https://lilian.nyisu.com"
   }
