@@ -2148,6 +2148,10 @@ app.get('/kamati', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+app.get(['/paper-card', '/kadi-karatasi', '/kadi-ya-karatasi'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'paper-card.html'));
+});
+
 function handleOrderPage(req, res) {
   const db = readDB();
   const tableId = req.params.tableId || req.query.table || 'meza-1';

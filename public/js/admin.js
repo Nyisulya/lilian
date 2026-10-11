@@ -463,6 +463,9 @@ function renderGuestTable(guests) {
         </td>
         <td>
           <div class="table-actions">
+            <button type="button" class="btn-action-sms" onclick="sendSingleGuestInvitationSMS('${g.id}')" title="Tuma SMS ya kawaida ya Mwaliko kwa ${escapeHtml(g.name)}">
+              📨 Tuma SMS
+            </button>
             <button type="button" class="btn-action-wa" onclick="sendWhatsAppCard('${g.id}')" title="Tuma Kadi ya Picha kwa WhatsApp ya ${escapeHtml(g.name)}">
               📲 Tuma Kadi
             </button>
@@ -703,6 +706,11 @@ function openSendoffWhatsAppModal(guestId) {
   const currentIdx = allGuests.findIndex(g => String(g.id) === String(guest.id));
   if (queueCounter) {
     queueCounter.textContent = `Mgeni ${currentIdx >= 0 ? currentIdx + 1 : 1} / ${allGuests.length}`;
+  }
+
+  const paperCardBtn = document.getElementById('btn-open-paper-gatefold');
+  if (paperCardBtn) {
+    paperCardBtn.href = `/paper-card?id=${encodeURIComponent(guest.id)}`;
   }
 
   // Update phone input field

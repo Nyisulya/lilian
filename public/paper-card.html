@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kadi ya Kifalme ya Karatasi (Die-Cut Bi-Fold): Send-off ya Lilian</title>
+
+  <!-- Google Fonts: Luxury Wedding Serif & Cursive -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <style>
+    :root {
+      --bg-cream: #fbf8f2;
+      --card-cream: #fffdf9;
+      --emerald-dark: #042e1d;
+      --emerald-mid: #0a4d31;
+      --emerald-light: #166542;
+      --gold-primary: #d4af37;
+      --gold-bright: #fae19c;
+      --gold-dark: #8c6d1f;
+      --gold-gradient: linear-gradient(135deg, #d4af37 0%, #fef3c7 35%, #b38728 70%, #fae19c 100%);
+      --text-dark: #1b2620;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #e8e3d8;
+      color: var(--text-dark);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 15px 40px 15px;
+    }
+
+    /* ========================================================
+       TOP TOOLBAR (CLEAN, MINIMAL, NO CLUTTER)
+       ======================================================== */
+    .clean-toolbar {
+      width: 100%;
+      max-width: 900px;
+      background: #ffffff;
+      border: 1px solid #dcd4c5;
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-left label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #635746;
+      text-transform: uppercase;
+    }
+
+    .input-guest {
+      padding: 8px 12px;
+      border: 1px solid #c9bea9;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      width: 220px;
+      background: #faf8f5;
+    }
+
+    .input-guest:focus {
+      border-color: var(--gold-primary);
+      background: #ffffff;
+    }
+
+    .btn-print {
+      background: var(--gold-gradient);
+      color: #042e1d;
+      border: 1px solid var(--gold-dark);
+      padding: 9px 22px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 12px rgba(212, 175, 55, 0.35);
+      transition: transform 0.15s ease;
+    }
+
+    .btn-print:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-sms {
+      background: linear-gradient(135deg, #0984e3, #0652dd);
+      color: #ffffff;
+      border: 1px solid #74b9ff;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 12px rgba(9, 132, 227, 0.35);
+      transition: transform 0.15s ease;
+    }
+
+    .btn-sms:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, #0652dd, #0984e3);
+    }
+
+    /* ========================================================
+       KADI YA KUKUNJA (DIE-CUT LASER SCALLOPED EDGES)
+       "Pembeni iwe kama imekatwa"
+       ======================================================== */
+    .card-sheet-container {
+      position: relative;
+      filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.18));
+      margin-bottom: 30px;
+    }
+
+    .card-sheet {
+      width: 900px;
+      height: 600px;
+      background: var(--card-cream);
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      
+      /* Laser-Cut / Die-Cut Scalloped Bracket Corners & Clipped Silhouette */
+      clip-path: polygon(
+        /* Top Edge with Scalloped / Clipped Bracket Corners */
+        0 24px, 12px 12px, 24px 0,
+        calc(100% - 24px) 0, calc(100% - 12px) 12px, 100% 24px,
+        /* Right Edge */
+        100% calc(50% - 15px), calc(100% - 8px) 50%, 100% calc(50% + 15px),
+        /* Bottom Right Bracket Corner */
+        100% calc(100% - 24px), calc(100% - 12px) calc(100% - 12px), calc(100% - 24px) 100%,
+        /* Bottom Edge */
+        calc(50% + 15px) 100%, 50% calc(100% - 6px), calc(50% - 15px) 100%,
+        /* Bottom Left Bracket Corner */
+        24px 100%, 12px calc(100% - 12px), 0 calc(100% - 24px),
+        /* Left Edge */
+        0 calc(50% + 15px), 8px 50%, 0 calc(50% - 15px)
+      );
+
+      /* Decorative Die-Cut Outer Edge Border */
+      border: 2px solid var(--gold-primary);
+    }
+
+    /* Double Ornate Inner Gold Foil Frame */
+    .inner-diecut-frame {
+      position: absolute;
+      inset: 8px;
+      border: 1.5px solid var(--gold-primary);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .inner-diecut-dashed {
+      position: absolute;
+      inset: 12px;
+      border: 1px dashed rgba(212, 175, 55, 0.5);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Mstari wa Kukunja Katikati na Kivuli cha Mkunjo (Realistic Fold Crease) */
+    .center-fold-crease {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(212, 175, 55, 0.8) 0px,
+        rgba(212, 175, 55, 0.8) 8px,
+        transparent 8px,
+        transparent 16px
+      );
+      z-index: 20;
+      box-shadow: 0 0 16px 2px rgba(0, 0, 0, 0.12);
+    }
+
+    .fold-badge {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fdfaf3;
+      border: 1px dashed var(--gold-primary);
+      color: var(--gold-dark);
+      font-size: 0.65rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      z-index: 25;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* Pande Mbili za Kadi */
+    .card-panel {
+      width: 50%;
+      height: 100%;
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Corner Flourishes & Bouquets */
+    .corner-flourish {
+      position: absolute;
+      pointer-events: none;
+      z-index: 12;
+    }
+
+    .flourish-tl {
+      top: 0;
+      left: 0;
+      width: 100px;
+    }
+
+    .flourish-tr {
+      top: 0;
+      right: 0;
+      width: 100px;
+    }
+
+    .flower-bl {
+      bottom: 0;
+      left: 0;
+      width: 115px;
+    }
+
+    .flower-br {
+      bottom: 0;
+      right: 0;
+      width: 115px;
+    }
+
+    /* ========================================================
+       UPANDE WA KUSHOTO: MBELE (FRONT COVER)
+       ======================================================== */
+    .panel-front {
+      background: radial-gradient(circle at center, #ffffff 0%, #faf6ee 100%);
+      border-right: 1px solid rgba(212, 175, 55, 0.25);
+    }
+
+    .crown-gold {
+      width: 38px;
+      height: auto;
+      margin-bottom: 2px;
+      filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.4));
+    }
+
+    .host-family-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--emerald-dark);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .invitation-script {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: #554838;
+      margin: 2px 0 6px 0;
+    }
+
+    /* Royal Emerald Ribbon: SEND-OFF YA */
+    .ribbon-sendoff-title {
+      background: linear-gradient(135deg, #042e1d, #0b4f32);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 5px 24px;
+      color: #ffffff;
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      box-shadow: 0 4px 12px rgba(4, 46, 29, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      display: inline-block;
+    }
+
+    /* Gold Sub-Ribbon: LILIAN MARCUS NYAHENDE */
+    .ribbon-bride-name {
+      background: var(--gold-gradient);
+      color: #042e1d;
+      font-family: 'Cinzel', serif;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 3px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--gold-dark);
+      margin-top: -6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      display: inline-block;
+      text-transform: uppercase;
+    }
+
+    .cover-sub-quote {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.72rem;
+      color: #635746;
+      margin-top: 4px;
+    }
+
+    /* CAMEO WREATH PORTRAIT OF LILIAN */
+    .cameo-container {
+      width: 250px;
+      margin: 4px auto;
+      position: relative;
+    }
+
+    .cameo-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.15));
+    }
+
+    /* ========================================================
+       UPANDE WA KULIA: NDANI (INSIDE INVITATION DETAILS)
+       ======================================================== */
+    .panel-inside {
+      background: radial-gradient(circle at center, #ffffff 0%, #faf6ee 100%);
+      border-left: 1px solid rgba(212, 175, 55, 0.25);
+    }
+
+    .inside-top-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .inside-top-badge span {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--emerald-dark);
+      text-transform: uppercase;
+    }
+
+    /* Grand Emerald Plaque: Jina la Mualikwa */
+    .guest-plaque {
+      width: 100%;
+      background: linear-gradient(135deg, #032417 0%, #08432a 100%);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      margin: 6px 0;
+    }
+
+    .guest-plaque-lbl {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold-bright);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .guest-plaque-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.5px;
+    }
+
+    /* VIP Gold Badge */
+    .seats-vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--gold-gradient);
+      border: 1px solid var(--gold-dark);
+      padding: 4px 18px;
+      border-radius: 14px;
+      color: #042e1d;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.25);
+    }
+
+    /* Pillars: Date, Time, Venue */
+    .event-info-box {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 8px 0;
+    }
+
+    .event-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: #2b2219;
+    }
+
+    .event-info-row strong {
+      color: var(--emerald-dark);
+    }
+
+    .dresscode-banner {
+      background: #f7f1e4;
+      border: 1px dashed var(--gold-primary);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: var(--emerald-dark);
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .dresscode-banner strong {
+      color: var(--emerald-dark);
+    }
+
+    .rsvp-section {
+      font-size: 0.74rem;
+      color: #554838;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .rsvp-phones-bold {
+      font-weight: 800;
+      color: var(--emerald-dark);
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    .card-footer-wish {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.74rem;
+      color: #7a6e5d;
+      margin-top: 4px;
+    }
+
+    /* ========================================================
+       PRINT STYLES FOR COMMERCIAL PRINTING
+       ======================================================== */
+    @media print {
+      @page {
+        size: landscape;
+        margin: 0;
+      }
+
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .clean-toolbar,
+      .fold-badge {
+        display: none !important;
+      }
+
+      .card-sheet-container {
+        filter: none !important;
+        margin: 0 auto !important;
+      }
+
+      .card-sheet {
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        max-width: 280mm !important;
+        height: 185mm !important;
+        page-break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================
+       TOP TOOLBAR (RAHISI NA SAFI)
+       ======================================================== */ -->
+  <header class="clean-toolbar">
+    <div class="toolbar-left">
+      <label for="select-existing-guest">Mgeni:</label>
+      <select id="select-existing-guest" class="input-guest" style="width: 170px;" onchange="onSelectExistingGuest(this.value)">
+        <option value="">-- Chagua Mgeni --</option>
+      </select>
+
+      <label for="input-name">Jina:</label>
+      <input type="text" id="input-name" class="input-guest" placeholder="Andika jina la mgeni..." value="Mheshimiwa Mualikwa" oninput="changeGuestName(this.value)" style="width: 160px;">
+
+      <label for="input-phone">Simu:</label>
+      <input type="text" id="input-phone" class="input-guest" placeholder="07xxxxxxxx" style="width: 120px;">
+
+      <label for="select-seats">Viti:</label>
+      <select id="select-seats" class="input-guest" style="width: 140px;" onchange="changeSeats(this.value)">
+        <option value="Double VIP">Watu 2 (Double)</option>
+        <option value="Single VIP">Mtu 1 (Single)</option>
+      </select>
+    </div>
+
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button type="button" class="btn-sms" onclick="sendIndividualSMS()" title="Tuma SMS ya kawaida ya mwaliko yenye namba ya mlangoni">
+        📨 Tuma SMS
+      </button>
+
+      <button type="button" class="btn-print" onclick="window.print()" title="Chapisha au hifadhi kadi kama PDF">
+        🖨️ Chapisha / PDF
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ========================================================
+       KADI YA KUKUNJA (DIE-CUT SPREAD YENYE MAUA NA MBWEMBWE)
+       ======================================================== -->
+  <div class="card-sheet-container">
+    <main class="card-sheet">
+
+      <!-- Ornate Gold Inner Borders -->
+      <div class="inner-diecut-frame"></div>
+      <div class="inner-diecut-dashed"></div>
+
+      <!-- Mstari wa Kukunja Katikati -->
+      <div class="center-fold-crease"></div>
+      <div class="fold-badge">✂️ Mkunjo wa Katikati</div>
+
+      <!-- ========================================================
+           UPANDE WA KUSHOTO: MBELE (FRONT COVER)
+           ======================================================== -->
+      <section class="card-panel panel-front">
+
+        <!-- Corner Flourishes -->
+        <img src="images/flourish_tl.png" alt="" class="corner-flourish flourish-tl">
+        <img src="images/flower_corner_bl.png" alt="" class="corner-flourish flower-bl">
+
+        <div>
+          <!-- Golden Royal Crown -->
+          <div style="font-size: 1.4rem;">👑</div>
+          <div class="host-family-name">FAMILIA YA MZEE MARCUS NYAHENDE</div>
+          <div class="invitation-script">kwa heshima kubwa inakualika kuhudhuria</div>
+          
+          <!-- Royal Ribbons -->
+          <div class="ribbon-sendoff-title">SEND-OFF YA</div>
+          <div>
+            <div class="ribbon-bride-name">LILIAN MARCUS NYAHENDE</div>
+          </div>
+
+          <div class="cover-sub-quote">“An Evening of Grace, Love & Elegance”</div>
+        </div>
+
+        <!-- CAMEO PORTRAIT YA LILIAN (CIRCULAR GOLD RING & WHITE FLOWERS) -->
+        <div class="cameo-container">
+          <img src="images/cameo_wreath_lilian.png" alt="Lilian Marcus" class="cameo-img" onerror="this.src='images/lilian_download.jpeg'">
+        </div>
+
+        <div style="font-size: 0.72rem; color: var(--emerald-dark); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;">
+          ✨ MWALIKO WA KIFALME ✨
+        </div>
+
+      </section>
+
+
+      <!-- ========================================================
+           UPANDE WA KULIA: NDANI (INSIDE INVITATION)
+           ======================================================== -->
+      <section class="card-panel panel-inside">
+
+        <!-- Corner Flourishes -->
+        <img src="images/flourish_tr.png" alt="" class="corner-flourish flourish-tr">
+        <img src="images/flower_corner_br.png" alt="" class="corner-flourish flower-br">
+
+        <div class="inside-top-badge">
+          <span style="color: var(--gold-primary);">⚜️</span>
+          <span>MWALIKO MAALUM WA HESHIMA</span>
+          <span style="color: var(--gold-primary);">⚜️</span>
+        </div>
+
+        <!-- Grand Emerald Plaque ya Jina la Mualikwa -->
+        <div class="guest-plaque">
+          <div class="guest-plaque-lbl">MWALIKO MAALUM WA HESHIMA KWA:</div>
+          <div class="guest-plaque-name" id="display-guest-name">Mheshimiwa Mualikwa</div>
+        </div>
+
+        <!-- VIP Badge -->
+        <div class="seats-vip-badge" id="display-seats">
+          <span>👥 DOUBLE</span>
+          <span>&bull;</span>
+          <span>👑 VIP</span>
+        </div>
+
+        <!-- Taarifa za Sherehe -->
+        <div class="event-info-box">
+          <div class="event-info-row">
+            <span>📅</span>
+            <span><strong>Jumanne, 13 Oktoba 2026</strong></span>
+            <span>&bull;</span>
+            <span>🕒</span>
+            <span><strong>Saa 12:30 Jioni</strong></span>
+          </div>
+
+          <div class="event-info-row">
+            <span>📍</span>
+            <span><strong>Bragging Social Hall</strong>, Goba, Dar es Salaam</span>
+          </div>
+        </div>
+
+        <!-- Dress Code -->
+        <div class="dresscode-banner">
+          <strong>👗 Dress Code:</strong> Emerald Green & Touch of Gold (Kijani & Dhahabu)
+        </div>
+
+        <!-- RSVP & Wishes -->
+        <div class="rsvp-section">
+          <div>Mawasiliano ya Kamati (RSVP):</div>
+          <div class="rsvp-phones-bold">📞 0713 980 004 &nbsp;|&nbsp; 0787 661 560</div>
+          <div class="card-footer-wish">“Uwepo wako ni heshima na furaha kubwa kwetu.”</div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    let allGuestsList = [];
+    let currentSelectedGuestId = null;
+
+    function changeGuestName(val) {
+      const clean = val && val.trim() ? val.trim() : 'Mheshimiwa Mualikwa';
+      document.getElementById('display-guest-name').textContent = clean;
+    }
+
+    function changeSeats(val) {
+      const isDouble = val.includes('Double') || val.includes('2');
+      const badge = document.getElementById('display-seats');
+      if (isDouble) {
+        badge.innerHTML = '<span>👥 DOUBLE</span><span>&bull;</span><span>👑 VIP</span>';
+      } else {
+        badge.innerHTML = '<span>👤 SINGLE</span><span>&bull;</span><span>👑 VIP</span>';
+      }
+    }
+
+    function onSelectExistingGuest(val) {
+      if (!val) {
+        currentSelectedGuestId = null;
+        return;
+      }
+      const g = allGuestsList.find(x => String(x.id) === String(val) || String(x.code) === String(val));
+      if (!g) return;
+
+      currentSelectedGuestId = g.id;
+      document.getElementById('input-name').value = g.name || '';
+      document.getElementById('input-phone').value = g.phone || '';
+      changeGuestName(g.name);
+
+      const isDouble = Number(g.seats) >= 2;
+      const seatsSelect = document.getElementById('select-seats');
+      seatsSelect.value = isDouble ? 'Double VIP' : 'Single VIP';
+      changeSeats(seatsSelect.value);
+    }
+
+    async function loadGuestsForDropdown() {
+      try {
+        const res = await fetch('/api/guests');
+        if (!res.ok) return;
+        const data = await res.json();
+        allGuestsList = Array.isArray(data) ? data : (data.guests || []);
+
+        const sel = document.getElementById('select-existing-guest');
+        if (!sel) return;
+
+        sel.innerHTML = '<option value="">-- Chagua Mgeni --</option>';
+        allGuestsList.forEach(g => {
+          const opt = document.createElement('option');
+          opt.value = g.id;
+          opt.textContent = `${g.name} ${g.phone ? '(' + g.phone + ')' : ''}`;
+          sel.appendChild(opt);
+        });
+
+        // Check URL params
+        const params = new URLSearchParams(window.location.search);
+        const urlId = params.get('id');
+        const urlName = params.get('name');
+        const urlSeats = params.get('seats');
+        const urlPhone = params.get('phone');
+
+        if (urlId) {
+          sel.value = urlId;
+          onSelectExistingGuest(urlId);
+        } else if (urlName) {
+          document.getElementById('input-name').value = urlName;
+          changeGuestName(urlName);
+          if (urlPhone) document.getElementById('input-phone').value = urlPhone;
+          if (urlSeats) {
+            document.getElementById('select-seats').value = (urlSeats === '1' || urlSeats.toLowerCase() === 'single') ? 'Single VIP' : 'Double VIP';
+            changeSeats(document.getElementById('select-seats').value);
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load guests for dropdown:', e);
+      }
+    }
+
+    async function sendIndividualSMS() {
+      const name = document.getElementById('input-name').value.trim() || 'Mualikwa';
+      const phone = document.getElementById('input-phone').value.trim();
+
+      if (!phone) {
+        alert(`Tafadhali weka namba ya simu ya ${name} ili kutuma SMS.`);
+        document.getElementById('input-phone').focus();
+        return;
+      }
+
+      if (!confirm(`Unataka kutuma SMS ya kawaida ya Mwaliko kwa ${name} (${phone}) kupitia NextSMS?`)) {
+        return;
+      }
+
+      const btn = document.querySelector('.btn-sms');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Inatuma...';
+      btn.disabled = true;
+
+      try {
+        let res, data;
+        if (currentSelectedGuestId) {
+          res = await fetch(`/api/sms/send-invitation/${currentSelectedGuestId}`, { method: 'POST' });
+          data = await res.json();
+        } else {
+          // Custom guest not yet in DB or manually typed
+          const invMsg = `MWALIKO WA SEND-OFF YA LILIAN\n\n` +
+            `Habari ${name},\n` +
+            `Familia ya Mzee Marcus Nyahende inayo heshima kubwa kukualika kwenye Send-off ya binti yao Lilian Marcus.\n\n` +
+            `Tarehe: Jumanne 13/10/2026 kuanzia Saa 12:30 Jioni\n` +
+            `Ukumbi: Bragging Social Hall, Goba\n` +
+            `Dress Code: Emerald Green & Touch of Gold\n` +
+            `Mawasiliano: 0713 980 004\n\n` +
+            `Karibu sana tufurahi pamoja!`;
+
+          res = await fetch('/api/sms/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, message: invMsg, name })
+          });
+          data = await res.json();
+        }
+
+        if (res.ok && (data.success || data?.result?.success)) {
+          alert(`✅ SMS ya kawaida ya mwaliko imetumwa kwa mafanikio kwenda ${phone}!`);
+        } else {
+          alert(`Hitilafu: ${data.error || data?.result?.log?.responseMessage || 'SMS haikutumwa'}`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Hitilafu ya mtandao wakati wa kutuma SMS.');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadGuestsForDropdown);
+  </script>
+</body>
+</html>

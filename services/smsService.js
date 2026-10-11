@@ -190,6 +190,8 @@ async function sendInvitationSMS(guest) {
     `Ukumbi: Bragging Social Hall, Goba, Dar es Salaam\n\n` +
     `Namba ya Kuingilia Getini: ${guestCode}\n` +
     `Mawasiliano: 0713 980 004\n\n` +
+    `Thibitisha uwepo wako hapa:\n` +
+    `https://${domain}/confirm/${guestCode}\n\n` +
     `Tazama hadithi na picha za Lilian:\n` +
     `https://${domain}\n\n` +
     `Karibu sana tufurahi pamoja!`;
