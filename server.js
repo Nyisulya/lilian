@@ -27,7 +27,12 @@ if (fs.existsSync(envFilePath)) {
 const QRCode = require('qrcode');
 const multer = require('multer');
 const compression = require('compression');
-const XLSX = require('xlsx');
+let XLSX = null;
+try {
+  XLSX = require('xlsx');
+} catch (e) {
+  console.warn('⚠️ Module "xlsx" haijapatikana kwenye node_modules. Endesha: npm install');
+}
 const dbService = require('./services/db');
 const { readDB, writeDB, getDBFilePath } = dbService;
 const smsService = require('./services/smsService');
@@ -717,6 +722,13 @@ app.get('/api/whatsapp/logs', (req, res) => {
 // Clean, Deduplicated WhatsApp Outbox Excel Export
 app.get('/api/whatsapp/export-excel', (req, res) => {
   try {
+    if (!XLSX) {
+      try {
+        XLSX = require('xlsx');
+      } catch (e) {
+        return res.status(500).send('Tafadhali endesha "npm install xlsx" kwenye server ili kuwezesha upakuaji wa Excel.');
+      }
+    }
     const db = readDB();
     const logs = db.whatsappLogs || [];
     const guests = db.guests || [];
