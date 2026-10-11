@@ -798,48 +798,56 @@ app.get('/api/whatsapp/export-excel', (req, res) => {
     const allRecipients = Array.from(recipientMap.values());
     allRecipients.sort((a, b) => a.name.localeCompare(b.name, 'sw', { sensitivity: 'base' }));
 
-    const deliveredList = allRecipients.filter(r => r.status === 'delivered');
-    const failedList = allRecipients.filter(r => r.status === 'failed');
-
     const wb = XLSX.utils.book_new();
 
-    // Sheet 1: Waliotumiwa (Imefika)
-    const deliveredRows = deliveredList.map((r, idx) => ({
+    // 6 Columns definition: Na, Jina, Namba, Viti, Hali, Muda
+    const colWidths = [
+      { wch: 8 },  // Na.
+      { wch: 38 }, // Jina la Mgeni
+      { wch: 22 }, // Namba ya Simu
+      { wch: 18 }, // Aina ya Mwaliko
+      { wch: 20 }, // Hali ya Ujumbe
+      { wch: 22 }  // Muda Uliotumwa
+    ];
+
+    // Sheet 1: Master Sheet (Orodha Kamili - IMEFIKA & HAIJAFIKA)
+    const allRows = allRecipients.map((r, idx) => ({
       'Na.': idx + 1,
       'Jina la Mgeni': r.name,
-      'Namba ya WhatsApp': r.phone ? (r.phone.startsWith('+') ? r.phone : `+${r.phone}`) : '-',
-      'Idadi ya Viti': r.seats,
-      'Hali ya Utumaji': 'IMEFIKA ✅',
-      'Mtoa Huduma': r.provider,
-      'Muda Uliotumwa': r.lastTimestamp ? r.lastTimestamp.replace('T', ' ').slice(0, 16) : '-',
-      'Maelezo': (r.failedCount > 0) ? 'Ilifanikiwa baada ya kurudiwa' : 'Ilifika mara ya kwanza'
+      'Namba ya Simu': r.phone ? (r.phone.startsWith('+') ? r.phone : `+${r.phone}`) : '-',
+      'Aina ya Mwaliko': r.seats,
+      'Hali ya Ujumbe': r.status === 'delivered' ? 'IMEFIKA ✅' : 'HAIJAFIKA ❌',
+      'Muda Uliotumwa': r.lastTimestamp ? r.lastTimestamp.replace('T', ' ').slice(0, 16) : '-'
+    }));
+    const wsAll = XLSX.utils.json_to_sheet(allRows);
+    wsAll['!cols'] = colWidths;
+    XLSX.utils.book_append_sheet(wb, wsAll, 'Orodha Kamili ya Wageni');
+
+    // Sheet 2: Zilizofika Pekee (IMEFIKA)
+    const deliveredRows = allRecipients.filter(r => r.status === 'delivered').map((r, idx) => ({
+      'Na.': idx + 1,
+      'Jina la Mgeni': r.name,
+      'Namba ya Simu': r.phone ? (r.phone.startsWith('+') ? r.phone : `+${r.phone}`) : '-',
+      'Aina ya Mwaliko': r.seats,
+      'Hali ya Ujumbe': 'IMEFIKA ✅',
+      'Muda Uliotumwa': r.lastTimestamp ? r.lastTimestamp.replace('T', ' ').slice(0, 16) : '-'
     }));
     const wsDelivered = XLSX.utils.json_to_sheet(deliveredRows);
-    XLSX.utils.book_append_sheet(wb, wsDelivered, 'Waliotumiwa (Imefika)');
+    wsDelivered['!cols'] = colWidths;
+    XLSX.utils.book_append_sheet(wb, wsDelivered, 'Zilizofika (IMEFIKA)');
 
-    // Sheet 2: Waliokwama (Failed)
-    const failedRows = failedList.map((r, idx) => ({
+    // Sheet 3: Zilizokwama Pekee (HAIJAFIKA)
+    const failedRows = allRecipients.filter(r => r.status === 'failed').map((r, idx) => ({
       'Na.': idx + 1,
       'Jina la Mgeni': r.name,
-      'Namba ya WhatsApp': r.phone ? (r.phone.startsWith('+') ? r.phone : `+${r.phone}`) : '-',
-      'Idadi ya Viti': r.seats,
-      'Hali ya Utumaji': 'IMEKWAMA ❌',
-      'Mtoa Huduma': r.provider,
-      'Muda wa Jaribio': r.lastTimestamp ? r.lastTimestamp.replace('T', ' ').slice(0, 16) : '-',
-      'Hatua Inayopendekezwa': 'Piga simu au tuma SMS ya kawaida'
+      'Namba ya Simu': r.phone ? (r.phone.startsWith('+') ? r.phone : `+${r.phone}`) : '-',
+      'Aina ya Mwaliko': r.seats,
+      'Hali ya Ujumbe': 'HAIJAFIKA ❌',
+      'Muda Uliotumwa': r.lastTimestamp ? r.lastTimestamp.replace('T', ' ').slice(0, 16) : '-'
     }));
     const wsFailed = XLSX.utils.json_to_sheet(failedRows);
-    XLSX.utils.book_append_sheet(wb, wsFailed, 'Waliokwama (Hawakupokea)');
-
-    // Sheet 3: Muhtasari
-    const summaryRows = [
-      { 'Kipengele': 'Jumla ya Wageni wa Kipekee Waliojaribiwa', 'Idadi': allRecipients.length, 'Asilimia': '100%' },
-      { 'Kipengele': 'Waliopokea Kadi kwa Mafanikio (Delivered)', 'Idadi': deliveredList.length, 'Asilimia': allRecipients.length ? `${((deliveredList.length / allRecipients.length) * 100).toFixed(1)}%` : '0%' },
-      { 'Kipengele': 'Waliokwama / Hawajapokea (Failed)', 'Idadi': failedList.length, 'Asilimia': allRecipients.length ? `${((failedList.length / allRecipients.length) * 100).toFixed(1)}%` : '0%' },
-      { 'Kipengele': 'Tarehe ya Ripoti Hii', 'Idadi': new Date().toISOString().slice(0, 10), 'Asilimia': '-' }
-    ];
-    const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
-    XLSX.utils.book_append_sheet(wb, wsSummary, 'Muhtasari wa Takwimu');
+    wsFailed['!cols'] = colWidths;
+    XLSX.utils.book_append_sheet(wb, wsFailed, 'Zilizokwama (HAIJAFIKA)');
 
     const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
     const fileName = `Wageni_Waliotumiwa_WhatsApp_Safi_${new Date().toISOString().slice(0, 10)}.xlsx`;

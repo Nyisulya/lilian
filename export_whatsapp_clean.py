@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Export WhatsApp Outbox to a Clean, Deduplicated Excel File (.xlsx)
+6 Columns, Large Spacious Cells, Clear Delivery Status (IMEFIKA / HAIJAFIKA)
 Send-off ya Lilian Marcus Nyahende
 """
 
@@ -44,7 +45,7 @@ def clean_and_deduplicate(db):
     print(f"[*] Jumla ya logs kwenye database: {len(logs)}")
     print(f"[*] Jumla ya wageni kwenye database: {len(guests)}")
 
-    # Index guests by normalized phone and by clean lower name
+    # Index guests by normalized phone and by clean lowercase name
     guest_by_phone = {}
     guest_by_name = {}
     for g in guests:
@@ -69,35 +70,30 @@ def clean_and_deduplicate(db):
         status = str(log.get('status', '')).lower()
         is_delivered = (status == 'delivered')
         timestamp = log.get('timestamp') or log.get('time') or ''
-        provider = log.get('provider') or 'Meta Cloud'
 
         # Match extra details from guest registry
         matched_g = guest_by_phone.get(p) or (guest_by_name.get(name.lower()) if name else None)
         final_name = name or (matched_g.get('name') if matched_g else 'Mualikwa')
         seats_val = matched_g.get('seats', 1) if matched_g else 1
         is_double = (str(seats_val).lower() in ['2', 'double', 'double vip'] or matched_g.get('isDouble') is True) if matched_g else False
-        table_num = (matched_g.get('table') or '') if matched_g else ''
 
         if key not in recipients:
             recipients[key] = {
                 'name': final_name,
                 'phone': p,
                 'seats': 'Double (2)' if is_double else 'Single (1)',
-                'table': str(table_num) if table_num else '-',
-                'status': 'delivered' if is_delivered else 'failed',
+                'status': 'IMEFIKA' if is_delivered else 'HAIJAFIKA',
                 'success_count': 1 if is_delivered else 0,
                 'failed_count': 0 if is_delivered else 1,
                 'attempts': 1,
-                'provider': provider,
                 'last_timestamp': timestamp
             }
         else:
             item = recipients[key]
             item['attempts'] += 1
             if is_delivered:
-                item['status'] = 'delivered'  # Prioritize delivered!
+                item['status'] = 'IMEFIKA'  # Prioritize delivered!
                 item['success_count'] += 1
-                item['provider'] = provider
             else:
                 item['failed_count'] += 1
 
@@ -105,220 +101,229 @@ def clean_and_deduplicate(db):
                 item['last_timestamp'] = timestamp
 
     all_list = list(recipients.values())
+    
+    # Sort: put HAIJAFIKA at top (or keep clear order) - let's sort by name
     all_list.sort(key=lambda x: x['name'].lower())
 
-    delivered_list = [r for r in all_list if r['status'] == 'delivered']
-    failed_list = [r for r in all_list if r['status'] == 'failed']
+    delivered_count = sum(1 for r in all_list if r['status'] == 'IMEFIKA')
+    failed_count = sum(1 for r in all_list if r['status'] == 'HAIJAFIKA')
 
-    print(f"[OK] Wageni wa kipekee waliotumiwa (Delivered): {len(delivered_list)}")
-    print(f"[FAIL] Wageni waliokwama kabisa (Failed): {len(failed_list)}")
-    print(f"[TOTAL] Jumla ya wageni wa kipekee: {len(all_list)}")
+    print(f"[OK] Wageni waliopokea (IMEFIKA): {delivered_count}")
+    print(f"[FAIL] Wageni ambao ujumbe haukufika (HAIJAFIKA): {failed_count}")
+    print(f"[TOTAL] Jumla ya wageni wote: {len(all_list)}")
 
-    return delivered_list, failed_list, all_list
+    return all_list
 
-def create_excel_report(delivered_list, failed_list, all_list, output_filename):
+def create_excel_report(all_list, output_filename):
     wb = openpyxl.Workbook()
-    # Remove default sheet
-    wb.remove(wb.active)
+    # Sheet 1: Master Sheet (Orodha Kamili - 6 Columns)
+    ws1 = wb.active
+    ws1.title = "Orodha Kamili ya Wageni"
+    ws1.views.sheetView[0].showGridLines = True
 
-    # Styles
-    navy_header_fill = PatternFill(start_color="0B2240", end_color="0B2240", fill_type="solid")
-    gold_header_fill = PatternFill(start_color="CBA135", end_color="CBA135", fill_type="solid")
+    # Colors & Styles
+    navy_header_fill = PatternFill(start_color="102A45", end_color="102A45", fill_type="solid")
     green_badge_fill = PatternFill(start_color="E6F4EA", end_color="E6F4EA", fill_type="solid")
     red_badge_fill = PatternFill(start_color="FCE8E6", end_color="FCE8E6", fill_type="solid")
-    
-    font_header = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
-    font_bold = Font(name="Calibri", size=10, bold=True)
-    font_regular = Font(name="Calibri", size=10)
-    font_green = Font(name="Calibri", size=10, bold=True, color="137333")
-    font_red = Font(name="Calibri", size=10, bold=True, color="C5221F")
+    zebra_fill = PatternFill(start_color="F9FAFB", end_color="F9FAFB", fill_type="solid")
+
+    font_banner = Font(name="Calibri", size=15, bold=True, color="102A45")
+    font_header = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
+    font_cell_bold = Font(name="Calibri", size=12, bold=True, color="1B2A3D")
+    font_cell_regular = Font(name="Calibri", size=12, color="222222")
+    font_green = Font(name="Calibri", size=12, bold=True, color="0D652D")
+    font_red = Font(name="Calibri", size=12, bold=True, color="B31412")
 
     align_center = Alignment(horizontal="center", vertical="center")
     align_left = Alignment(horizontal="left", vertical="center")
-    
+
     thin_border = Border(
-        left=Side(style='thin', color='DDDDDD'),
-        right=Side(style='thin', color='DDDDDD'),
-        top=Side(style='thin', color='DDDDDD'),
-        bottom=Side(style='thin', color='DDDDDD')
+        left=Side(style='thin', color='CCCCCC'),
+        right=Side(style='thin', color='CCCCCC'),
+        top=Side(style='thin', color='CCCCCC'),
+        bottom=Side(style='thin', color='CCCCCC')
     )
 
-    # ========================================================
-    # SHEET 1: WALIOTUMIWA (IMEFIKA) - 100% CLEAN
-    # ========================================================
-    ws1 = wb.create_sheet(title="Waliotumiwa (Imefika)")
-    ws1.views.sheetView[0].showGridLines = True
-
-    # Title Banner
-    ws1.merge_cells("A1:H1")
+    # Title Banner (Large & Clear)
+    ws1.merge_cells("A1:F1")
     title_cell = ws1["A1"]
-    title_cell.value = "ORODHA YA WAGENI WALIOTUMIWA KADI YA WHATSAPP (SEND-OFF YA LILIAN MARCUS)"
-    title_cell.font = Font(name="Calibri", size=13, bold=True, color="0B2240")
+    title_cell.value = "ORODHA YA WAGENI WALIOTUMIWA UJUMBE WA WHATSAPP (SEND-OFF YA LILIAN MARCUS)"
+    title_cell.font = font_banner
     title_cell.alignment = align_left
-    ws1.row_dimensions[1].height = 25
+    ws1.row_dimensions[1].height = 36
 
-    headers_1 = [
-        "Na.", "Jina la Mgeni", "Namba ya WhatsApp", "Viti", 
-        "Hali ya Utumaji", "Mtoa Huduma", "Muda Uliotumwa", "Maelezo ya Utumaji"
+    # Subtitle / Summary info
+    delivered_count = sum(1 for r in all_list if r['status'] == 'IMEFIKA')
+    failed_count = sum(1 for r in all_list if r['status'] == 'HAIJAFIKA')
+    ws1.merge_cells("A2:F2")
+    sub_cell = ws1["A2"]
+    sub_cell.value = f"Jumla ya Wageni: {len(all_list)}  |  ✅ Zilizofika (IMEFIKA): {delivered_count}  |  ❌ Zilizokwama (HAIJAFIKA): {failed_count}  |  Tarehe: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    sub_cell.font = Font(name="Calibri", size=11, bold=True, color="555555")
+    sub_cell.alignment = align_left
+    ws1.row_dimensions[2].height = 24
+
+    # EXACTLY 6 HEADERS (Spacious, Large, No Provider, No Notes)
+    headers = [
+        "Na.",
+        "Jina la Mgeni",
+        "Namba ya Simu",
+        "Aina ya Mwaliko",
+        "Hali ya Ujumbe",
+        "Muda Uliotumwa"
     ]
 
-    for col_idx, header in enumerate(headers_1, 1):
-        cell = ws1.cell(row=3, column=col_idx, value=header)
+    for col_idx, header in enumerate(headers, 1):
+        cell = ws1.cell(row=4, column=col_idx, value=header)
         cell.fill = navy_header_fill
         cell.font = font_header
         cell.alignment = align_center
         cell.border = thin_border
-    ws1.row_dimensions[3].height = 24
+    ws1.row_dimensions[4].height = 32
 
-    for row_idx, r in enumerate(delivered_list, start=4):
+    # Data Rows (Cell kubwa kubwa, size 12, height 30px)
+    for row_idx, r in enumerate(all_list, start=5):
         phone_display = f"+{r['phone']}" if r['phone'] else "-"
-        note = "Ilifanikiwa baada ya kurudiwa" if r['failed_count'] > 0 else "Ilifika mara ya kwanza"
+        time_display = r['last_timestamp'][:16].replace('T', ' ') if r['last_timestamp'] else "-"
         
         row_values = [
-            row_idx - 3,
+            row_idx - 4,
             r['name'],
             phone_display,
             r['seats'],
-            "IMEFIKA",
-            r['provider'],
-            r['last_timestamp'][:16].replace('T', ' ') if r['last_timestamp'] else "-",
-            note
+            r['status'],  # "IMEFIKA" au "HAIJAFIKA"
+            time_display
         ]
 
         for col_idx, val in enumerate(row_values, 1):
             cell = ws1.cell(row=row_idx, column=col_idx, value=val)
-            cell.font = font_regular
             cell.border = thin_border
-            if col_idx in [1, 3, 4, 6, 7]:
-                cell.alignment = align_center
-            else:
-                cell.alignment = align_left
 
-            if col_idx == 5:  # Status
+            # Alternating subtle row shading
+            if (row_idx % 2 == 0):
+                cell.fill = zebra_fill
+
+            # Column specific styling
+            if col_idx == 1:  # Na.
+                cell.font = font_cell_bold
+                cell.alignment = align_center
+            elif col_idx == 2:  # Jina la Mgeni
+                cell.font = font_cell_bold
+                cell.alignment = align_left
+            elif col_idx in [3, 4, 6]:  # Namba, Viti, Muda
+                cell.font = font_cell_regular
+                cell.alignment = align_center
+            elif col_idx == 5:  # Hali ya Ujumbe
+                if r['status'] == 'IMEFIKA':
+                    cell.font = font_green
+                    cell.fill = green_badge_fill
+                else:
+                    cell.font = font_red
+                    cell.fill = red_badge_fill
+                cell.alignment = align_center
+
+        ws1.row_dimensions[row_idx].height = 28
+
+    # Set Generous Column Widths so everything is large and never truncated
+    column_widths = {
+        "A": 8,    # Na.
+        "B": 38,   # Jina la Mgeni
+        "C": 22,   # Namba ya Simu
+        "D": 18,   # Aina ya Mwaliko
+        "E": 20,   # Hali ya Ujumbe
+        "F": 22    # Muda Uliotumwa
+    }
+    for col_letter, width in column_widths.items():
+        ws1.column_dimensions[col_letter].width = width
+
+    # ========================================================
+    # SHEET 2: WALIOPATA PEKEE (IMEFIKA)
+    # ========================================================
+    delivered_list = [r for r in all_list if r['status'] == 'IMEFIKA']
+    ws2 = wb.create_sheet(title="Zilizofika (IMEFIKA)")
+    ws2.views.sheetView[0].showGridLines = True
+    
+    ws2.merge_cells("A1:F1")
+    t2 = ws2["A1"]
+    t2.value = f"WAGENI WALIOFIKIWA KWA MAFANIKIO (Jumla: {len(delivered_list)})"
+    t2.font = font_banner
+    t2.alignment = align_left
+    ws2.row_dimensions[1].height = 36
+
+    for col_idx, header in enumerate(headers, 1):
+        cell = ws2.cell(row=3, column=col_idx, value=header)
+        cell.fill = PatternFill(start_color="0D652D", end_color="0D652D", fill_type="solid")
+        cell.font = font_header
+        cell.alignment = align_center
+        cell.border = thin_border
+    ws2.row_dimensions[3].height = 32
+
+    for row_idx, r in enumerate(delivered_list, start=4):
+        phone_display = f"+{r['phone']}" if r['phone'] else "-"
+        time_display = r['last_timestamp'][:16].replace('T', ' ') if r['last_timestamp'] else "-"
+        row_values = [row_idx - 3, r['name'], phone_display, r['seats'], "IMEFIKA", time_display]
+
+        for col_idx, val in enumerate(row_values, 1):
+            cell = ws2.cell(row=row_idx, column=col_idx, value=val)
+            cell.border = thin_border
+            if col_idx in [1, 3, 4, 6]: cell.alignment = align_center
+            elif col_idx == 2: cell.alignment = align_left
+            elif col_idx == 5:
                 cell.font = font_green
                 cell.fill = green_badge_fill
                 cell.alignment = align_center
+        ws2.row_dimensions[row_idx].height = 28
 
-        ws1.row_dimensions[row_idx].height = 20
-
-    # Auto-fit columns
-    for col in ws1.columns:
-        max_len = max(len(str(cell.value or '')) for cell in col)
-        col_letter = get_column_letter(col[0].column)
-        ws1.column_dimensions[col_letter].width = max(max_len + 4, 12)
+    for col_letter, width in column_widths.items():
+        ws2.column_dimensions[col_letter].width = width
 
     # ========================================================
-    # SHEET 2: WALIOKWAMA (FAILED)
+    # SHEET 3: WALIOKWAMA PEKEE (HAIJAFIKA)
     # ========================================================
-    ws2 = wb.create_sheet(title="Waliokwama (Hawakupokea)")
-    ws2.views.sheetView[0].showGridLines = True
+    failed_list = [r for r in all_list if r['status'] == 'HAIJAFIKA']
+    ws3 = wb.create_sheet(title="Zilizokwama (HAIJAFIKA)")
+    ws3.views.sheetView[0].showGridLines = True
 
-    ws2.merge_cells("A1:G1")
-    t2 = ws2["A1"]
-    t2.value = "ORODHA YA WAGENI WAMBAO UJUMBE WA WHATSAPP ULIKWAMA (HAUKUFIKA)"
-    t2.font = Font(name="Calibri", size=13, bold=True, color="C5221F")
-    t2.alignment = align_left
-    ws2.row_dimensions[1].height = 25
+    ws3.merge_cells("A1:F1")
+    t3 = ws3["A1"]
+    t3.value = f"WAGENI WAMBAO UJUMBE HAUJAFIKA (Jumla: {len(failed_list)})"
+    t3.font = Font(name="Calibri", size=15, bold=True, color="B31412")
+    t3.alignment = align_left
+    ws3.row_dimensions[1].height = 36
 
-    headers_2 = [
-        "Na.", "Jina la Mgeni", "Namba ya WhatsApp", "Viti", 
-        "Hali ya Utumaji", "Mtoa Huduma", "Hatua Inayopendekezwa"
-    ]
-
-    for col_idx, header in enumerate(headers_2, 1):
-        cell = ws2.cell(row=3, column=col_idx, value=header)
+    for col_idx, header in enumerate(headers, 1):
+        cell = ws3.cell(row=3, column=col_idx, value=header)
         cell.fill = PatternFill(start_color="8A1B14", end_color="8A1B14", fill_type="solid")
         cell.font = font_header
         cell.alignment = align_center
         cell.border = thin_border
-    ws2.row_dimensions[3].height = 24
+    ws3.row_dimensions[3].height = 32
 
     for row_idx, r in enumerate(failed_list, start=4):
         phone_display = f"+{r['phone']}" if r['phone'] else "-"
-        row_values = [
-            row_idx - 3,
-            r['name'],
-            phone_display,
-            r['seats'],
-            "IMEKWAMA",
-            r['provider'],
-            "Piga simu au tuma SMS ya kawaida ya NextSMS"
-        ]
+        time_display = r['last_timestamp'][:16].replace('T', ' ') if r['last_timestamp'] else "-"
+        row_values = [row_idx - 3, r['name'], phone_display, r['seats'], "HAIJAFIKA", time_display]
 
         for col_idx, val in enumerate(row_values, 1):
-            cell = ws2.cell(row=row_idx, column=col_idx, value=val)
-            cell.font = font_regular
+            cell = ws3.cell(row=row_idx, column=col_idx, value=val)
             cell.border = thin_border
-            if col_idx in [1, 3, 4, 6]:
-                cell.alignment = align_center
-            else:
-                cell.alignment = align_left
-
-            if col_idx == 5:  # Status
+            if col_idx in [1, 3, 4, 6]: cell.alignment = align_center
+            elif col_idx == 2: cell.alignment = align_left
+            elif col_idx == 5:
                 cell.font = font_red
                 cell.fill = red_badge_fill
                 cell.alignment = align_center
+        ws3.row_dimensions[row_idx].height = 28
 
-        ws2.row_dimensions[row_idx].height = 20
-
-    for col in ws2.columns:
-        max_len = max(len(str(cell.value or '')) for cell in col)
-        col_letter = get_column_letter(col[0].column)
-        ws2.column_dimensions[col_letter].width = max(max_len + 4, 12)
-
-    # ========================================================
-    # SHEET 3: MUHTASARI WA TAKWIMU
-    # ========================================================
-    ws3 = wb.create_sheet(title="Muhtasari wa Takwimu")
-    ws3.views.sheetView[0].showGridLines = True
-
-    ws3.merge_cells("A1:C1")
-    t3 = ws3["A1"]
-    t3.value = "RIPOTI NA MUHTASARI WA UTUMAJI WA KADI ZA WHATSAPP"
-    t3.font = Font(name="Calibri", size=13, bold=True, color="0B2240")
-    ws3.row_dimensions[1].height = 25
-
-    headers_3 = ["Kipengele / Maelezo", "Takwimu", "Asilimia (%)"]
-    for col_idx, header in enumerate(headers_3, 1):
-        cell = ws3.cell(row=3, column=col_idx, value=header)
-        cell.fill = gold_header_fill
-        cell.font = Font(name="Calibri", size=11, bold=True, color="0B2240")
-        cell.alignment = align_center
-        cell.border = thin_border
-
-    total_unique = len(all_list)
-    total_delivered = len(delivered_list)
-    total_failed = len(failed_list)
-    pct_delivered = f"{(total_delivered / total_unique * 100):.1f}%" if total_unique else "0%"
-    pct_failed = f"{(total_failed / total_unique * 100):.1f}%" if total_unique else "0%"
-
-    stats = [
-        ("Jumla ya Wageni wa Kipekee Waliojaribiwa", total_unique, "100.0%"),
-        ("Waliopokea Kadi kwa Mafanikio (Delivered)", total_delivered, pct_delivered),
-        ("Waliokwama / Hawajapokea (Failed)", total_failed, pct_failed),
-        ("Tarehe ya Kuandaa Ripoti", datetime.now().strftime("%d/%m/%Y %H:%M"), "-"),
-    ]
-
-    for row_idx, (lbl, val, pct) in enumerate(stats, start=4):
-        ws3.cell(row=row_idx, column=1, value=lbl).font = font_bold
-        ws3.cell(row=row_idx, column=2, value=val).font = font_regular
-        ws3.cell(row=row_idx, column=3, value=pct).font = font_regular
-        for c in range(1, 4):
-            ws3.cell(row=row_idx, column=c).border = thin_border
-            if c > 1:
-                ws3.cell(row=row_idx, column=c).alignment = align_center
-
-    ws3.column_dimensions["A"].width = 45
-    ws3.column_dimensions["B"].width = 20
-    ws3.column_dimensions["C"].width = 18
+    for col_letter, width in column_widths.items():
+        ws3.column_dimensions[col_letter].width = width
 
     wb.save(output_filename)
     print(f"[SUCCESS] Faili la Excel limehifadhiwa kwa mafanikio: {output_filename}")
 
 if __name__ == "__main__":
     db = load_database()
-    delivered, failed, all_recipients = clean_and_deduplicate(db)
+    all_recipients = clean_and_deduplicate(db)
     
     date_str = datetime.now().strftime("%Y_%m_%d")
     out_file = os.path.join(BASE_DIR, f"Wageni_Waliotumiwa_WhatsApp_Safi_{date_str}.xlsx")
-    create_excel_report(delivered, failed, all_recipients, out_file)
+    create_excel_report(all_recipients, out_file)
