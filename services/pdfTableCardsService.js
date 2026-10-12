@@ -20,20 +20,12 @@ async function generateTableCardsPDF(options = {}) {
     info: {
       Title: 'Vipeperushi vya Meza - Send-off ya Lilian Marcus',
       Author: 'Felician Joseph (Nyisulya)',
-      Subject: 'Dual QR Table Tent Cards',
+      Subject: 'Table Tent Cards - Oda ya Vinywaji Mezani',
       Keywords: 'Table Cards, QR Code, Send-off, Lilian, Drinks Menu'
     }
   });
 
-  // Pre-generate & cache QR buffers
-  const websiteUrl = `${baseUrl}/celebration.html`;
-  const websiteQrBuffer = await QRCode.toBuffer(websiteUrl, {
-    errorCorrectionLevel: 'M',
-    margin: 1,
-    scale: 6,
-    color: { dark: '#000000', light: '#ffffff' }
-  });
-
+  // Pre-generate & cache Table QR buffers (Drink Order only)
   const tableQrBuffers = {};
   for (let t = 1; t <= tablesCount; t++) {
     const tableUrl = `${baseUrl}/order/meza-${t}`;
@@ -102,7 +94,7 @@ async function generateTableCardsPDF(options = {}) {
       const x = marginX + (col * (cardWidth + gapX));
       const y = marginY + (row * (cardHeight + gapY));
 
-      drawSingleCard(doc, x, y, cardWidth, cardHeight, tableNum, theme, density, tableQrBuffers[tableNum], websiteQrBuffer);
+      drawSingleCard(doc, x, y, cardWidth, cardHeight, tableNum, theme, density, tableQrBuffers[tableNum]);
       cardIdx++;
     }
   }
@@ -111,7 +103,7 @@ async function generateTableCardsPDF(options = {}) {
   return doc;
 }
 
-function drawSingleCard(doc, x, y, w, h, tableNum, theme, density, tableQrBuf, webQrBuf) {
+function drawSingleCard(doc, x, y, w, h, tableNum, theme, density, tableQrBuf) {
   doc.save();
 
   // 1. Draw outer dashed cutting guide border
@@ -133,99 +125,107 @@ function drawSingleCard(doc, x, y, w, h, tableNum, theme, density, tableQrBuf, w
   const isIvory = theme === 'ivory';
   const bgColor = isIvory ? '#fffef7' : '#041c12';
   const borderColor = isIvory ? '#d4af37' : '#d4af37';
-  const textColor = isIvory ? '#041c12' : '#ffffff';
-  const goldColor = '#b8860b';
   const lightGoldColor = isIvory ? '#996515' : '#fef08a';
 
   // Fill card background
   doc.roundedRect(cx, cy, cw, ch, radius)
      .fillAndStroke(bgColor, borderColor);
 
-  // 3. Top Header: Tag & Table Name (Pure Clean Typography without Emojis)
-  const topY = cy + (density === 6 ? 6 : 10);
-  doc.fontSize(density === 6 ? 6.5 : 7.5)
+  // 3. Top Header: Tag & Table Name
+  const isCompact = density === 6;
+  const topY = cy + (isCompact ? 8 : 12);
+  doc.fontSize(isCompact ? 6.5 : 7.5)
      .font('Helvetica-Bold')
      .fillColor(lightGoldColor)
      .text('SEND-OFF YA LILIAN MARCUS', cx, topY, { width: cw, align: 'center' });
 
-  const tableTitleY = topY + (density === 6 ? 10 : 13);
-  doc.fontSize(density === 6 ? 17 : 22)
+  const tableTitleY = topY + (isCompact ? 11 : 14);
+  doc.fontSize(isCompact ? 18 : 23)
      .font('Helvetica-Bold')
      .fillColor(isIvory ? '#062318' : '#ffffff')
      .text(`MEZA ${tableNum}`, cx, tableTitleY, { width: cw, align: 'center' });
 
-  const subtitleY = tableTitleY + (density === 6 ? 18 : 23);
-  doc.fontSize(density === 6 ? 5.5 : 6.5)
+  const subtitleY = tableTitleY + (isCompact ? 19 : 25);
+  doc.fontSize(isCompact ? 5.5 : 6.8)
      .font('Helvetica-Bold')
      .fillColor('#10b981')
      .text('VIP TABLE SERVICE | BRAGGING SOCIAL HALL, GOBA', cx, subtitleY, { width: cw, align: 'center' });
 
-  // 4. Dual QR Codes Section (No emoji in headers)
-  const qrSectionY = subtitleY + (density === 6 ? 10 : 14);
-  const qrBoxW = (cw - 18) / 2;
-  const qrBoxH = density === 6 ? 124 : 170;
-  const qrSize = density === 6 ? 74 : 98;
+  // 4. Single QR Code Section: Kuagiza Vinywaji Mezani Pekee (Centered)
+  const qrSectionY = subtitleY + (isCompact ? 10 : 16);
+  const qrBoxW = isCompact ? 180 : 200;
+  const qrBoxH = isCompact ? 126 : 172;
+  const qrSize = isCompact ? 82 : 110;
+  const qrBoxX = cx + ((cw - qrBoxW) / 2);
 
-  // Left QR: Drink Order
-  const leftX = cx + 6;
-  drawQrBox(doc, leftX, qrSectionY, qrBoxW, qrBoxH, qrSize, 'ODA YA VINYWAJI', 'Scan kuagiza vinywaji', `lilian.nyisu.com/order/meza-${tableNum}`, tableQrBuf, isIvory);
-
-  // Right QR: Celebration Website
-  const rightX = cx + qrBoxW + 12;
-  drawQrBox(doc, rightX, qrSectionY, qrBoxW, qrBoxH, qrSize, 'TOVUTI YA SHEREHE', 'Scan picha, sala & ratiba', 'lilian.nyisu.com', webQrBuf, isIvory);
+  drawQrBox(
+    doc,
+    qrBoxX,
+    qrSectionY,
+    qrBoxW,
+    qrBoxH,
+    qrSize,
+    'ODA YA VINYWAJI MEZANI',
+    'Scan kwa kamera ya simu kuagiza vinywaji',
+    `lilian.nyisu.com/order/meza-${tableNum}`,
+    tableQrBuf,
+    isIvory
+  );
 
   // 5. Card Footer
-  const footerY = qrSectionY + qrBoxH + (density === 6 ? 4 : 8);
+  const footerY = qrSectionY + qrBoxH + (isCompact ? 6 : 14);
   doc.strokeColor(isIvory ? '#e2e8f0' : '#1e3a2b')
      .lineWidth(0.5)
      .moveTo(cx + 8, footerY)
      .lineTo(cx + cw - 8, footerY)
      .stroke();
 
-  doc.fontSize(density === 6 ? 5.5 : 6.5)
+  doc.fontSize(isCompact ? 5.5 : 6.5)
      .font('Helvetica')
      .fillColor(isIvory ? '#4b5563' : '#94a3b8')
-     .text('Jumanne, 13 Oktoba 2026 | Karibuni Tufurahi Pamoja!', cx, footerY + 3, { width: cw, align: 'center' });
+     .text('Jumanne, 13 Oktoba 2026 | Karibuni Tufurahi Pamoja!', cx, footerY + 4, { width: cw, align: 'center' });
 
-  doc.fontSize(density === 6 ? 5.5 : 6.5)
+  doc.fontSize(isCompact ? 5.5 : 6.5)
      .font('Helvetica-Bold')
      .fillColor(lightGoldColor)
-     .text('Mfumo wa Kidijitali: 0787 661 560 (Nyisulya)', cx, footerY + (density === 6 ? 11 : 13), { width: cw, align: 'center' });
+     .text('Mfumo wa Kidijitali: 0787 661 560 (Nyisulya)', cx, footerY + (isCompact ? 12 : 14), { width: cw, align: 'center' });
 
   doc.restore();
 }
 
 function drawQrBox(doc, bx, by, bw, bh, qrSize, headerText, captionText, urlText, qrBuffer, isIvory) {
   // Box background
-  doc.roundedRect(bx, by, bw, bh, 6)
+  doc.roundedRect(bx, by, bw, bh, 8)
      .fillAndStroke(isIvory ? '#ffffff' : '#03140d', isIvory ? '#d4af37' : '#0e5239');
 
+  const isLarge = bh > 140;
+
   // Header
-  doc.fontSize(bh > 140 ? 7 : 6)
+  doc.fontSize(isLarge ? 7.8 : 6.5)
      .font('Helvetica-Bold')
      .fillColor(isIvory ? '#062318' : '#fef08a')
-     .text(headerText, bx, by + 4, { width: bw, align: 'center' });
+     .text(headerText, bx, by + (isLarge ? 8 : 5), { width: bw, align: 'center' });
 
   // QR Image Centered
   const qrX = bx + ((bw - qrSize) / 2);
-  const qrY = by + (bh > 140 ? 18 : 15);
+  const qrY = by + (isLarge ? 22 : 16);
 
   // White border backing for QR
-  doc.roundedRect(qrX - 2, qrY - 2, qrSize + 4, qrSize + 4, 4)
+  doc.roundedRect(qrX - 3, qrY - 3, qrSize + 6, qrSize + 6, 5)
      .fillAndStroke('#ffffff', '#d4af37');
 
   doc.image(qrBuffer, qrX, qrY, { width: qrSize, height: qrSize });
 
   // Caption
-  const capY = qrY + qrSize + 4;
-  doc.fontSize(bh > 140 ? 6 : 5)
+  const capY = qrY + qrSize + (isLarge ? 6 : 4);
+  doc.fontSize(isLarge ? 6.8 : 5.5)
      .font('Helvetica')
      .fillColor(isIvory ? '#374151' : '#cbd5e1')
      .text(captionText, bx, capY, { width: bw, align: 'center' });
 
   // Direct short URL
-  const urlY = capY + (bh > 140 ? 10 : 8);
-  doc.fontSize(bh > 140 ? 6 : 5)
+  const urlY = capY + (isLarge ? 11 : 9);
+  doc.fontSize(isLarge ? 6.5 : 5.5)
      .font('Courier-Bold')
      .fillColor(isIvory ? '#0f172a' : '#fef08a')
      .text(urlText, bx, urlY, { width: bw, align: 'center' });
