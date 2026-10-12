@@ -1453,6 +1453,33 @@ app.get('/api/qr/table/:id', async (req, res) => {
   }
 });
 
+// 7.1b Generic QR Code Generator Endpoint (Website, Celebration, or Custom URLs)
+app.get('/api/qr/general', async (req, res) => {
+  const url = req.query.url || `${req.protocol}://${req.get('host')}/celebration.html`;
+  const darkColor = req.query.dark || '#031a10';
+  const lightColor = req.query.light || '#ffffff';
+
+  try {
+    const qrBuffer = await QRCode.toBuffer(url, {
+      errorCorrectionLevel: 'M',
+      type: 'png',
+      margin: 1,
+      scale: 8,
+      color: {
+        dark: darkColor,
+        light: lightColor
+      }
+    });
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(qrBuffer);
+  } catch (err) {
+    console.error('General QR generation error:', err);
+    res.status(500).send('Error generating QR code');
+  }
+});
+
 // 7.2 Table Drink Orders API (Instant WhatsApp Dispatch to 0787661560)
 app.get('/api/orders', (req, res) => {
   const db = readDB();
@@ -2298,6 +2325,10 @@ app.get('/kamati', (req, res) => {
 
 app.get(['/paper-card', '/kadi-karatasi', '/kadi-ya-karatasi'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'paper-card.html'));
+});
+
+app.get(['/table-cards', '/vipeperushi-meza'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'table-cards.html'));
 });
 
 function handleOrderPage(req, res) {
