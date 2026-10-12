@@ -11,8 +11,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/favicon.png">
 
-  <!-- Include QRCode.js for Instant Client-Side QR Rendering -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- QRCode.js (Local with CDN fallback) -->
+  <script src="/js/qrcode.min.js"></script>
+  <script>
+    if (typeof QRCode === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>');
+    }
+  </script>
+
+  <!-- html2pdf & jsPDF Bundle (Local with CDN fallback) -->
+  <script src="/js/html2pdf.bundle.min.js"></script>
+  <script>
+    if (typeof html2pdf === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>');
+    }
+  </script>
 
   <style>
     /* ==========================================================================
@@ -39,7 +52,7 @@
 
     body {
       font-family: 'Outfit', sans-serif;
-      background: #111827;
+      background: #0f172a;
       color: #333;
       padding: 20px 10px;
       -webkit-font-smoothing: antialiased;
@@ -53,10 +66,10 @@
       margin: 0 auto 25px;
       background: #061f16;
       border: 1.5px solid var(--gold-primary);
-      border-radius: 14px;
-      padding: 18px 24px;
+      border-radius: 16px;
+      padding: 20px 24px;
       color: #fff;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
     }
 
     .toolbar-header {
@@ -64,15 +77,15 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 16px;
+      gap: 16px;
+      margin-bottom: 18px;
       border-bottom: 1px solid rgba(212, 175, 55, 0.25);
-      padding-bottom: 12px;
+      padding-bottom: 14px;
     }
 
     .toolbar-title h1 {
       font-family: 'Cinzel', serif;
-      font-size: 1.35rem;
+      font-size: 1.38rem;
       color: var(--gold-light);
       display: flex;
       align-items: center;
@@ -82,28 +95,53 @@
     .toolbar-title p {
       font-size: 0.85rem;
       color: #94a3b8;
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
     .toolbar-actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Primary Download PDF Button */
+    .btn-download-pdf {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.96rem;
+      padding: 11px 22px;
+      border-radius: 30px;
+      border: 1.5px solid #34d399;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+      transition: all 0.25s ease;
+    }
+
+    .btn-download-pdf:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(52, 211, 153, 0.6);
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      color: #041810;
     }
 
     .btn-print-now {
       background: var(--gold-gradient);
       color: #041a12;
       font-weight: 800;
-      font-size: 0.98rem;
-      padding: 10px 24px;
-      border-radius: 9999px;
+      font-size: 0.92rem;
+      padding: 11px 20px;
+      border-radius: 30px;
       border: 1px solid #fff;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.4);
       transition: all 0.25s ease;
     }
 
@@ -117,14 +155,14 @@
     .toolbar-controls-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      gap: 14px;
       align-items: center;
     }
 
     .control-item label {
       display: block;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--gold-light);
@@ -137,7 +175,7 @@
       background: #04140e;
       border: 1px solid rgba(212, 175, 55, 0.4);
       border-radius: 8px;
-      padding: 8px 12px;
+      padding: 9px 12px;
       color: #fff;
       font-size: 0.9rem;
       outline: none;
@@ -151,17 +189,29 @@
 
     .paper-summary-badge {
       grid-column: 1 / -1;
-      background: rgba(14, 82, 57, 0.4);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      background: rgba(14, 82, 57, 0.45);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.86rem;
       color: #a7f3d0;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
+    }
+
+    /* Stationery Guidance Tip Banner */
+    .stationery-tips-banner {
+      grid-column: 1 / -1;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px dashed var(--gold-primary);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: #fef08a;
+      line-height: 1.5;
     }
 
     /* ==========================================================================
@@ -170,6 +220,50 @@
     .print-sheet-container {
       max-width: 1040px;
       margin: 0 auto;
+    }
+
+    /* THE A4 SHEET PAGE CONTAINER */
+    .a4-sheet-page {
+      position: relative;
+      margin-bottom: 30px;
+      page-break-after: always;
+      break-after: page;
+      background: #04140e;
+      border: 1.5px solid rgba(212, 175, 55, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .sheet-header-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      padding: 7px 14px;
+      margin-bottom: 14px;
+      font-size: 0.82rem;
+      color: var(--gold-light);
+      font-weight: 700;
+    }
+
+    .btn-sheet-png {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .btn-sheet-png:hover {
+      background: var(--gold-gradient);
+      color: #04140e;
     }
 
     /* GRID FOR 4 CARDS PER A4 (2x2) */
@@ -198,7 +292,7 @@
       justify-content: space-between;
       page-break-inside: avoid;
       break-inside: avoid;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
       border: 2px dashed rgba(212, 175, 55, 0.45); /* Cutting Guide line */
       background: #041810;
       transition: all 0.2s ease;
@@ -226,6 +320,16 @@
     }
 
     /* THEME 2: CHAMPAGNE IVORY & GOLD (INK-SAVER LUXURY) */
+    .theme-ivory .a4-sheet-page {
+      background: #fdfbf7;
+      border-color: #d4af37;
+    }
+
+    .theme-ivory .table-flyer-card {
+      background: #faf6ec;
+      border-color: #c59b27;
+    }
+
     .theme-ivory .card-inner-box {
       background: linear-gradient(145deg, #fffdf7 0%, #faf5ea 100%);
       border: 1.5px solid #c59b27;
@@ -433,6 +537,50 @@
     }
 
     /* ==========================================================================
+       PROGRESS MODAL FOR PDF DOWNLOAD
+       ========================================================================== */
+    .pdf-progress-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .pdf-progress-card {
+      background: linear-gradient(145deg, #09281a 0%, #03140c 100%);
+      border: 2px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 30px 24px;
+      text-align: center;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.25);
+    }
+
+    .pdf-progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 10px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .pdf-progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--gold-gradient);
+      transition: width 0.25s ease;
+    }
+
+    /* ==========================================================================
        PRINT MEDIA QUERIES (PERFECT A4 SHEETS)
        ========================================================================== */
     @media print {
@@ -442,37 +590,47 @@
         margin: 0 !important;
       }
 
-      .no-print-toolbar {
+      .no-print-toolbar,
+      .pdf-progress-overlay {
         display: none !important;
       }
 
       .print-sheet-container {
         max-width: 100% !important;
         margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .a4-sheet-page {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 6mm !important;
+        margin: 0 !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        border-radius: 0 !important;
+      }
+
+      .sheet-header-badge {
+        display: none !important;
       }
 
       .table-flyer-card {
         box-shadow: none !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
+        border: 1px dashed #bbb !important;
       }
 
-      /* 4 Cards per A4 Layout */
       .cards-grid-layout.layout-4 {
         grid-template-columns: 1fr 1fr !important;
         gap: 8mm !important;
-        padding: 5mm !important;
       }
 
-      /* 6 Cards per A4 Layout */
       .cards-grid-layout.layout-6 {
         grid-template-columns: 1fr 1fr !important;
         gap: 5mm !important;
-        padding: 4mm !important;
-      }
-
-      .table-flyer-card {
-        border: 1px dashed #aaa !important;
       }
     }
   </style>
@@ -486,10 +644,16 @@
     <div class="toolbar-header">
       <div class="toolbar-title">
         <h1>🍾 Vipeperushi vya Meza (Dual QR Tent Cards)</h1>
-        <p>Vipeperushi vidogo vyenye QR mbili (Vinywaji Mezani + Tovuti ya Sherehe) vinavyookoa karatasi na gharama.</p>
+        <p>Vipeperushi vyenye QR mbili (Vinywaji Mezani + Tovuti ya Sherehe) tayari kwa kupakua PDF au kuprint stationery.</p>
       </div>
       <div class="toolbar-actions">
-        <button type="button" class="btn-print-now" onclick="window.print()">
+        <!-- Direct PDF Download Button -->
+        <button type="button" class="btn-download-pdf" id="btn-download-pdf" onclick="downloadPdfFile()">
+          <span>📥 Pakua PDF (Stationery Ready)</span>
+        </button>
+
+        <!-- Native Print / Save PDF Button -->
+        <button type="button" class="btn-print-now" onclick="triggerBrowserPrint()">
           <span>🖨️ Chapisha / Hifadhi PDF</span>
         </button>
       </div>
@@ -506,6 +670,7 @@
           <option value="25">Meza 25 (Meza 1 hadi 25)</option>
           <option value="20">Meza 20 (Meza 1 hadi 20)</option>
           <option value="10">Meza 10 (Meza 1 hadi 10)</option>
+          <option value="5">Meza 5 (Meza 1 hadi 5)</option>
         </select>
       </div>
 
@@ -535,7 +700,18 @@
         <label>Mandhari ya Rangi:</label>
         <select id="select-theme" onchange="changeTheme()">
           <option value="theme-emerald" selected>👑 Kijani cha Kifalme & Dhahabu (Emerald & Gold)</option>
-          <option value="theme-ivory">📜 Krimu & Dhahabu (Champagne Ivory - Inatunza Wino)</option>
+          <option value="theme-ivory">📜 Krimu & Dhahabu (Champagne Ivory - Inatunza Wino wa Stationary)</option>
+        </select>
+      </div>
+
+      <!-- Kurasa za Kupakua kwenye PDF -->
+      <div class="control-item">
+        <label>Chagua Kurasa za Kupakua PDF:</label>
+        <select id="select-pdf-range">
+          <option value="all" selected>Kurasa Zote (Meza Zote) [Kamili]</option>
+          <option value="sample-1">Karatasi 1 ya Kwanza Tu (Sample)</option>
+          <option value="first-5">Karatasi 1 hadi 5 (Meza za Mwanzo)</option>
+          <option value="first-10">Karatasi 1 hadi 10 (Nusu ya Kwanza)</option>
         </select>
       </div>
 
@@ -545,15 +721,42 @@
         <span id="badge-total-pages">📄 Karatasi za A4 Zitakazotumika: 27 tu!</span>
         <span>✂️ Mistari ya kukatia (dashed lines) ipo tayari</span>
       </div>
+
+      <!-- Stationery Tips Box -->
+      <div class="stationery-tips-banner">
+        💡 <strong>Muongozo wa Stationery:</strong><br>
+        1. Bonyeza <strong>"📥 Pakua PDF (Stationery Ready)"</strong> kuipakua kama faili halisi la PDF kwenye simu au flash drive.<br>
+        2. Kwenye kila karatasi hapa chini kuna kitufe cha <strong>"📥 Pakua Picha (PNG)"</strong> kama unataka kumtumia fundi wa stationery picha WhatsApp.<br>
+        3. Pia unaweza kubonyeza <strong>"🖨️ Chapisha / Hifadhi PDF"</strong> na kuchagua <em>"Save as PDF"</em> kwenye kompyuta yako.
+      </div>
     </div>
   </div>
 
   <!-- ========================================================
-       PRINT SHEET CONTAINER
+       PRINT SHEET CONTAINER (A4 PAGES)
        ======================================================== -->
-  <div class="print-sheet-container">
-    <div class="cards-grid-layout layout-4" id="cards-grid">
-      <!-- Populated dynamically by javascript -->
+  <div class="print-sheet-container" id="sheets-container">
+    <!-- Populated dynamically by javascript into A4 Sheets -->
+  </div>
+
+  <!-- PDF Generation Progress Modal -->
+  <div id="pdf-progress-overlay" class="pdf-progress-overlay" style="display: none;">
+    <div class="pdf-progress-card">
+      <div style="font-size: 3rem; margin-bottom: 8px;">📄</div>
+      <h3 style="color: var(--gold-light); font-family: 'Cinzel', serif; font-size: 1.25rem; margin-bottom: 6px;">
+        Inatengeneza File la PDF...
+      </h3>
+      <p id="pdf-progress-text" style="color: #cbd5e1; font-size: 0.88rem; line-height: 1.4;">
+        Tafadhali subiri, inatayarisha vipeperushi vya meza...
+      </p>
+
+      <div class="pdf-progress-bar-bg">
+        <div id="pdf-progress-bar" class="pdf-progress-bar-fill"></div>
+      </div>
+
+      <div style="font-size: 0.78rem; color: #94a3b8;">
+        Faili la PDF litaanza kupakuliwa mara moja likikamilika!
+      </div>
     </div>
   </div>
 
@@ -576,10 +779,7 @@
     }
 
     function changeDensity() {
-      const density = document.getElementById('select-page-density').value;
-      const grid = document.getElementById('cards-grid');
-      grid.className = `cards-grid-layout layout-${density}`;
-      updatePaperSummary();
+      regenerateCards();
     }
 
     function updatePaperSummary() {
@@ -594,28 +794,65 @@
       document.getElementById('badge-total-pages').textContent = `📄 Karatasi za A4 Zitakazotumika: ${totalSheets} tu!`;
     }
 
+    function triggerBrowserPrint() {
+      window.print();
+    }
+
     async function regenerateCards() {
       const tablesCount = parseInt(document.getElementById('select-tables-count').value, 10) || 35;
       const copies = parseInt(document.getElementById('select-copies-per-table').value, 10) || 3;
       const density = parseInt(document.getElementById('select-page-density').value, 10) || 4;
 
-      const grid = document.getElementById('cards-grid');
-      grid.className = `cards-grid-layout layout-${density}`;
-      grid.innerHTML = '';
+      const container = document.getElementById('sheets-container');
+      container.innerHTML = '';
 
       updatePaperSummary();
 
-      let cardIndex = 0;
+      const totalFlyers = tablesCount * copies;
+      const totalSheets = Math.ceil(totalFlyers / density);
 
-      // Generate Table cards
+      let cardIndex = 0;
+      let currentSheetIndex = 0;
+      let currentSheetEl = null;
+      let cardsInCurrentSheet = 0;
+
       for (let tableNum = 1; tableNum <= tablesCount; tableNum++) {
         const tableId = `meza-${tableNum}`;
         const orderUrl = `${BASE_DOMAIN}/order/${tableId}`;
 
         for (let copy = 1; copy <= copies; copy++) {
           cardIndex++;
+
+          // Create new A4 Sheet when needed
+          if (cardsInCurrentSheet === 0) {
+            currentSheetIndex++;
+            currentSheetEl = document.createElement('div');
+            currentSheetEl.className = `a4-sheet-page`;
+            currentSheetEl.id = `sheet-${currentSheetIndex}`;
+
+            const sheetHeader = document.createElement('div');
+            sheetHeader.className = 'sheet-header-badge';
+            sheetHeader.innerHTML = `
+              <span>📄 Karatasi ya A4 #${currentSheetIndex} kati ya ${totalSheets}</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button type="button" class="btn-sheet-png" onclick="downloadSheetImage(${currentSheetIndex})">
+                  📥 Pakua Karatasi Hii Tu (PNG)
+                </button>
+              </div>
+            `;
+
+            const cardsGrid = document.createElement('div');
+            cardsGrid.className = `cards-grid-layout layout-${density}`;
+            cardsGrid.id = `grid-sheet-${currentSheetIndex}`;
+
+            currentSheetEl.appendChild(sheetHeader);
+            currentSheetEl.appendChild(cardsGrid);
+            container.appendChild(currentSheetEl);
+          }
+
+          const targetGrid = currentSheetEl.querySelector(`.cards-grid-layout`);
           const flyer = createFlyerElement(tableNum, tableId, orderUrl, cardIndex);
-          grid.appendChild(flyer);
+          targetGrid.appendChild(flyer);
 
           // Generate Left QR (Drinks) with pure black and optimal scanning density
           const qrDrinksEl = flyer.querySelector(`.qr-drinks-${cardIndex}`);
@@ -639,6 +876,11 @@
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.M
           });
+
+          cardsInCurrentSheet++;
+          if (cardsInCurrentSheet >= density) {
+            cardsInCurrentSheet = 0;
+          }
         }
       }
     }
@@ -692,6 +934,121 @@
       `;
 
       return div;
+    }
+
+    // Direct Multi-Page PDF Download for Stationery Printing
+    async function downloadPdfFile() {
+      const range = document.getElementById('select-pdf-range')?.value || 'all';
+      const allSheets = Array.from(document.querySelectorAll('.a4-sheet-page'));
+      if (allSheets.length === 0) {
+        alert('Hakuna vipeperushi vilivyopatikana.');
+        return;
+      }
+
+      let sheetsToProcess = allSheets;
+      if (range === 'sample-1') {
+        sheetsToProcess = allSheets.slice(0, 1);
+      } else if (range === 'first-5') {
+        sheetsToProcess = allSheets.slice(0, Math.min(5, allSheets.length));
+      } else if (range === 'first-10') {
+        sheetsToProcess = allSheets.slice(0, Math.min(10, allSheets.length));
+      }
+
+      const overlay = document.getElementById('pdf-progress-overlay');
+      const progText = document.getElementById('pdf-progress-text');
+      const progBar = document.getElementById('pdf-progress-bar');
+      if (overlay) overlay.style.display = 'flex';
+
+      try {
+        const jsPdfConstructor = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
+        if (!jsPdfConstructor) {
+          throw new Error('Maktaba ya kutengeneza PDF (jsPDF) inapakia. Tafadhali subiri kidogo.');
+        }
+
+        const pdf = new jsPdfConstructor({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+          compress: true
+        });
+
+        const total = sheetsToProcess.length;
+        const isIvory = document.body.classList.contains('theme-ivory');
+        const bgColor = isIvory ? '#ffffff' : '#041810';
+
+        for (let i = 0; i < total; i++) {
+          const sheet = sheetsToProcess[i];
+          const pageNum = i + 1;
+          const pct = Math.round(((i + 1) / total) * 100);
+
+          if (progText) progText.textContent = `Inatayarisha Karatasi ya ${pageNum} kati ya ${total} (${pct}%)...`;
+          if (progBar) progBar.style.width = `${pct}%`;
+
+          // Small delay to allow browser to refresh UI
+          await new Promise(r => setTimeout(r, 60));
+
+          // Hide header badge temporarily during capture
+          const badge = sheet.querySelector('.sheet-header-badge');
+          if (badge) badge.style.display = 'none';
+
+          const canvas = await html2canvas(sheet, {
+            scale: 2, // 300 DPI razor sharp for printing
+            useCORS: true,
+            logging: false,
+            backgroundColor: bgColor
+          });
+
+          if (badge) badge.style.display = '';
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          if (i > 0) {
+            pdf.addPage('a4', 'portrait');
+          }
+          pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        }
+
+        if (progText) progText.textContent = 'Inapakua faili la PDF sasa...';
+        const timestamp = new Date().toISOString().slice(0, 10);
+        pdf.save(`Vipeperushi_Meza_Sendoff_Lilian_${timestamp}.pdf`);
+      } catch (err) {
+        console.error('PDF export error:', err);
+        alert('Hitilafu wakati wa kutengeneza PDF: ' + err.message + '\n\nUnaweza pia kubonyeza "Chapisha / Hifadhi PDF" na uchague "Save as PDF"!');
+      } finally {
+        if (overlay) {
+          setTimeout(() => { overlay.style.display = 'none'; }, 600);
+        }
+      }
+    }
+
+    // Download Single Sheet as High-Resolution PNG (Great for WhatsApp sharing to Stationary)
+    async function downloadSheetImage(sheetIndex) {
+      const sheet = document.getElementById(`sheet-${sheetIndex}`);
+      if (!sheet) return;
+
+      const badge = sheet.querySelector('.sheet-header-badge');
+      if (badge) badge.style.display = 'none';
+
+      const isIvory = document.body.classList.contains('theme-ivory');
+      const bgColor = isIvory ? '#ffffff' : '#041810';
+
+      try {
+        const canvas = await html2canvas(sheet, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: bgColor
+        });
+
+        if (badge) badge.style.display = '';
+
+        const link = document.createElement('a');
+        link.download = `Karatasi_${sheetIndex}_Vipeperushi_Sendoff_Lilian.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        if (badge) badge.style.display = '';
+        alert('Hitilafu: ' + e.message);
+      }
     }
   </script>
 </body>
