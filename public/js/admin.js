@@ -193,6 +193,7 @@ async function initDashboard() {
     loadSmsConfig(),
     loadWhatsAppConfig(),
     loadDrinkOrders(),
+    loadOrderNotificationConfig(),
     loadDrinksAdmin(),
     loadGalleryImages()
   ]);
@@ -2413,6 +2414,39 @@ function setupEventListeners() {
     });
   }
 
+  // SMS-Gate Config Form
+  const smsGateConfigForm = document.getElementById('smsgate-config-form');
+  if (smsGateConfigForm) {
+    smsGateConfigForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        recipientPhone: document.getElementById('set-smsgate-phone').value.trim(),
+        serverUrl: document.getElementById('set-smsgate-url').value.trim(),
+        username: document.getElementById('set-smsgate-user').value.trim(),
+        password: document.getElementById('set-smsgate-pass').value.trim(),
+        deviceId: document.getElementById('set-smsgate-device').value.trim(),
+        simNumber: parseInt(document.getElementById('set-smsgate-sim').value, 10) || 1
+      };
+
+      try {
+        const res = await fetch('/api/orders/notification-config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('✅ Mipangilio ya SMS-Gate na Namba ya Simu imehifadhiwa kikamilifu!');
+          await loadOrderNotificationConfig();
+        } else {
+          alert(data.error || 'Hitilafu');
+        }
+      } catch (err) {
+        alert('Hitilafu ya mtandao: ' + err.message);
+      }
+    });
+  }
+
   // Settings form
   const settingsForm = document.getElementById('settings-form');
   if (settingsForm) {
@@ -3319,6 +3353,131 @@ async function testTelegramNotification() {
   }
 }
 
+// -------------------------------------------------------------
+// SMS-GATE ANDROID GATEWAY (SMS NOTIFICATIONS FOR ORDERS)
+// -------------------------------------------------------------
+
+async function loadOrderNotificationConfig() {
+  try {
+    const res = await fetch('/api/orders/notification-config');
+    if (!res.ok) return;
+    const cfg = await res.json();
+
+    const phoneInput = document.getElementById('order-notification-phone-input');
+    if (phoneInput && cfg.recipientPhone) {
+      phoneInput.value = cfg.recipientPhone;
+    }
+
+    // Tab-settings inputs
+    const setPhone = document.getElementById('set-smsgate-phone');
+    if (setPhone && cfg.recipientPhone) setPhone.value = cfg.recipientPhone;
+
+    const setUrl = document.getElementById('set-smsgate-url');
+    if (setUrl && cfg.serverUrl) setUrl.value = cfg.serverUrl;
+
+    const setUser = document.getElementById('set-smsgate-user');
+    if (setUser && cfg.username) setUser.value = cfg.username;
+
+    const setPass = document.getElementById('set-smsgate-pass');
+    if (setPass && cfg.password) setPass.value = cfg.password;
+
+    const setDevice = document.getElementById('set-smsgate-device');
+    if (setDevice && cfg.deviceId) setDevice.value = cfg.deviceId;
+
+    const setSim = document.getElementById('set-smsgate-sim');
+    if (setSim && cfg.simNumber) setSim.value = String(cfg.simNumber);
+
+    const badge = document.getElementById('smsgate-status-badge');
+    if (badge) {
+      badge.textContent = `🟢 SMS-Gate Imewashwa (${cfg.recipientPhone || '0787661560'})`;
+    }
+  } catch (err) {
+    console.error('Error loading SMS-Gate config:', err);
+  }
+}
+
+async function saveOrderNotificationPhone() {
+  const input = document.getElementById('order-notification-phone-input');
+  const alertEl = document.getElementById('order-sms-alert-msg');
+  if (!input) return;
+
+  const phone = input.value.trim();
+  if (!phone) {
+    alert('Tafadhali weka namba ya simu ya mhudumu.');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/orders/notification-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipientPhone: phone })
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (alertEl) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = 'rgba(16, 185, 129, 0.2)';
+        alertEl.style.color = '#34d399';
+        alertEl.style.border = '1px solid #10b981';
+        alertEl.innerHTML = `✅ Namba ya simu <strong>${phone}</strong> imehifadhiwa kikamilifu! Oda zote za vinywaji zitatumwa hapa kwa SMS.`;
+        setTimeout(() => { alertEl.style.display = 'none'; }, 6000);
+      } else {
+        alert(`✅ Namba ya simu ${phone} imehifadhiwa kikamilifu!`);
+      }
+      await loadOrderNotificationConfig();
+    }
+  } catch (e) {
+    alert('Hitilafu wakati wa kuhifadhi namba: ' + e.message);
+  }
+}
+
+async function testOrderNotificationSMS() {
+  const input = document.getElementById('order-notification-phone-input');
+  const alertEl = document.getElementById('order-sms-alert-msg');
+  const phone = input ? input.value.trim() : '0787661560';
+
+  if (alertEl) {
+    alertEl.style.display = 'block';
+    alertEl.style.background = 'rgba(212, 175, 55, 0.15)';
+    alertEl.style.color = '#fae19c';
+    alertEl.style.border = '1px solid #d4af37';
+    alertEl.innerHTML = `⏳ Inatuma SMS ya jaribio kwenda <strong>${phone}</strong> kupitia SMS-Gate (SIM 1)...`;
+  }
+
+  try {
+    const res = await fetch('/api/orders/test-sms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      if (alertEl) {
+        alertEl.style.background = 'rgba(16, 185, 129, 0.2)';
+        alertEl.style.color = '#34d399';
+        alertEl.style.border = '1px solid #10b981';
+        alertEl.innerHTML = `🎉 HONGERA! SMS ya jaribio imepokelewa na SMS-Gate na inatumwa kwa <strong>${phone}</strong>!`;
+        setTimeout(() => { alertEl.style.display = 'none'; }, 8000);
+      } else {
+        alert(`🎉 SMS ya jaribio imetumwa kwa mafanikio kwenda ${phone}!`);
+      }
+    } else {
+      if (alertEl) {
+        alertEl.style.background = 'rgba(239, 68, 68, 0.2)';
+        alertEl.style.color = '#f87171';
+        alertEl.style.border = '1px solid #ef4444';
+        alertEl.innerHTML = `❌ Hitilafu ya kutuma SMS: ${data.error || 'Angalia muunganisho wa simu au SMS-Gate'}`;
+      } else {
+        alert(`Hitilafu: ${data.error}`);
+      }
+    }
+  } catch (e) {
+    alert('Hitilafu ya mtandao: ' + e.message);
+  }
+}
+
 function renderOrdersTable() {
   const tbody = document.getElementById('orders-table-body');
   if (!tbody) return;
@@ -3880,6 +4039,8 @@ window.markAllInboxRead = markAllInboxRead;
 window.deleteInboxMessage = deleteInboxMessage;
 window.copyWebhookUrl = copyWebhookUrl;
 window.loadWhatsAppInbox = loadWhatsAppInbox;
+window.saveOrderNotificationPhone = saveOrderNotificationPhone;
+window.testOrderNotificationSMS = testOrderNotificationSMS;
 
 
 

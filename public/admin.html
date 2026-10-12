@@ -926,6 +926,38 @@
         <div id="telegram-test-result" style="display: none; margin-top: 10px; font-size: 0.82rem; padding: 6px 12px; border-radius: 8px;"></div>
       </div>
 
+      <!-- SMS Gateway (sms-gate.app) Notification Phone Card -->
+      <div class="glass-card" style="margin-bottom: 20px; padding: 18px 20px; border: 1.5px solid var(--gold-primary); background: rgba(8, 30, 22, 0.9); border-radius: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="font-size: 2.2rem; line-height: 1;">📲</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h4 style="font-size: 1.05rem; color: var(--gold-light); margin: 0; font-weight: 700;">Namba ya Simu ya Kupokea Oda za SMS (Mhudumu / Kaunta)</h4>
+                <span class="badge" id="smsgate-status-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981;">🟢 SMS-Gate Imewashwa</span>
+              </div>
+              <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 4px 0 0 0;">
+                Mgeni akiweka oda mezani kupitia QR Code, SMS inatumwa papo hapo kwenye namba hii kupitia <strong>SMS Gateway (SIM 1)</strong>. Unaweza kubadilisha namba hii wakati wowote mhudumu akibadilika.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 240px; position: relative;">
+            <input type="text" id="order-notification-phone-input" class="form-control" placeholder="Weka namba ya simu, mfano: 0787661560" style="font-size: 1rem; font-weight: 700; color: #fff; background: rgba(4, 16, 11, 0.8); border: 1.5px solid var(--gold-primary); padding-left: 38px;">
+            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.1rem;">📞</span>
+          </div>
+          <button type="button" class="btn btn-gold" onclick="saveOrderNotificationPhone()" style="font-weight: 700;">
+            💾 Hifadhi Namba Hii
+          </button>
+          <button type="button" class="btn btn-emerald" onclick="testOrderNotificationSMS()" style="font-weight: 700;">
+            🔔 Tuma SMS ya Jaribio
+          </button>
+        </div>
+        <div id="order-sms-alert-msg" style="display: none; margin-top: 10px; font-size: 0.85rem; padding: 8px 14px; border-radius: 8px;"></div>
+      </div>
+
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
         <div>
           <h3 class="font-serif gold-text">🍸 Oda za Vinywaji Mezani</h3>
@@ -1335,6 +1367,59 @@
               </div>
               <div id="test-wa-status" style="margin-top: 8px; font-size: 0.8rem;"></div>
             </div>
+          </div>
+
+          <!-- SMS-Gate Android Gateway Settings Box -->
+          <div style="margin-top: 28px; border-top: 1px solid var(--bg-glass-border); padding-top: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <h3 class="font-serif gold-text">📲 Mipangilio ya SMS Gateway (sms-gate.app)</h3>
+              <span class="badge badge-success" id="smsgate-active-badge">Active & Connected</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+              Inatumia simu ya Android na programu ya <strong>SMS Gateway</strong> kutuma SMS moja kwa moja za oda za vinywaji mezani.
+            </p>
+
+            <form id="smsgate-config-form">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                  <label>Namba ya Kupokea Oda za SMS (Mhudumu/Kaunta):</label>
+                  <input type="text" id="set-smsgate-phone" class="form-control" placeholder="0787661560">
+                </div>
+                <div class="form-group">
+                  <label>Server URL:</label>
+                  <input type="text" id="set-smsgate-url" class="form-control" placeholder="https://api.sms-gate.app">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                  <label>Username / API Key:</label>
+                  <input type="text" id="set-smsgate-user" class="form-control" placeholder="N9E09U">
+                </div>
+                <div class="form-group">
+                  <label>Password / Secret:</label>
+                  <input type="password" id="set-smsgate-pass" class="form-control" placeholder="uwuyehml2kt4p4">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                  <label>Device ID ya Simu:</label>
+                  <input type="text" id="set-smsgate-device" class="form-control" placeholder="v-6kXzHB8eibBnzwYeV-H">
+                </div>
+                <div class="form-group">
+                  <label>SIM Card Number (Laini):</label>
+                  <select id="set-smsgate-sim" class="form-control">
+                    <option value="1">SIM 1 (Laini ya Kwanza)</option>
+                    <option value="2">SIM 2 (Laini ya Pili)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-gold" style="width: 100%; margin-top: 6px;">
+                💾 Hifadhi Mipangilio ya SMS-Gate
+              </button>
+            </form>
           </div>
 
           <!-- Database Safety & Backup Download Box -->

@@ -38,6 +38,7 @@ const { readDB, writeDB, getDBFilePath } = dbService;
 const smsService = require('./services/smsService');
 const whatsappService = require('./services/whatsappService');
 const telegramService = require('./services/telegramService');
+const smsGateService = require('./services/smsGateService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -1518,6 +1519,14 @@ app.post('/api/orders', async (req, res) => {
   db.orders.unshift(newOrder);
   writeDB(db);
 
+  // Auto-dispatch SMS notification via SMS-Gate to the configured phone number
+  let smsResult = null;
+  try {
+    smsResult = await smsGateService.sendOrderSMSNotification(newOrder);
+  } catch (e) {
+    console.error('Error dispatching SMS-Gate order notification:', e);
+  }
+
   // Auto-dispatch notification to Telegram Bot (@Lilian_sendoff_bot)
   let tgResult = null;
   try {
@@ -1526,9 +1535,10 @@ app.post('/api/orders', async (req, res) => {
     console.error('Error dispatching Telegram order notification:', e);
   }
 
-  // Auto-dispatch WhatsApp notification directly to 0787661560 in background
+  // Auto-dispatch WhatsApp notification directly in background
   let waResult = null;
-  const BAR_WA_NUMBER = '0787661560';
+  const cfg = smsGateService.getSmsGateConfig();
+  const BAR_WA_NUMBER = cfg.recipientPhone || '0787661560';
   try {
     waResult = await whatsappService.sendTableDrinkOrderWhatsApp(newOrder, BAR_WA_NUMBER);
   } catch (e) {
@@ -1539,9 +1549,46 @@ app.post('/api/orders', async (req, res) => {
     success: true,
     order: newOrder,
     message: `Oda yako ya kinywaji imepokelewa na mhudumu wetu atakuletea moja kwa moja kwenye meza yako!`,
+    smsNotification: smsResult,
     telegramNotification: tgResult,
     waNotification: waResult
   });
+});
+
+// 7.2b Order Notification Phone & SMS Gate Config Endpoints
+app.get('/api/orders/notification-config', (req, res) => {
+  const config = smsGateService.getSmsGateConfig();
+  res.json(config);
+});
+
+app.put('/api/orders/notification-config', (req, res) => {
+  const db = readDB();
+  db.orderNotificationConfig = {
+    ...(db.orderNotificationConfig || {}),
+    ...req.body
+  };
+  writeDB(db);
+  res.json({
+    success: true,
+    message: 'Namba na mipangilio ya arifa za oda za SMS imehifadhiwa kikamilifu!',
+    config: smsGateService.getSmsGateConfig()
+  });
+});
+
+app.post('/api/orders/test-sms', async (req, res) => {
+  const { phone } = req.body || {};
+  const cfg = smsGateService.getSmsGateConfig();
+  const targetPhone = phone || cfg.recipientPhone || '0787661560';
+
+  const testMsg = `🔔 JARIBIO LA ARIFA ZA ODA!
+Mfumo wa Send-off ya Lilian: Namba yako (${targetPhone}) imeunganishwa na itapokea SMS za oda zote za vinywaji kutoka mezani moja kwa moja.`;
+
+  const result = await smsGateService.sendSmsGateNotification(targetPhone, testMsg, {
+    recipientName: `Mhudumu (${targetPhone})`,
+    messageType: 'Jaribio la SMS za Oda'
+  });
+
+  res.json(result);
 });
 
 // 7.3 Telegram Bot API & Management
