@@ -87,7 +87,7 @@ async function generateTableCardsPDF(options = {}) {
 
     // Optional page number / trim guide at the very bottom
     doc.fontSize(7).fillColor('#64748b').text(
-      `Send-off ya Lilian Marcus • Karatasi ${page + 1} ya ${totalPages} • Kata kwenye mistari ya doti (✂)`,
+      `Send-off ya Lilian Marcus - Karatasi ${page + 1} ya ${totalPages} - Kata kwenye mistari ya doti`,
       marginX,
       pageHeight - 16,
       { width: usableWidth, align: 'center' }
@@ -122,9 +122,6 @@ function drawSingleCard(doc, x, y, w, h, tableNum, theme, density, tableQrBuf, w
      .stroke();
   doc.undash();
 
-  // Draw small scissors icon hint at top-right
-  doc.fontSize(7).fillColor('#94a3b8').text('✂', x + w - 14, y + 2);
-
   // 2. Inner luxury card container
   const pad = 4;
   const cx = x + pad;
@@ -144,26 +141,26 @@ function drawSingleCard(doc, x, y, w, h, tableNum, theme, density, tableQrBuf, w
   doc.roundedRect(cx, cy, cw, ch, radius)
      .fillAndStroke(bgColor, borderColor);
 
-  // 3. Top Header: Tag & Table Name
+  // 3. Top Header: Tag & Table Name (Pure Clean Typography without Emojis)
   const topY = cy + (density === 6 ? 6 : 10);
   doc.fontSize(density === 6 ? 6.5 : 7.5)
      .font('Helvetica-Bold')
      .fillColor(lightGoldColor)
-     .text('✨ SEND-OFF YA LILIAN MARCUS ✨', cx, topY, { width: cw, align: 'center' });
+     .text('SEND-OFF YA LILIAN MARCUS', cx, topY, { width: cw, align: 'center' });
 
   const tableTitleY = topY + (density === 6 ? 10 : 13);
-  doc.fontSize(density === 6 ? 16 : 20)
+  doc.fontSize(density === 6 ? 17 : 22)
      .font('Helvetica-Bold')
      .fillColor(isIvory ? '#062318' : '#ffffff')
-     .text(`📍 MEZA ${tableNum}`, cx, tableTitleY, { width: cw, align: 'center' });
+     .text(`MEZA ${tableNum}`, cx, tableTitleY, { width: cw, align: 'center' });
 
-  const subtitleY = tableTitleY + (density === 6 ? 17 : 22);
+  const subtitleY = tableTitleY + (density === 6 ? 18 : 23);
   doc.fontSize(density === 6 ? 5.5 : 6.5)
      .font('Helvetica-Bold')
      .fillColor('#10b981')
-     .text('VIP TABLE SERVICE • BRAGGING SOCIAL HALL, GOBA', cx, subtitleY, { width: cw, align: 'center' });
+     .text('VIP TABLE SERVICE | BRAGGING SOCIAL HALL, GOBA', cx, subtitleY, { width: cw, align: 'center' });
 
-  // 4. Dual QR Codes Section
+  // 4. Dual QR Codes Section (No emoji in headers)
   const qrSectionY = subtitleY + (density === 6 ? 10 : 14);
   const qrBoxW = (cw - 18) / 2;
   const qrBoxH = density === 6 ? 124 : 170;
@@ -171,11 +168,11 @@ function drawSingleCard(doc, x, y, w, h, tableNum, theme, density, tableQrBuf, w
 
   // Left QR: Drink Order
   const leftX = cx + 6;
-  drawQrBox(doc, leftX, qrSectionY, qrBoxW, qrBoxH, qrSize, '🍾 ODA YA VINYWAJI', 'Scan kuagiza vinywaji', `lilian.nyisu.com/order/meza-${tableNum}`, tableQrBuf, isIvory);
+  drawQrBox(doc, leftX, qrSectionY, qrBoxW, qrBoxH, qrSize, 'ODA YA VINYWAJI', 'Scan kuagiza vinywaji', `lilian.nyisu.com/order/meza-${tableNum}`, tableQrBuf, isIvory);
 
   // Right QR: Celebration Website
   const rightX = cx + qrBoxW + 12;
-  drawQrBox(doc, rightX, qrSectionY, qrBoxW, qrBoxH, qrSize, '👑 TOVUTI YA SHEREHE', 'Scan picha, sala & ratiba', 'lilian.nyisu.com', webQrBuf, isIvory);
+  drawQrBox(doc, rightX, qrSectionY, qrBoxW, qrBoxH, qrSize, 'TOVUTI YA SHEREHE', 'Scan picha, sala & ratiba', 'lilian.nyisu.com', webQrBuf, isIvory);
 
   // 5. Card Footer
   const footerY = qrSectionY + qrBoxH + (density === 6 ? 4 : 8);
@@ -188,12 +185,12 @@ function drawSingleCard(doc, x, y, w, h, tableNum, theme, density, tableQrBuf, w
   doc.fontSize(density === 6 ? 5.5 : 6.5)
      .font('Helvetica')
      .fillColor(isIvory ? '#4b5563' : '#94a3b8')
-     .text('📅 Jumanne, 13 Oktoba 2026 • Karibuni Tufurahi Pamoja!', cx, footerY + 3, { width: cw, align: 'center' });
+     .text('Jumanne, 13 Oktoba 2026 | Karibuni Tufurahi Pamoja!', cx, footerY + 3, { width: cw, align: 'center' });
 
   doc.fontSize(density === 6 ? 5.5 : 6.5)
      .font('Helvetica-Bold')
      .fillColor(lightGoldColor)
-     .text('✨ Mfumo wa Kidijitali: 0787 661 560 (Nyisulya)', cx, footerY + (density === 6 ? 11 : 13), { width: cw, align: 'center' });
+     .text('Mfumo wa Kidijitali: 0787 661 560 (Nyisulya)', cx, footerY + (density === 6 ? 11 : 13), { width: cw, align: 'center' });
 
   doc.restore();
 }
