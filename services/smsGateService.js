@@ -1,6 +1,6 @@
 /**
  * SMS Gateway for Android™ Integration Service (sms-gate.app)
- * Automatically dispatches instant SMS alerts for Table Drink Orders to the assigned phone.
+ * Automatically dispatches instant SMS alerts for Table Drink Orders to multiple assigned phones.
  */
 
 const { readDB, writeDB } = require('./db');
@@ -16,24 +16,48 @@ function formatPhoneE164(phone) {
   return digits.startsWith('+') ? digits : `+${digits}`;
 }
 
+function parsePhonesList(raw) {
+  if (Array.isArray(raw)) {
+    return raw.map(p => String(p).trim()).filter(Boolean);
+  }
+  if (typeof raw === 'string') {
+    return raw.split(/[\n,;]+/).map(p => p.trim()).filter(Boolean);
+  }
+  return [];
+}
+
 function getSmsGateConfig() {
   const db = readDB();
   const dbCfg = db.orderNotificationConfig || db.smsGateConfig || {};
 
+  let phones = parsePhonesList(dbCfg.recipientPhones);
+  if (phones.length === 0 && dbCfg.recipientPhone) {
+    phones = parsePhonesList(dbCfg.recipientPhone);
+  }
+  if (phones.length === 0 && process.env.SMS_GATE_ORDER_PHONE) {
+    phones = parsePhonesList(process.env.SMS_GATE_ORDER_PHONE);
+  }
+  if (phones.length === 0) {
+    phones = ['0787661560'];
+  }
+
   return {
     enabled: dbCfg.enabled !== false,
+    serviceActive: dbCfg.serviceActive !== false, // Master switch for table drink orders
+    maxTotalPerOrder: parseInt(dbCfg.maxTotalPerOrder || 4, 10),
     serverUrl: dbCfg.serverUrl || process.env.SMS_GATE_SERVER_URL || 'https://api.sms-gate.app',
     username: dbCfg.username || process.env.SMS_GATE_USERNAME || 'N9E09U',
     password: dbCfg.password || process.env.SMS_GATE_PASSWORD || 'uwuyehml2kt4p4',
     deviceId: dbCfg.deviceId || process.env.SMS_GATE_DEVICE_ID || 'v-6kXzHB8eibBnzwYeV-H',
     simNumber: parseInt(dbCfg.simNumber || process.env.SMS_GATE_SIM_NUMBER || 1, 10),
-    recipientPhone: dbCfg.recipientPhone || process.env.SMS_GATE_ORDER_PHONE || '0787661560',
+    recipientPhones: phones,
+    recipientPhone: phones[0] || '0787661560',
     simulationMode: dbCfg.simulationMode === true
   };
 }
 
 /**
- * Dispatch an SMS using sms-gate.app Cloud API
+ * Dispatch an SMS using sms-gate.app Cloud API to a single phone number
  */
 async function sendSmsGateNotification(toPhone, messageText, options = {}) {
   const cfg = getSmsGateConfig();
@@ -126,11 +150,13 @@ async function sendSmsGateNotification(toPhone, messageText, options = {}) {
 }
 
 /**
- * Format and send an Instant Table Drink Order Notification
+ * Format and send an Instant Table Drink Order Notification to ALL configured recipient phones
  */
-async function sendOrderSMSNotification(order, customPhone = '') {
+async function sendOrderSMSNotification(order, specificPhones = null) {
   const cfg = getSmsGateConfig();
-  const phoneToSend = customPhone || cfg.recipientPhone || '0787661560';
+  const phonesToSend = Array.isArray(specificPhones) && specificPhones.length > 0 
+    ? specificPhones 
+    : cfg.recipientPhones;
 
   const itemsList = (order.items || [])
     .map(it => `• ${it.qty || 1}x ${it.name}`)
@@ -147,15 +173,26 @@ ${order.notes ? `📝 Maelekezo: "${order.notes}"\n` : ''}⏰ Muda: ${nowTime}
 
 Tafadhali peleka mezani mara moja!`;
 
-  return await sendSmsGateNotification(phoneToSend, smsText, {
-    recipientName: `Mhudumu (${phoneToSend})`,
-    messageType: 'Oda ya Kinywaji Mezani'
-  });
+  const results = [];
+  for (const phone of phonesToSend) {
+    const res = await sendSmsGateNotification(phone, smsText, {
+      recipientName: `Mhudumu (${phone})`,
+      messageType: 'Oda ya Kinywaji Mezani'
+    });
+    results.push({ phone, result: res });
+  }
+
+  return {
+    success: results.some(r => r.result.success),
+    totalSent: results.filter(r => r.result.success).length,
+    results
+  };
 }
 
 module.exports = {
   getSmsGateConfig,
   sendSmsGateNotification,
   sendOrderSMSNotification,
-  formatPhoneE164
+  formatPhoneE164,
+  parsePhonesList
 };

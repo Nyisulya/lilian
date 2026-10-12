@@ -926,35 +926,69 @@
         <div id="telegram-test-result" style="display: none; margin-top: 10px; font-size: 0.82rem; padding: 6px 12px; border-radius: 8px;"></div>
       </div>
 
-      <!-- SMS Gateway (sms-gate.app) Notification Phone Card -->
-      <div class="glass-card" style="margin-bottom: 20px; padding: 18px 20px; border: 1.5px solid var(--gold-primary); background: rgba(8, 30, 22, 0.9); border-radius: 14px;">
+      <!-- Master Service Switch Banner (Washa / Zima Huduma ya Vinywaji Mezani) -->
+      <div id="service-status-banner" style="margin-bottom: 20px; padding: 18px 22px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; background: rgba(16, 185, 129, 0.15); border: 2px solid #10b981; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div id="service-status-icon" style="font-size: 2.2rem; line-height: 1;">🟢</div>
+          <div>
+            <h4 id="service-status-title" style="margin: 0; font-size: 1.05rem; color: #34d399; font-weight: 800; letter-spacing: 0.5px;">
+              HUDUMA YA VINYWAJI MEZANI: IMEWASHWA (WAGENI WANAAGIZA)
+            </h4>
+            <p id="service-status-desc" style="margin: 4px 0 0 0; font-size: 0.84rem; color: #cbd5e1;">
+              Wageni wakiscan QR Code mezani wanaona menyu na wanaweza kuagiza vinywaji (Kikomo: Vinywaji 4 kwa mtu).
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button type="button" id="btn-toggle-service" class="btn btn-danger" onclick="toggleOrderService()" style="font-weight: 800; font-size: 0.92rem; padding: 10px 18px; border-radius: 10px;">
+            🛑 Zima Huduma Sasa (Funga Ukurasa)
+          </button>
+        </div>
+      </div>
+
+      <!-- SMS Gateway (sms-gate.app) Multi-Recipient Phone Numbers Management -->
+      <div class="glass-card" style="margin-bottom: 20px; padding: 18px 22px; border: 1.5px solid var(--gold-primary); background: rgba(8, 30, 22, 0.9); border-radius: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
           <div style="display: flex; align-items: center; gap: 14px;">
             <div style="font-size: 2.2rem; line-height: 1;">📲</div>
             <div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <h4 style="font-size: 1.05rem; color: var(--gold-light); margin: 0; font-weight: 700;">Namba ya Simu ya Kupokea Oda za SMS (Mhudumu / Kaunta)</h4>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <h4 style="font-size: 1.05rem; color: var(--gold-light); margin: 0; font-weight: 700;">Namba za Simu za Kupokea Oda za SMS (Wahudumu / Kaunta)</h4>
                 <span class="badge" id="smsgate-status-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981;">🟢 SMS-Gate Imewashwa</span>
               </div>
               <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 4px 0 0 0;">
-                Mgeni akiweka oda mezani kupitia QR Code, SMS inatumwa papo hapo kwenye namba hii kupitia <strong>SMS Gateway (SIM 1)</strong>. Unaweza kubadilisha namba hii wakati wowote mhudumu akibadilika.
+                Ongeza namba yoyote unayotaka hapa chini. Mgeni akiweka oda mezani, SMS inatumwa mara moja kwa namba <strong>zote</strong> zilizosajiliwa hapa.
               </p>
             </div>
           </div>
         </div>
 
-        <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 240px; position: relative;">
-            <input type="text" id="order-notification-phone-input" class="form-control" placeholder="Weka namba ya simu, mfano: 0787661560" style="font-size: 1rem; font-weight: 700; color: #fff; background: rgba(4, 16, 11, 0.8); border: 1.5px solid var(--gold-primary); padding-left: 38px;">
-            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.1rem;">📞</span>
+        <!-- Add Phone Input & Tag Chips Container -->
+        <div style="margin-top: 16px; background: rgba(3, 14, 9, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 0.84rem; font-weight: 700; color: var(--gold-light); margin-bottom: 8px;">
+            📋 Namba Zilizosajiliwa Kupokea Oda (<span id="phones-count-label">0</span>):
           </div>
-          <button type="button" class="btn btn-gold" onclick="saveOrderNotificationPhone()" style="font-weight: 700;">
-            💾 Hifadhi Namba Hii
-          </button>
-          <button type="button" class="btn btn-emerald" onclick="testOrderNotificationSMS()" style="font-weight: 700;">
-            🔔 Tuma SMS ya Jaribio
-          </button>
+          <div id="order-phones-chips-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 34px;">
+            <!-- Rendered by admin.js -->
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px; position: relative;">
+              <input type="text" id="add-order-phone-input" class="form-control" placeholder="Weka namba mpya, mfano: 0787661560 au 0712345678" style="font-size: 0.95rem; font-weight: 700; color: #fff; background: rgba(4, 16, 11, 0.9); border: 1px solid var(--gold-primary); padding-left: 38px;">
+              <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1rem;">📞</span>
+            </div>
+            <button type="button" class="btn btn-outline-gold" onclick="addNewOrderPhoneFromInput()" style="font-weight: 700;">
+              ➕ Ongeza Namba Hii
+            </button>
+            <button type="button" class="btn btn-gold" onclick="saveOrderNotificationPhones()" style="font-weight: 700;">
+              💾 Hifadhi Namba Zote
+            </button>
+            <button type="button" class="btn btn-emerald" onclick="testOrderNotificationSMS()" style="font-weight: 700;">
+              🔔 Tuma SMS ya Jaribio kwa Zote
+            </button>
+          </div>
         </div>
+
         <div id="order-sms-alert-msg" style="display: none; margin-top: 10px; font-size: 0.85rem; padding: 8px 14px; border-radius: 8px;"></div>
       </div>
 
@@ -1042,12 +1076,13 @@
               <th style="width: 60px;">Picha</th>
               <th>Jina la Kinywaji</th>
               <th>Kategoria</th>
+              <th style="text-align: center;">Kikomo (Mwisho)</th>
               <th>Maelezo Fupi</th>
               <th>Vitendo</th>
             </tr>
           </thead>
           <tbody id="drinks-admin-table-body">
-            <tr><td colspan="5" style="text-align: center; padding: 24px;">Inapakia orodha ya vinywaji...</td></tr>
+            <tr><td colspan="6" style="text-align: center; padding: 24px;">Inapakia orodha ya vinywaji...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1984,6 +2019,22 @@
         <div class="form-group">
           <label>Maelezo Fupi (Hiari):</label>
           <input type="text" id="drink-input-desc" class="form-control" placeholder="mfano: Very Special Cognac / Chilled Lager">
+        </div>
+
+        <div class="form-group" style="margin-top: 10px; background: rgba(3, 14, 9, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 12px;">
+          <label style="font-weight: 700; color: var(--gold-light);">Kikomo cha Kuagiza kwa Mtu (Mwisho ngapi kwa oda moja?):</label>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px;">
+            <input type="number" id="drink-input-max-qty" class="form-control" value="4" min="1" max="10" required style="width: 80px; font-weight: 800; text-align: center; font-size: 1.1rem; color: #fae19c;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-sm btn-outline-gold" onclick="setDrinkMaxPreset(1)">1 Tu</button>
+              <button type="button" class="btn btn-sm btn-outline-gold" onclick="setDrinkMaxPreset(2)">2 Tu (Juisi Kubwa)</button>
+              <button type="button" class="btn btn-sm btn-outline-gold" onclick="setDrinkMaxPreset(3)">3 Tu</button>
+              <button type="button" class="btn btn-sm btn-outline-gold" onclick="setDrinkMaxPreset(4)">4 (Kawaida)</button>
+            </div>
+          </div>
+          <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;">
+            💡 <em>Mfano: Juisi kubwa (Ceres) weka <strong>2</strong>. Mgeni akifikisha 2, mfumo utajifunga kwa kinywaji hiki ila utamruhusu kuagiza vinywaji vingine hadi kikomo kikuu cha 4.</em>
+          </div>
         </div>
 
         <!-- Photo Upload Box with Live Preview -->

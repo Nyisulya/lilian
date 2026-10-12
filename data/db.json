@@ -77,126 +77,144 @@
       "name": "Moët & Chandon Brut Imperial",
       "category": "Champagne & Wine",
       "description": "Champagne ya Kifahari ya Ufaransa",
-      "icon": "🍾"
+      "icon": "🍾",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "red-wine",
       "name": "Robertson Sweet Red Wine",
       "category": "Champagne & Wine",
       "description": "South African Sweet Blend",
-      "icon": "🍷"
+      "icon": "🍷",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "white-wine",
       "name": "Nederburg Sauvignon Blanc White Wine",
       "category": "Champagne & Wine",
       "description": "Crisp & Chilled South African White",
-      "icon": "🥂"
+      "icon": "🥂",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "four-cousins",
       "name": "Four Cousins Sweet Red",
       "category": "Champagne & Wine",
       "description": "Sweet Ruby Red Wine",
-      "icon": "🍷"
+      "icon": "🍷",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "hennessy-vs",
       "name": "Hennessy V.S Cognac",
       "category": "Whiskeys & Spirits",
       "description": "Very Special French Cognac",
-      "icon": "🥃"
+      "icon": "🥃",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "jameson",
       "name": "Jameson Irish Whiskey",
       "category": "Whiskeys & Spirits",
       "description": "Triple Distilled Smooth Whiskey",
-      "icon": "🥃"
+      "icon": "🥃",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "black-label",
       "name": "Johnnie Walker Black Label 12Y",
       "category": "Whiskeys & Spirits",
       "description": "Blended Scotch Whisky",
-      "icon": "🥃"
+      "icon": "🥃",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "gordons-gin",
       "name": "Gordon's London Dry Gin",
       "category": "Whiskeys & Spirits",
       "description": "Classic Dry Gin with Tonic",
-      "icon": "🍸"
+      "icon": "🍸",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "heineken",
       "name": "Heineken Premium Beer",
       "category": "Bia & Ciders",
       "description": "Lager ya Kimataifa - Chilled",
-      "icon": "🍺"
+      "icon": "🍺",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "serengeti-lite",
       "name": "Serengeti Premium Lite",
       "category": "Bia & Ciders",
       "description": "Bia Safi ya Nyumbani",
-      "icon": "🍺"
+      "icon": "🍺",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "corona-extra",
       "name": "Corona Extra Beer",
       "category": "Bia & Ciders",
       "description": "With Fresh Lime Wedge",
-      "icon": "🍺"
+      "icon": "🍺",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "savanna",
       "name": "Savanna Dry Apple Cider",
       "category": "Bia & Ciders",
       "description": "Crisp Cider with Lemon",
-      "icon": "🍾"
+      "icon": "🍾",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "ceres-juice",
       "name": "Ceres 100% Fruit Juice (Apple/Orange)",
       "category": "Juisi & Vinywaji Baridi",
       "description": "Juisi Asilia Bila Sukari ya Ziada",
-      "icon": "🧃"
+      "icon": "🧃",
+      "maxQtyPerOrder": 2
     },
     {
       "id": "passion-fresh",
       "name": "Fresh Passion & Mint Mocktail",
       "category": "Juisi & Vinywaji Baridi",
       "description": "Juisi ya Pasheni Safi yenye Nanaa",
-      "icon": "🍹"
+      "icon": "🍹",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "red-bull",
       "name": "Red Bull Energy Drink",
       "category": "Juisi & Vinywaji Baridi",
       "description": "Chilled Energy Booster",
-      "icon": "⚡"
+      "icon": "⚡",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "coca-cola",
       "name": "Soda (Coke / Fanta / Sprite / Tonic)",
       "category": "Juisi & Vinywaji Baridi",
       "description": "Soda Baridi na Barafu",
-      "icon": "🥤"
+      "icon": "🥤",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "kilimanjaro-water",
       "name": "Kilimanjaro Pure Mineral Water",
       "category": "Maji",
       "description": "Maji Safi ya Asili (Chilled / Room Temp)",
-      "icon": "💧"
+      "icon": "💧",
+      "maxQtyPerOrder": 4
     },
     {
       "id": "sparkling-water",
       "name": "San Pellegrino Sparkling Water",
       "category": "Maji",
       "description": "Maji ya Gesi na Ndimu",
-      "icon": "✨"
+      "icon": "✨",
+      "maxQtyPerOrder": 4
     }
   ],
   "orders": [],
@@ -11998,5 +12016,12 @@
     "templateLanguage": "sw",
     "simulationMode": false,
     "systemUrl": "https://lilian.nyisu.com"
+  },
+  "orderNotificationConfig": {
+    "serviceActive": true,
+    "maxTotalPerOrder": 4,
+    "recipientPhones": [
+      "0787661560"
+    ]
   }
 }

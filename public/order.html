@@ -8,10 +8,10 @@
   <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/style.css">
+  <!-- Optimized Fast Font Loading with Instant Fallback -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Great+Vibes&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -22,10 +22,10 @@
       --gold-light: #fae19c;
       --gold-gradient: linear-gradient(135deg, #f9e79f 0%, #d4af37 50%, #aa820a 100%);
       --emerald-dark: #020e08;
-      --font-sans: 'Outfit', sans-serif;
-      --font-serif: 'Playfair Display', serif;
-      --font-cinzel: 'Cinzel', serif;
-      --font-script: 'Great Vibes', cursive;
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --font-cinzel: 'Playfair Display', Georgia, serif;
+      --font-script: cursive;
     }
 
     * {
@@ -80,7 +80,7 @@
     }
 
     .brand-subtitle {
-      font-family: var(--font-cinzel);
+      font-family: var(--font-serif);
       font-size: 0.72rem;
       letter-spacing: 3px;
       color: var(--gold-light);
@@ -104,11 +104,146 @@
       color: var(--gold-light);
       padding: 6px 16px;
       border-radius: 30px;
+      font-size: 0.9rem;
       font-weight: 700;
-      font-size: 0.92rem;
-      margin-top: 6px;
-      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+      letter-spacing: 0.5px;
     }
+
+    /* Service Closed Fullscreen Overlay */
+    .service-closed-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 16, 10, 0.97);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .closed-card {
+      background: linear-gradient(160deg, rgba(16, 44, 32, 0.98), rgba(6, 24, 16, 0.98));
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 24px;
+      padding: 36px 24px;
+      text-align: center;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.15);
+    }
+
+    .closed-icon {
+      font-size: 3.4rem;
+      margin-bottom: 16px;
+      display: inline-block;
+      animation: pulseClosed 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseClosed {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .closed-title {
+      font-family: var(--font-serif);
+      font-size: 1.55rem;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .closed-text {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .closed-badge {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: var(--gold-light);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .btn-refresh-service {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 14px;
+      border: none;
+      background: var(--gold-gradient);
+      color: #03140c;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35);
+      transition: transform 0.2s;
+    }
+
+    .btn-refresh-service:active {
+      transform: scale(0.98);
+    }
+
+    /* Limit Warning & Badges */
+    .drink-limit-pill {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .toast-notice {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      opacity: 0;
+      visibility: hidden;
+      background: #7f1d1d;
+      border: 1px solid #f87171;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      z-index: 999999;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+      max-width: 90%;
+      pointer-events: none;
+    }
+
+    .toast-notice.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .limit-reached-btn {
+      opacity: 0.45 !important;
+      cursor: not-allowed !important;
+    }
+
 
     /* Category Navigation */
     .category-scroll {
@@ -558,6 +693,24 @@
       </button>
     </div>
   </div>
+
+  <!-- Service Closed Fullscreen Overlay (Controlled by Admin Button) -->
+  <div id="service-closed-overlay" class="service-closed-overlay" style="display: none;">
+    <div class="closed-card">
+      <div class="closed-icon">🔒</div>
+      <h2 class="closed-title">Huduma ya Vinywaji Imefungwa</h2>
+      <p class="closed-text">
+        Samahani, huduma ya kuagiza vinywaji mezani kwa njia ya mfumo imefungwa kwa sasa ukumbini.
+      </p>
+      <div class="closed-badge">Tafadhali wasiliana na mhudumu aliyepo karibu na meza yako</div>
+      <button type="button" class="btn-refresh-service" onclick="location.reload()">
+        🔄 Angalia Tena Kama Imefunguliwa
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notice for Limit Warnings -->
+  <div id="toast-notice" class="toast-notice"></div>
 
   <script src="/js/order.js"></script>
 </body>

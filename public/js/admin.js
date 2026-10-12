@@ -3357,20 +3357,32 @@ async function testTelegramNotification() {
 // SMS-GATE ANDROID GATEWAY (SMS NOTIFICATIONS FOR ORDERS)
 // -------------------------------------------------------------
 
+let orderNotificationPhones = ['0787661560'];
+let orderServiceActive = true;
+
 async function loadOrderNotificationConfig() {
   try {
     const res = await fetch('/api/orders/notification-config');
     if (!res.ok) return;
     const cfg = await res.json();
 
-    const phoneInput = document.getElementById('order-notification-phone-input');
-    if (phoneInput && cfg.recipientPhone) {
-      phoneInput.value = cfg.recipientPhone;
+    orderServiceActive = cfg.serviceActive !== false;
+    updateServiceStatusBanner(orderServiceActive);
+
+    // Phones list handling
+    if (Array.isArray(cfg.recipientPhones) && cfg.recipientPhones.length > 0) {
+      orderNotificationPhones = [...cfg.recipientPhones];
+    } else if (cfg.recipientPhone) {
+      orderNotificationPhones = [cfg.recipientPhone];
+    } else {
+      orderNotificationPhones = ['0787661560'];
     }
+
+    renderOrderPhoneChips();
 
     // Tab-settings inputs
     const setPhone = document.getElementById('set-smsgate-phone');
-    if (setPhone && cfg.recipientPhone) setPhone.value = cfg.recipientPhone;
+    if (setPhone) setPhone.value = orderNotificationPhones.join(', ');
 
     const setUrl = document.getElementById('set-smsgate-url');
     if (setUrl && cfg.serverUrl) setUrl.value = cfg.serverUrl;
@@ -3389,21 +3401,148 @@ async function loadOrderNotificationConfig() {
 
     const badge = document.getElementById('smsgate-status-badge');
     if (badge) {
-      badge.textContent = `🟢 SMS-Gate Imewashwa (${cfg.recipientPhone || '0787661560'})`;
+      badge.textContent = `🟢 SMS-Gate Imewashwa (${orderNotificationPhones.length} Namba)`;
     }
   } catch (err) {
     console.error('Error loading SMS-Gate config:', err);
   }
 }
 
-async function saveOrderNotificationPhone() {
-  const input = document.getElementById('order-notification-phone-input');
-  const alertEl = document.getElementById('order-sms-alert-msg');
+function updateServiceStatusBanner(isActive) {
+  const banner = document.getElementById('service-status-banner');
+  const icon = document.getElementById('service-status-icon');
+  const title = document.getElementById('service-status-title');
+  const desc = document.getElementById('service-status-desc');
+  const btn = document.getElementById('btn-toggle-service');
+
+  if (!banner) return;
+
+  if (isActive) {
+    banner.style.background = 'rgba(16, 185, 129, 0.15)';
+    banner.style.border = '2px solid #10b981';
+    if (icon) icon.textContent = '🟢';
+    if (title) {
+      title.textContent = 'HUDUMA YA VINYWAJI MEZANI: IMEWASHWA (WAGENI WANAAGIZA)';
+      title.style.color = '#34d399';
+    }
+    if (desc) {
+      desc.textContent = 'Wageni wakiscan QR Code mezani wanaona menyu na wanaweza kuagiza vinywaji (Kikomo: Vinywaji 4 kwa mtu).';
+    }
+    if (btn) {
+      btn.textContent = '🛑 Zima Huduma Sasa (Funga Ukurasa)';
+      btn.className = 'btn btn-danger';
+    }
+  } else {
+    banner.style.background = 'rgba(239, 68, 68, 0.18)';
+    banner.style.border = '2px solid #ef4444';
+    if (icon) icon.textContent = '🔴';
+    if (title) {
+      title.textContent = 'HUDUMA YA VINYWAJI MEZANI: IMEFUNGWA (WAGENI HAWAWEZI KUAGIZA)';
+      title.style.color = '#f87171';
+    }
+    if (desc) {
+      desc.textContent = 'Ukurasa wa kuagiza vinywaji umezimwa. Mtu akiingia anaambiwa: "Huduma kwa sasa imefungwa".';
+    }
+    if (btn) {
+      btn.textContent = '✅ Washa Huduma Sasa (Fungua Ukurasa)';
+      btn.className = 'btn btn-emerald';
+    }
+  }
+}
+
+async function toggleOrderService() {
+  const willActivate = !orderServiceActive;
+  const confirmMsg = willActivate
+    ? 'Je, una uhakika unataka KUWASHA huduma ya vinywaji mezani? Wageni sasa wataweza kuagiza vinywaji.'
+    : 'Je, una uhakika unataka KUZIMA huduma ya vinywaji mezani? Wageni wakiscan QR Code wataambiwa huduma imefungwa kwa sasa.';
+
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch('/api/orders/toggle-service', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ active: willActivate })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      orderServiceActive = data.serviceActive;
+      updateServiceStatusBanner(orderServiceActive);
+      alert(`✅ ${data.message}`);
+    } else {
+      alert(`Hitilafu: ${data.error || 'Haikuweza kubadilisha hali ya huduma'}`);
+    }
+  } catch (e) {
+    alert('Hitilafu ya mtandao: ' + e.message);
+  }
+}
+
+function renderOrderPhoneChips() {
+  const container = document.getElementById('order-phones-chips-container');
+  const countLabel = document.getElementById('phones-count-label');
+  if (countLabel) countLabel.textContent = orderNotificationPhones.length;
+
+  if (!container) return;
+
+  if (orderNotificationPhones.length === 0) {
+    container.innerHTML = `<span style="font-size: 0.82rem; color: #f87171;">Hakuna namba yoyote iliyoongezwa! Weka namba hapa chini.</span>`;
+    return;
+  }
+
+  container.innerHTML = orderNotificationPhones.map(phone => `
+    <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(212, 175, 55, 0.15); border: 1.5px solid var(--gold-primary); color: #fff; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.88rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+      <span>📞 ${escapeHtml(phone)}</span>
+      <button type="button" onclick="removeOrderPhone('${escapeHtml(phone)}')" title="Ondoa namba hii" style="background: none; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer; padding: 0 2px; line-height: 1; font-weight: 900;">
+        &times;
+      </button>
+    </div>
+  `).join('');
+}
+
+function addNewOrderPhoneFromInput() {
+  const input = document.getElementById('add-order-phone-input');
   if (!input) return;
 
-  const phone = input.value.trim();
-  if (!phone) {
-    alert('Tafadhali weka namba ya simu ya mhudumu.');
+  const raw = input.value.trim();
+  if (!raw) {
+    alert('Tafadhali andika namba ya simu.');
+    return;
+  }
+
+  // Handle commas or multiple lines if user pasted several
+  const parts = raw.split(/[\n,;]+/).map(p => p.trim()).filter(Boolean);
+  let addedCount = 0;
+
+  for (const p of parts) {
+    if (!orderNotificationPhones.includes(p)) {
+      orderNotificationPhones.push(p);
+      addedCount++;
+    }
+  }
+
+  input.value = '';
+  renderOrderPhoneChips();
+
+  if (addedCount > 0) {
+    saveOrderNotificationPhones(false); // auto-save quietly
+  }
+}
+
+async function removeOrderPhone(phone) {
+  if (orderNotificationPhones.length <= 1) {
+    if (!confirm(`Namba hii (${phone}) ndiyo pekee iliyobaki. Je, una uhakika unataka kuiondoa?`)) {
+      return;
+    }
+  }
+  orderNotificationPhones = orderNotificationPhones.filter(p => p !== phone);
+  renderOrderPhoneChips();
+  await saveOrderNotificationPhones(false);
+}
+
+async function saveOrderNotificationPhones(showAlert = true) {
+  const alertEl = document.getElementById('order-sms-alert-msg');
+  if (orderNotificationPhones.length === 0) {
+    alert('Tafadhali ongeza angalau namba moja ya simu.');
     return;
   }
 
@@ -3411,19 +3550,24 @@ async function saveOrderNotificationPhone() {
     const res = await fetch('/api/orders/notification-config', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipientPhone: phone })
+      body: JSON.stringify({
+        recipientPhones: orderNotificationPhones,
+        recipientPhone: orderNotificationPhones[0] || '0787661560'
+      })
     });
     const data = await res.json();
     if (data.success) {
-      if (alertEl) {
-        alertEl.style.display = 'block';
-        alertEl.style.background = 'rgba(16, 185, 129, 0.2)';
-        alertEl.style.color = '#34d399';
-        alertEl.style.border = '1px solid #10b981';
-        alertEl.innerHTML = `✅ Namba ya simu <strong>${phone}</strong> imehifadhiwa kikamilifu! Oda zote za vinywaji zitatumwa hapa kwa SMS.`;
-        setTimeout(() => { alertEl.style.display = 'none'; }, 6000);
-      } else {
-        alert(`✅ Namba ya simu ${phone} imehifadhiwa kikamilifu!`);
+      if (showAlert) {
+        if (alertEl) {
+          alertEl.style.display = 'block';
+          alertEl.style.background = 'rgba(16, 185, 129, 0.2)';
+          alertEl.style.color = '#34d399';
+          alertEl.style.border = '1px solid #10b981';
+          alertEl.innerHTML = `✅ Namba zote (${orderNotificationPhones.length}) zimehifadhiwa kikamilifu! Oda za vinywaji zitatumwa kwa namba zote hizi kwa SMS.`;
+          setTimeout(() => { alertEl.style.display = 'none'; }, 6000);
+        } else {
+          alert(`✅ Namba zote zimehifadhiwa kikamilifu!`);
+        }
       }
       await loadOrderNotificationConfig();
     }
@@ -3432,24 +3576,28 @@ async function saveOrderNotificationPhone() {
   }
 }
 
+// Backward compatibility alias
+async function saveOrderNotificationPhone() {
+  return saveOrderNotificationPhones(true);
+}
+
 async function testOrderNotificationSMS() {
-  const input = document.getElementById('order-notification-phone-input');
   const alertEl = document.getElementById('order-sms-alert-msg');
-  const phone = input ? input.value.trim() : '0787661560';
+  const targetCount = orderNotificationPhones.length || 1;
 
   if (alertEl) {
     alertEl.style.display = 'block';
     alertEl.style.background = 'rgba(212, 175, 55, 0.15)';
     alertEl.style.color = '#fae19c';
     alertEl.style.border = '1px solid #d4af37';
-    alertEl.innerHTML = `⏳ Inatuma SMS ya jaribio kwenda <strong>${phone}</strong> kupitia SMS-Gate (SIM 1)...`;
+    alertEl.innerHTML = `⏳ Inatuma SMS za jaribio kwa namba zote (${targetCount}) kupitia SMS-Gate (SIM 1)...`;
   }
 
   try {
     const res = await fetch('/api/orders/test-sms', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone })
+      body: JSON.stringify({})
     });
     const data = await res.json();
 
@@ -3458,10 +3606,10 @@ async function testOrderNotificationSMS() {
         alertEl.style.background = 'rgba(16, 185, 129, 0.2)';
         alertEl.style.color = '#34d399';
         alertEl.style.border = '1px solid #10b981';
-        alertEl.innerHTML = `🎉 HONGERA! SMS ya jaribio imepokelewa na SMS-Gate na inatumwa kwa <strong>${phone}</strong>!`;
+        alertEl.innerHTML = `🎉 HONGERA! SMS ya jaribio imepokelewa na SMS-Gate na inatumwa kwa namba zote ${orderNotificationPhones.length}!`;
         setTimeout(() => { alertEl.style.display = 'none'; }, 8000);
       } else {
-        alert(`🎉 SMS ya jaribio imetumwa kwa mafanikio kwenda ${phone}!`);
+        alert(`🎉 SMS za jaribio zimetumwa kwa mafanikio kwa namba zote!`);
       }
     } else {
       if (alertEl) {
@@ -3591,6 +3739,11 @@ async function loadDrinksAdmin() {
   }
 }
 
+function setDrinkMaxPreset(val) {
+  const input = document.getElementById('drink-input-max-qty');
+  if (input) input.value = val;
+}
+
 function renderDrinksAdminTable() {
   const tbody = document.getElementById('drinks-admin-table-body');
   if (!tbody) return;
@@ -3601,7 +3754,7 @@ function renderDrinksAdminTable() {
     : allDrinks.filter(d => d.category === categoryFilter);
 
   if (!filtered || filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Hakuna vinywaji katika kategoria hii. Bofya "+ Ongeza Kinywaji Kipya" kuweka kinywaji.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Hakuna vinywaji katika kategoria hii. Bofya "+ Ongeza Kinywaji Kipya" kuweka kinywaji.</td></tr>`;
     return;
   }
 
@@ -3609,6 +3762,11 @@ function renderDrinksAdminTable() {
     const photoHtml = d.image
       ? `<img src="${d.image}" alt="${escapeHtml(d.name)}" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover; border: 1px solid var(--gold-primary);">`
       : `<div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">${d.icon || '🍹'}</div>`;
+
+    const maxLimit = d.maxQtyPerOrder || (d.id === 'ceres-juice' ? 2 : 4);
+    const limitBadge = maxLimit <= 2
+      ? `<span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; font-weight: 800;">${maxLimit} Tu (Max)</span>`
+      : `<span class="badge badge-gold" style="font-weight: 700;">${maxLimit} Max</span>`;
 
     return `
       <tr>
@@ -3622,7 +3780,10 @@ function renderDrinksAdminTable() {
             ${escapeHtml(d.category)}
           </span>
         </td>
-        <td style="font-size: 0.85rem; color: var(--text-secondary); max-width: 280px;">
+        <td style="text-align: center; vertical-align: middle;">
+          ${limitBadge}
+        </td>
+        <td style="font-size: 0.85rem; color: var(--text-secondary); max-width: 260px;">
           ${escapeHtml(d.description || '-')}
         </td>
         <td>
@@ -3648,6 +3809,7 @@ function openAddDrinkModal() {
   const catInput = document.getElementById('drink-input-category');
   const iconInput = document.getElementById('drink-input-icon');
   const descInput = document.getElementById('drink-input-desc');
+  const maxQtyInput = document.getElementById('drink-input-max-qty');
   const fileInput = document.getElementById('drink-file-input');
   const previewBox = document.getElementById('drink-preview-box');
   const imgUrl = document.getElementById('drink-image-url');
@@ -3658,6 +3820,7 @@ function openAddDrinkModal() {
   if (catInput) catInput.value = 'Champagne & Wine';
   if (iconInput) iconInput.value = '🍾';
   if (descInput) descInput.value = '';
+  if (maxQtyInput) maxQtyInput.value = '4';
   if (fileInput) fileInput.value = '';
   if (imgUrl) imgUrl.value = '';
   if (previewBox) previewBox.innerHTML = '🍾';
@@ -3676,6 +3839,7 @@ function openEditDrinkModal(id) {
   const catInput = document.getElementById('drink-input-category');
   const iconInput = document.getElementById('drink-input-icon');
   const descInput = document.getElementById('drink-input-desc');
+  const maxQtyInput = document.getElementById('drink-input-max-qty');
   const fileInput = document.getElementById('drink-file-input');
   const previewBox = document.getElementById('drink-preview-box');
   const imgUrl = document.getElementById('drink-image-url');
@@ -3686,6 +3850,7 @@ function openEditDrinkModal(id) {
   if (catInput) catInput.value = drink.category || 'Champagne & Wine';
   if (iconInput) iconInput.value = drink.icon || '🍹';
   if (descInput) descInput.value = drink.description || '';
+  if (maxQtyInput) maxQtyInput.value = drink.maxQtyPerOrder || (drink.id === 'ceres-juice' ? '2' : '4');
   if (fileInput) fileInput.value = '';
   if (imgUrl) imgUrl.value = drink.image || '';
 
@@ -3720,6 +3885,7 @@ async function handleSaveDrink(event) {
   const category = document.getElementById('drink-input-category')?.value;
   const icon = document.getElementById('drink-input-icon')?.value.trim() || '🍹';
   const description = document.getElementById('drink-input-desc')?.value.trim() || '';
+  const maxQtyPerOrder = document.getElementById('drink-input-max-qty')?.value || '4';
   const fileInput = document.getElementById('drink-file-input');
   const existingImageUrl = document.getElementById('drink-image-url')?.value || '';
   const saveBtn = document.getElementById('btn-save-drink');
@@ -3740,10 +3906,11 @@ async function handleSaveDrink(event) {
     formData.append('category', category);
     formData.append('icon', icon);
     formData.append('description', description);
+    formData.append('maxQtyPerOrder', maxQtyPerOrder);
     formData.append('image', existingImageUrl);
 
     if (fileInput && fileInput.files && fileInput.files[0]) {
-      formData.append('photo', fileInput.files[0]);
+      formData.append('imageFile', fileInput.files[0]);
     }
 
     const url = editId ? `/api/drinks/${editId}` : '/api/drinks';
@@ -4040,7 +4207,12 @@ window.deleteInboxMessage = deleteInboxMessage;
 window.copyWebhookUrl = copyWebhookUrl;
 window.loadWhatsAppInbox = loadWhatsAppInbox;
 window.saveOrderNotificationPhone = saveOrderNotificationPhone;
+window.saveOrderNotificationPhones = saveOrderNotificationPhones;
 window.testOrderNotificationSMS = testOrderNotificationSMS;
+window.toggleOrderService = toggleOrderService;
+window.addNewOrderPhoneFromInput = addNewOrderPhoneFromInput;
+window.removeOrderPhone = removeOrderPhone;
+window.setDrinkMaxPreset = setDrinkMaxPreset;
 
 
 

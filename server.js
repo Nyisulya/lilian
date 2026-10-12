@@ -1493,7 +1493,32 @@ app.post('/api/orders', async (req, res) => {
     return res.status(400).json({ error: 'Tafadhali chagua vinywaji na meza yako.' });
   }
 
+  const cfg = smsGateService.getSmsGateConfig();
+
+  // 1. Check Master Service Switch
+  if (cfg.serviceActive === false) {
+    return res.status(403).json({ error: 'Samahani, huduma ya kuagiza vinywaji imefungwa kwa sasa ukumbini.' });
+  }
+
+  // 2. Check Total Items Limit (Default Max 4 drinks)
+  const maxTotal = cfg.maxTotalPerOrder || 4;
+  const totalQty = items.reduce((sum, it) => sum + (parseInt(it.qty, 10) || 0), 0);
+  if (totalQty > maxTotal) {
+    return res.status(400).json({ error: `Kikomo cha vinywaji kwa agizo moja ni vinywaji ${maxTotal} pekee.` });
+  }
+
   const db = readDB();
+
+  // 3. Check Per-Item Limit (e.g. Max 2 for Ceres Juice)
+  for (const it of items) {
+    const matchedDrink = (db.drinks || []).find(d => String(d.id).toLowerCase() === String(it.id).toLowerCase());
+    const maxItemQty = matchedDrink?.maxQtyPerOrder || 4;
+    const itemQty = parseInt(it.qty, 10) || 0;
+    if (itemQty > maxItemQty) {
+      return res.status(400).json({ error: `Kikomo cha ${matchedDrink?.name || 'kinywaji hiki'} ni ${maxItemQty} pekee kwa agizo moja.` });
+    }
+  }
+
   const foundTable = (db.tables || []).find(t => String(t.id).toLowerCase() === String(tableId).toLowerCase());
   const resolvedTableName = inputTableName ? inputTableName.trim() : (foundTable ? foundTable.name : tableId.replace(/-/g, ' ').toUpperCase());
   
@@ -1537,7 +1562,6 @@ app.post('/api/orders', async (req, res) => {
 
   // Auto-dispatch WhatsApp notification directly in background
   let waResult = null;
-  const cfg = smsGateService.getSmsGateConfig();
   const BAR_WA_NUMBER = cfg.recipientPhone || '0787661560';
   try {
     waResult = await whatsappService.sendTableDrinkOrderWhatsApp(newOrder, BAR_WA_NUMBER);
@@ -1575,20 +1599,45 @@ app.put('/api/orders/notification-config', (req, res) => {
   });
 });
 
+// 7.2c Master Service Switch (Washa / Zima Huduma ya Vinywaji Mezani)
+app.post('/api/orders/toggle-service', (req, res) => {
+  const db = readDB();
+  db.orderNotificationConfig = db.orderNotificationConfig || {};
+  const current = db.orderNotificationConfig.serviceActive !== false;
+  const next = req.body && typeof req.body.active === 'boolean' ? req.body.active : !current;
+  db.orderNotificationConfig.serviceActive = next;
+  writeDB(db);
+  res.json({
+    success: true,
+    serviceActive: next,
+    message: next 
+      ? 'Huduma ya kuagiza vinywaji imewashwa rasmi kwa wageni wote ukumbini!' 
+      : 'Huduma ya kuagiza vinywaji imezimwa (imefungwa). Wageni wataambiwa huduma imefungwa.'
+  });
+});
+
 app.post('/api/orders/test-sms', async (req, res) => {
   const { phone } = req.body || {};
   const cfg = smsGateService.getSmsGateConfig();
-  const targetPhone = phone || cfg.recipientPhone || '0787661560';
+  const targetPhones = phone ? [phone] : (cfg.recipientPhones && cfg.recipientPhones.length > 0 ? cfg.recipientPhones : [cfg.recipientPhone || '0787661560']);
 
   const testMsg = `🔔 JARIBIO LA ARIFA ZA ODA!
-Mfumo wa Send-off ya Lilian: Namba yako (${targetPhone}) imeunganishwa na itapokea SMS za oda zote za vinywaji kutoka mezani moja kwa moja.`;
+Mfumo wa Send-off ya Lilian: Namba yako imeunganishwa na itapokea SMS za oda zote za vinywaji kutoka mezani moja kwa moja.`;
 
-  const result = await smsGateService.sendSmsGateNotification(targetPhone, testMsg, {
-    recipientName: `Mhudumu (${targetPhone})`,
-    messageType: 'Jaribio la SMS za Oda'
+  const results = [];
+  for (const p of targetPhones) {
+    const resItem = await smsGateService.sendSmsGateNotification(p, testMsg, {
+      recipientName: `Mhudumu (${p})`,
+      messageType: 'Jaribio la SMS za Oda'
+    });
+    results.push({ phone: p, result: resItem });
+  }
+
+  res.json({
+    success: results.some(r => r.result && r.result.success),
+    targetPhones,
+    results
   });
-
-  res.json(result);
 });
 
 // 7.3 Telegram Bot API & Management
@@ -1629,7 +1678,7 @@ app.put('/api/orders/:id/status', (req, res) => {
   res.json({ success: true, order });
 });
 
-// 7.3 Drinks Management Endpoints (CRUD + Photo Uploads)
+// 7.3 Drinks Management Endpoints (CRUD + Photo Uploads + Per-Drink Order Limits)
 app.get('/api/drinks', (req, res) => {
   const db = readDB();
   res.json(db.drinks || []);
@@ -1638,7 +1687,7 @@ app.get('/api/drinks', (req, res) => {
 app.post('/api/drinks', upload.single('imageFile'), (req, res) => {
   const db = readDB();
   const drinks = db.drinks || [];
-  const { name, category, description, icon, image, base64Image } = req.body;
+  const { name, category, description, icon, image, base64Image, maxQtyPerOrder } = req.body;
 
   if (!name || !name.trim()) {
     return res.status(400).json({ error: 'Jina la kinywaji linahitajika.' });
@@ -1668,7 +1717,8 @@ app.post('/api/drinks', upload.single('imageFile'), (req, res) => {
     category: category || 'Pombe / Bia',
     description: description ? description.trim() : '',
     icon: icon || '🍹',
-    image: finalImageUrl
+    image: finalImageUrl,
+    maxQtyPerOrder: maxQtyPerOrder ? Math.max(1, parseInt(maxQtyPerOrder, 10)) : 4
   };
 
   drinks.push(newDrink);
@@ -1711,7 +1761,10 @@ app.put('/api/drinks/:id', upload.single('imageFile'), (req, res) => {
     category: req.body.category || drinks[idx].category,
     description: req.body.description !== undefined ? req.body.description.trim() : drinks[idx].description,
     icon: req.body.icon || drinks[idx].icon,
-    image: finalImageUrl
+    image: finalImageUrl,
+    maxQtyPerOrder: req.body.maxQtyPerOrder !== undefined 
+      ? Math.max(1, parseInt(req.body.maxQtyPerOrder, 10)) 
+      : (drinks[idx].maxQtyPerOrder || 4)
   };
 
   db.drinks = drinks;
@@ -2381,10 +2434,32 @@ app.get(['/table-cards', '/vipeperushi-meza'], (req, res) => {
 function handleOrderPage(req, res) {
   const db = readDB();
   const tableId = req.params.tableId || req.query.table || 'meza-1';
-  const table = (db.tables || []).find(t => String(t.id).toLowerCase() === String(tableId).toLowerCase()) || { name: 'Meza ya Wageni' };
+  const table = (db.tables || []).find(t => String(t.id).toLowerCase() === String(tableId).toLowerCase()) || { 
+    id: tableId, 
+    name: tableId.toLowerCase().startsWith('meza-') 
+      ? `Meza ${tableId.replace(/^meza-/i, '')}` 
+      : (tableId ? `Meza ya ${tableId.replace(/-/g, ' ').toUpperCase()}` : 'Meza ya Wageni')
+  };
   const event = db.event || {};
   const groom = event.groomName || 'James';
   const bride = event.brideName || 'Lilian';
+  const cfg = smsGateService.getSmsGateConfig();
+
+  const bootstrapData = {
+    activeTable: table,
+    allTables: (db.tables || []).map(t => ({ id: t.id, name: t.name })),
+    drinks: (db.drinks || []).map(d => ({
+      id: d.id,
+      name: d.name,
+      category: d.category,
+      description: d.description,
+      icon: d.icon,
+      image: d.image,
+      maxQtyPerOrder: d.maxQtyPerOrder || (d.id === 'ceres-juice' ? 2 : 4)
+    })),
+    serviceActive: cfg.serviceActive !== false,
+    maxTotalPerOrder: cfg.maxTotalPerOrder || 4
+  };
 
   const filePath = path.join(__dirname, 'public', 'order.html');
   fs.readFile(filePath, 'utf8', (err, html) => {
@@ -2397,9 +2472,20 @@ function handleOrderPage(req, res) {
   <meta property="og:description" content="Chagua kinywaji chako uletewe moja kwa moja kwenye ${table.name}.">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#071510">
+  <script id="__BOOTSTRAP_DATA__">window.__ORDER_BOOTSTRAP__ = ${JSON.stringify(bootstrapData)};</script>
     `;
 
-    const modified = html.replace(/<title>.*?<\/title>/i, ogTags);
+    let modified = html;
+    if (/<title>.*?<\/title>/i.test(modified)) {
+      modified = modified.replace(/<title>.*?<\/title>/i, ogTags);
+    } else {
+      modified = modified.replace('<head>', `<head>\n${ogTags}`);
+    }
+    // Pre-inject table name right into the HTML so guest sees their table immediately
+    modified = modified.replace('id="active-table-name">...', `id="active-table-name">${table.name}`);
+    modified = modified.replace('id="active-table-name">Inatambua Meza Yako...<', `id="active-table-name">${table.name}<`);
+    modified = modified.replace('id="tray-table-display">Meza: ...<', `id="tray-table-display">📍 ${table.name}<`);
+
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
