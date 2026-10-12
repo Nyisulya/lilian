@@ -39,6 +39,7 @@ const smsService = require('./services/smsService');
 const whatsappService = require('./services/whatsappService');
 const telegramService = require('./services/telegramService');
 const smsGateService = require('./services/smsGateService');
+const { generateTableCardsPDF } = require('./services/pdfTableCardsService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -2503,6 +2504,35 @@ app.get(['/paper-card', '/kadi-karatasi', '/kadi-ya-karatasi'], (req, res) => {
 
 app.get(['/table-cards', '/vipeperushi-meza'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'table-cards.html'));
+});
+
+// 7.1c Download Official Table Cards Multi-Page PDF for Stationery Printing
+app.get(['/api/table-cards/pdf', '/api/table-cards/download-pdf'], async (req, res) => {
+  try {
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.get('host');
+    const baseUrl = `${protocol}://${host}`;
+
+    const doc = await generateTableCardsPDF({
+      tables: req.query.tables || req.query.tablesCount || 35,
+      copies: req.query.copies || 3,
+      density: req.query.density || 4,
+      theme: req.query.theme || 'emerald',
+      range: req.query.range || 'all',
+      baseUrl: baseUrl.includes('localhost') ? 'https://lilian.nyisu.com' : baseUrl
+    });
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const filename = `Vipeperushi_Meza_Sendoff_Lilian_${timestamp}.pdf`;
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    doc.pipe(res);
+  } catch (err) {
+    console.error('Error generating Table Cards PDF:', err);
+    res.status(500).json({ error: 'Hitilafu wakati wa kutengeneza faili la PDF: ' + err.message });
+  }
 });
 
 function handleOrderPage(req, res) {
