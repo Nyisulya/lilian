@@ -97,37 +97,21 @@ async function fetchGuestQuota() {
   }
 }
 
-// Update Quota Pill in Header
+// Update Quota Pill in Header (Quiet mode: Only shown when limit is reached!)
 function updateQuotaUI() {
   const pill = document.getElementById('quota-display-pill');
   const txt = document.getElementById('quota-display-text');
-  if (!txt) return;
-
-  const currentCartCount = getTotalCartCount();
-  const cumulative = guestTotalOrdered + currentCartCount;
-  const remaining = Math.max(0, maxTotalPerOrder - guestTotalOrdered);
+  if (!pill) return;
 
   if (guestTotalOrdered >= maxTotalPerOrder) {
-    txt.textContent = `🔒 Umefikisha Kikomo (${guestTotalOrdered}/${maxTotalPerOrder} Vinywaji)`;
-    if (pill) {
-      pill.style.background = 'rgba(239, 68, 68, 0.2)';
-      pill.style.border = '1.5px solid #ef4444';
-      pill.style.color = '#fca5a5';
-    }
-  } else if (remaining === 1) {
-    txt.textContent = `🍹 Umeagiza ${guestTotalOrdered}/${maxTotalPerOrder} (Imebaki 1 Tu)`;
-    if (pill) {
-      pill.style.background = 'rgba(234, 179, 8, 0.2)';
-      pill.style.border = '1px solid #eab308';
-      pill.style.color = '#fde047';
-    }
+    pill.style.display = 'inline-flex';
+    pill.style.background = 'rgba(239, 68, 68, 0.2)';
+    pill.style.border = '1.5px solid #ef4444';
+    pill.style.color = '#fca5a5';
+    if (txt) txt.textContent = `🔒 Umefikisha Kikomo cha Kuagiza Vinywaji (${guestTotalOrdered}/${maxTotalPerOrder})`;
   } else {
-    txt.textContent = `🍹 Umeagiza ${guestTotalOrdered}/${maxTotalPerOrder} (Zimebaki ${remaining})`;
-    if (pill) {
-      pill.style.background = 'rgba(16, 185, 129, 0.15)';
-      pill.style.border = '1px solid rgba(16, 185, 129, 0.5)';
-      pill.style.color = '#6ee7b7';
-    }
+    // Hidden when guest still has remaining drinks
+    pill.style.display = 'none';
   }
 }
 
@@ -391,7 +375,7 @@ function updateTrayUI() {
   const remainingOverall = Math.max(0, maxTotalPerOrder - (guestTotalOrdered + totalCount));
 
   if (countBadge) {
-    countBadge.textContent = `${totalCount} ${totalCount === 1 ? 'Kinywaji' : 'Vinywaji'} (Nafasi iliyobaki: ${remainingOverall})`;
+    countBadge.textContent = `${totalCount} ${totalCount === 1 ? 'Kinywaji' : 'Vinywaji'}`;
   }
 
   if (tray) {
@@ -514,26 +498,26 @@ function openSuccessModal(order, items, remainingQuota) {
     tableEl.textContent = `📍 ${activeTable.name}`;
   }
 
+  // ONLY show limit notice if the guest has actually reached their overall limit!
   if (quotaBox) {
     const rem = typeof remainingQuota === 'number' ? remainingQuota : Math.max(0, maxTotalPerOrder - guestTotalOrdered);
-    if (rem > 0) {
+    if (rem <= 0 || guestTotalOrdered >= maxTotalPerOrder) {
+      quotaBox.style.display = 'block';
+      quotaBox.style.background = 'rgba(239, 68, 68, 0.18)';
+      quotaBox.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+      quotaBox.style.color = '#fca5a5';
       quotaBox.innerHTML = `
-        <div style="font-size: 0.95rem; color: #34d399; margin-bottom: 4px;">
-          🍹 Umeagiza jumla ya <strong>${guestTotalOrdered}</strong> kati ya <strong>${maxTotalPerOrder}</strong> vinywaji vyako.
+        <div style="font-size: 0.95rem; font-weight: 800; color: #fae19c; margin-bottom: 4px;">
+          🔒 Umefikisha Kikomo cha Kuagiza Vinywaji (${guestTotalOrdered}/${maxTotalPerOrder})
         </div>
-        <div style="color: #6ee7b7; font-size: 0.82rem;">
-          Bado una nafasi ya kuagiza vinywaji <strong>${rem}</strong> usiku wa leo!
+        <div style="color: #e2e8f0; font-size: 0.82rem;">
+          ✨ Umefikisha kikomo chako cha jumla cha vinywaji kwa usiku wa leo. Asante sana na uwe na wakati mzuri!
         </div>
       `;
     } else {
-      quotaBox.innerHTML = `
-        <div style="font-size: 0.95rem; color: #fae19c; margin-bottom: 4px;">
-          🍹 Umeagiza jumla ya <strong>${guestTotalOrdered}</strong> kati ya <strong>${maxTotalPerOrder}</strong> vinywaji vyako.
-        </div>
-        <div style="color: #e2e8f0; font-size: 0.82rem;">
-          ✨ Umefikisha kikomo chako cha jumla cha vinywaji kwa usiku mzima. Furahia sherehe!
-        </div>
-      `;
+      // Hidden completely when guest hasn't reached limit
+      quotaBox.style.display = 'none';
+      quotaBox.innerHTML = '';
     }
   }
 
