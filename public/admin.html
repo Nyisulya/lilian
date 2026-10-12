@@ -946,6 +946,46 @@
         </div>
       </div>
 
+      <!-- Kikomo Kikuu cha Vinywaji kwa Mtu (Usiku Mzima) -->
+      <div class="glass-card" style="margin-bottom: 20px; padding: 18px 22px; border: 1.5px solid rgba(212, 175, 55, 0.5); background: rgba(6, 26, 18, 0.9); border-radius: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="font-size: 2.2rem; line-height: 1;">🍸</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <h4 style="font-size: 1.05rem; color: var(--gold-light); margin: 0; font-weight: 700;">Kikomo cha Jumla cha Vinywaji kwa Kila Mgeni (Usiku Mzima)</h4>
+                <span class="badge" id="global-max-drinks-badge" style="background: rgba(212, 175, 55, 0.2); color: #fae19c; border: 1px solid var(--gold-primary); font-weight: 700;">Kikomo: Vinywaji 4</span>
+              </div>
+              <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 4px 0 0 0;">
+                Hiki ndicho kikomo cha vinywaji vyote kwa ujumla ambavyo mtu mmoja anaruhusiwa kuagiza kwa <strong>usiku mzima / oda zake zote kwa pamoja</strong> (sio kwa oda moja tu). Akifikisha idadi hii, mfumo utajifunga kwake.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; background: rgba(3, 14, 9, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.88rem; font-weight: 700; color: #fff; margin: 0;">Jumla ya Vinywaji:</label>
+            <input type="number" id="order-global-max-drinks-input" class="form-control" value="4" min="1" max="20" style="width: 85px; font-weight: 800; font-size: 1.15rem; text-align: center; color: #fae19c; background: rgba(4, 16, 11, 0.9); border: 1.5px solid var(--gold-primary);">
+          </div>
+
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); margin-right: 2px;">Chagua haraka:</span>
+            <button type="button" class="btn btn-sm btn-outline-gold" onclick="setGlobalMaxDrinksPreset(2)">2 Tu</button>
+            <button type="button" class="btn btn-sm btn-outline-gold" onclick="setGlobalMaxDrinksPreset(3)">3 Tu</button>
+            <button type="button" class="btn btn-sm btn-outline-gold" onclick="setGlobalMaxDrinksPreset(4)">4 (Kawaida)</button>
+            <button type="button" class="btn btn-sm btn-outline-gold" onclick="setGlobalMaxDrinksPreset(5)">5</button>
+            <button type="button" class="btn btn-sm btn-outline-gold" onclick="setGlobalMaxDrinksPreset(6)">6</button>
+          </div>
+
+          <button type="button" class="btn btn-gold" onclick="saveGlobalMaxDrinksLimit()" style="font-weight: 800; margin-left: auto;">
+            💾 Hifadhi Kikomo Hiki cha Jumla
+          </button>
+        </div>
+
+        <div id="global-max-drinks-alert" style="display: none; margin-top: 10px; font-size: 0.85rem; padding: 8px 14px; border-radius: 8px;"></div>
+      </div>
+
       <!-- SMS Gateway (sms-gate.app) Multi-Recipient Phone Numbers Management -->
       <div class="glass-card" style="margin-bottom: 20px; padding: 18px 22px; border: 1.5px solid var(--gold-primary); background: rgba(8, 30, 22, 0.9); border-radius: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
@@ -2022,7 +2062,7 @@
         </div>
 
         <div class="form-group" style="margin-top: 10px; background: rgba(3, 14, 9, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 12px;">
-          <label style="font-weight: 700; color: var(--gold-light);">Kikomo cha Kuagiza kwa Mtu (Mwisho ngapi kwa oda moja?):</label>
+          <label style="font-weight: 700; color: var(--gold-light);">Kikomo cha Kinywaji Hiki kwa Mtu (Usiku Mzima):</label>
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px;">
             <input type="number" id="drink-input-max-qty" class="form-control" value="4" min="1" max="10" required style="width: 80px; font-weight: 800; text-align: center; font-size: 1.1rem; color: #fae19c;">
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -2033,7 +2073,7 @@
             </div>
           </div>
           <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;">
-            💡 <em>Mfano: Juisi kubwa (Ceres) weka <strong>2</strong>. Mgeni akifikisha 2, mfumo utajifunga kwa kinywaji hiki ila utamruhusu kuagiza vinywaji vingine hadi kikomo kikuu cha 4.</em>
+            💡 <em>Mfano: Juisi kubwa (Ceres) weka <strong>1 au 2</strong>. Mgeni akifikisha idadi hii katika oda zake za usiku mzima, mfumo utajifunga kwa kinywaji hiki ila utamruhusu kuagiza vinywaji vingine hadi kikomo kikuu cha jumla.</em>
           </div>
         </div>
 

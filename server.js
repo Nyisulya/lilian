@@ -1427,7 +1427,7 @@ app.get('/api/qr/:id', async (req, res) => {
   }
 });
 
-// 7.1 Table QR Code Generator Endpoint (Points directly to /order/:tableId)
+// 7.1 Table QR Code Generator Endpoint (High Contrast, Ultra-Scannable for all Android and iPhone Cameras)
 app.get('/api/qr/table/:id', async (req, res) => {
   const tableId = req.params.id;
   const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -1435,12 +1435,12 @@ app.get('/api/qr/table/:id', async (req, res) => {
 
   try {
     const qrBuffer = await QRCode.toBuffer(orderUrl, {
-      errorCorrectionLevel: 'H',
+      errorCorrectionLevel: 'M', // Level M gives chunky, thick modules that budget Android cameras scan instantly
       type: 'png',
-      margin: 2,
-      scale: 10,
+      margin: 2, // Clean quiet-zone border
+      scale: 12,
       color: {
-        dark: '#031a10', // Luxury Deep Emerald Green
+        dark: '#000000', // Pure Pitch Black (Maximum contrast for low-light & basic camera sensors)
         light: '#ffffff'
       }
     });
@@ -1457,15 +1457,15 @@ app.get('/api/qr/table/:id', async (req, res) => {
 // 7.1b Generic QR Code Generator Endpoint (Website, Celebration, or Custom URLs)
 app.get('/api/qr/general', async (req, res) => {
   const url = req.query.url || `${req.protocol}://${req.get('host')}/celebration.html`;
-  const darkColor = req.query.dark || '#031a10';
+  const darkColor = req.query.dark || '#000000';
   const lightColor = req.query.light || '#ffffff';
 
   try {
     const qrBuffer = await QRCode.toBuffer(url, {
       errorCorrectionLevel: 'M',
       type: 'png',
-      margin: 1,
-      scale: 8,
+      margin: 2,
+      scale: 10,
       color: {
         dark: darkColor,
         light: lightColor
@@ -1481,14 +1481,45 @@ app.get('/api/qr/general', async (req, res) => {
   }
 });
 
-// 7.2 Table Drink Orders API (Instant WhatsApp Dispatch to 0787661560)
+// 7.2 Table Drink Orders API (Instant Response, Background SMS/WA/Telegram Dispatch)
 app.get('/api/orders', (req, res) => {
   const db = readDB();
   res.json(db.orders || []);
 });
 
+// 7.2a Guest Quota API (Returns Cumulative Ordered Counts for a Guest Session)
+app.get('/api/orders/quota/:sessionId', (req, res) => {
+  const sessionId = String(req.params.sessionId || '').trim();
+  const cfg = smsGateService.getSmsGateConfig();
+  const maxTotal = cfg.maxTotalPerOrder || 4;
+  const db = readDB();
+
+  const orders = (db.orders || []).filter(o => 
+    o.guestSessionId && String(o.guestSessionId) === sessionId && o.status !== 'cancelled'
+  );
+
+  let totalOrdered = 0;
+  const drinkCounts = {};
+  orders.forEach(o => {
+    (o.items || []).forEach(it => {
+      const q = parseInt(it.qty, 10) || 0;
+      totalOrdered += q;
+      drinkCounts[it.id] = (drinkCounts[it.id] || 0) + q;
+    });
+  });
+
+  const remainingQuota = Math.max(0, maxTotal - totalOrdered);
+  res.json({
+    maxTotal,
+    totalOrdered,
+    remainingQuota,
+    drinkCounts,
+    serviceActive: cfg.serviceActive !== false
+  });
+});
+
 app.post('/api/orders', async (req, res) => {
-  const { tableId, tableName: inputTableName, guestName, items, notes } = req.body;
+  const { tableId, tableName: inputTableName, guestName, items, notes, guestSessionId } = req.body;
   if (!tableId || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Tafadhali chagua vinywaji na meza yako.' });
   }
@@ -1500,22 +1531,60 @@ app.post('/api/orders', async (req, res) => {
     return res.status(403).json({ error: 'Samahani, huduma ya kuagiza vinywaji imefungwa kwa sasa ukumbini.' });
   }
 
-  // 2. Check Total Items Limit (Default Max 4 drinks)
-  const maxTotal = cfg.maxTotalPerOrder || 4;
-  const totalQty = items.reduce((sum, it) => sum + (parseInt(it.qty, 10) || 0), 0);
-  if (totalQty > maxTotal) {
-    return res.status(400).json({ error: `Kikomo cha vinywaji kwa agizo moja ni vinywaji ${maxTotal} pekee.` });
+  const db = readDB();
+  const cleanSessionId = guestSessionId ? String(guestSessionId).trim() : null;
+
+  // Calculate past cumulative orders by this person/session across the whole event
+  let pastTotalCount = 0;
+  const pastDrinkCounts = {};
+  if (cleanSessionId) {
+    const pastOrders = (db.orders || []).filter(o => 
+      o.guestSessionId && String(o.guestSessionId) === cleanSessionId && o.status !== 'cancelled'
+    );
+    pastOrders.forEach(o => {
+      (o.items || []).forEach(it => {
+        const q = parseInt(it.qty, 10) || 0;
+        pastTotalCount += q;
+        pastDrinkCounts[it.id] = (pastDrinkCounts[it.id] || 0) + q;
+      });
+    });
   }
 
-  const db = readDB();
+  const incomingTotalCount = items.reduce((sum, it) => sum + (parseInt(it.qty, 10) || 0), 0);
+  const maxTotal = cfg.maxTotalPerOrder || 4; // Overall limit per person across all orders for the whole night
 
-  // 3. Check Per-Item Limit (e.g. Max 2 for Ceres Juice)
+  // 2. Cumulative Total Items Limit
+  if (pastTotalCount + incomingTotalCount > maxTotal) {
+    const remaining = Math.max(0, maxTotal - pastTotalCount);
+    if (remaining <= 0) {
+      return res.status(400).json({ 
+        error: `Umefikisha kikomo chako cha jumla cha vinywaji ${maxTotal} kwa usiku wa leo. Asante kwa kusherehekea nasi!` 
+      });
+    } else {
+      return res.status(400).json({ 
+        error: `Umebakiwa na nafasi ya vinywaji ${remaining} tu kwa usiku mzima (Kikomo cha jumla ni vinywaji ${maxTotal}).` 
+      });
+    }
+  }
+
+  // 3. Cumulative Per-Item Limit (e.g. Max 1 or 2 for Ceres Juice or special drinks across all orders)
   for (const it of items) {
     const matchedDrink = (db.drinks || []).find(d => String(d.id).toLowerCase() === String(it.id).toLowerCase());
-    const maxItemQty = matchedDrink?.maxQtyPerOrder || 4;
-    const itemQty = parseInt(it.qty, 10) || 0;
-    if (itemQty > maxItemQty) {
-      return res.status(400).json({ error: `Kikomo cha ${matchedDrink?.name || 'kinywaji hiki'} ni ${maxItemQty} pekee kwa agizo moja.` });
+    const maxItemLimit = matchedDrink?.maxQtyPerOrder !== undefined ? matchedDrink.maxQtyPerOrder : maxTotal;
+    const pastItemCount = pastDrinkCounts[it.id] || 0;
+    const thisQty = parseInt(it.qty, 10) || 0;
+
+    if (pastItemCount + thisQty > maxItemLimit) {
+      const itemRem = Math.max(0, maxItemLimit - pastItemCount);
+      if (itemRem <= 0) {
+        return res.status(400).json({ 
+          error: `Kikomo chako cha ${matchedDrink?.name || 'kinywaji hiki'} ni ${maxItemLimit} tu kwa usiku mzima. Tayari umepokea ${pastItemCount}.` 
+        });
+      } else {
+        return res.status(400).json({ 
+          error: `Kikomo chako cha ${matchedDrink?.name || 'kinywaji hiki'} ni ${maxItemLimit} tu kwa usiku mzima. Umebakiwa na nafasi ya ${itemRem} tu kwa kinywaji hiki.` 
+        });
+      }
     }
   }
 
@@ -1525,6 +1594,7 @@ app.post('/api/orders', async (req, res) => {
   const orderId = `ORD-${Date.now().toString().slice(-6)}`;
   const newOrder = {
     id: orderId,
+    guestSessionId: cleanSessionId,
     tableId: tableId,
     tableName: resolvedTableName,
     guestName: guestName ? guestName.trim() : 'Mgeni wa Meza',
@@ -1544,38 +1614,42 @@ app.post('/api/orders', async (req, res) => {
   db.orders.unshift(newOrder);
   writeDB(db);
 
-  // Auto-dispatch SMS notification via SMS-Gate to the configured phone number
-  let smsResult = null;
-  try {
-    smsResult = await smsGateService.sendOrderSMSNotification(newOrder);
-  } catch (e) {
-    console.error('Error dispatching SMS-Gate order notification:', e);
-  }
+  const newTotalOrdered = pastTotalCount + incomingTotalCount;
+  const remainingTotal = Math.max(0, maxTotal - newTotalOrdered);
 
-  // Auto-dispatch notification to Telegram Bot (@Lilian_sendoff_bot)
-  let tgResult = null;
-  try {
-    tgResult = await telegramService.sendDrinkOrderNotification(newOrder);
-  } catch (e) {
-    console.error('Error dispatching Telegram order notification:', e);
-  }
-
-  // Auto-dispatch WhatsApp notification directly in background
-  let waResult = null;
-  const BAR_WA_NUMBER = cfg.recipientPhone || '0787661560';
-  try {
-    waResult = await whatsappService.sendTableDrinkOrderWhatsApp(newOrder, BAR_WA_NUMBER);
-  } catch (e) {
-    console.error('Error dispatching WhatsApp order notification:', e);
-  }
-
+  // INSTANT RESPONSE: Respond in <15ms so the button triggers instant confirmation without waiting for internet SMS/WA
   res.status(201).json({
     success: true,
     order: newOrder,
-    message: `Oda yako ya kinywaji imepokelewa na mhudumu wetu atakuletea moja kwa moja kwenye meza yako!`,
-    smsNotification: smsResult,
-    telegramNotification: tgResult,
-    waNotification: waResult
+    totalOrdered: newTotalOrdered,
+    maxTotal: maxTotal,
+    remainingQuota: remainingTotal,
+    message: `Oda yako ya kinywaji imepokelewa na mhudumu wetu atakuletea moja kwa moja kwenye meza yako!`
+  });
+
+  // ASYNCHRONOUS BACKGROUND DISPATCH (Zero blocking of user UI)
+  setImmediate(async () => {
+    // 1. Auto-dispatch SMS notification via SMS-Gate to all configured phones
+    try {
+      await smsGateService.sendOrderSMSNotification(newOrder);
+    } catch (e) {
+      console.error('Background SMS-Gate order dispatch error:', e);
+    }
+
+    // 2. Auto-dispatch notification to Telegram Bot (@Lilian_sendoff_bot)
+    try {
+      await telegramService.sendDrinkOrderNotification(newOrder);
+    } catch (e) {
+      console.error('Background Telegram order dispatch error:', e);
+    }
+
+    // 3. Auto-dispatch WhatsApp notification directly in background
+    try {
+      const BAR_WA_NUMBER = cfg.recipientPhone || '0787661560';
+      await whatsappService.sendTableDrinkOrderWhatsApp(newOrder, BAR_WA_NUMBER);
+    } catch (e) {
+      console.error('Background WhatsApp order dispatch error:', e);
+    }
   });
 });
 

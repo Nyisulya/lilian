@@ -339,36 +339,58 @@
     /* QR CODE FRAME WITH HIGH CONTRAST SO CAMERAS SCAN INSTANTLY */
     .qr-medallion-frame {
       background: #ffffff;
-      padding: 5px;
-      border-radius: 8px;
-      border: 1.5px solid var(--gold-primary);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      padding: 6px;
+      border-radius: 10px;
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .qr-medallion-frame canvas,
     .qr-medallion-frame img {
-      width: 82px !important;
-      height: 82px !important;
+      width: 110px !important;
+      height: 110px !important;
       display: block;
+      image-rendering: pixelated;
     }
 
     /* COMPACT MODE FOR 6 PER PAGE */
     .layout-6 .qr-medallion-frame canvas,
     .layout-6 .qr-medallion-frame img {
-      width: 70px !important;
-      height: 70px !important;
+      width: 95px !important;
+      height: 95px !important;
     }
 
     .qr-col-caption {
-      font-size: 0.64rem;
-      line-height: 1.2;
+      font-size: 0.66rem;
+      line-height: 1.25;
       color: #cbd5e1;
-      font-weight: 500;
+      font-weight: 600;
       padding: 0 2px;
+      margin-top: 2px;
+    }
+
+    .qr-url-hint {
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+      word-break: break-all;
+      font-family: monospace;
+      display: inline-block;
+    }
+
+    .theme-ivory .qr-url-hint {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-color: #cbd5e1;
     }
 
     .theme-ivory .qr-col-caption {
@@ -595,24 +617,25 @@
           const flyer = createFlyerElement(tableNum, tableId, orderUrl, cardIndex);
           grid.appendChild(flyer);
 
-          // Generate Left QR (Drinks)
+          // Generate Left QR (Drinks) with pure black and optimal scanning density
           const qrDrinksEl = flyer.querySelector(`.qr-drinks-${cardIndex}`);
+          const qrSize = density === 6 ? 95 : 110;
           new QRCode(qrDrinksEl, {
             text: orderUrl,
-            width: 82,
-            height: 82,
-            colorDark: "#031a10",
+            width: qrSize,
+            height: qrSize,
+            colorDark: "#000000",
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.M
           });
 
-          // Generate Right QR (Website)
+          // Generate Right QR (Website) with pure black and optimal scanning density
           const qrWebEl = flyer.querySelector(`.qr-web-${cardIndex}`);
           new QRCode(qrWebEl, {
             text: WEBSITE_URL,
-            width: 82,
-            height: 82,
-            colorDark: "#031a10",
+            width: qrSize,
+            height: qrSize,
+            colorDark: "#000000",
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.M
           });
@@ -643,8 +666,9 @@
               </div>
               <div class="qr-medallion-frame qr-drinks-${index}"></div>
               <div class="qr-col-caption">
-                Scan kuagiza vinywaji mezani kwako
+                Scan kuagiza vinywaji
               </div>
+              <div class="qr-url-hint">lilian.nyisu.com/order/${tableId}</div>
             </div>
 
             <!-- Right QR: Celebration Website -->
@@ -654,8 +678,9 @@
               </div>
               <div class="qr-medallion-frame qr-web-${index}"></div>
               <div class="qr-col-caption">
-                Scan picha, sala & pongezi live
+                Scan picha, sala & ratiba
               </div>
+              <div class="qr-url-hint">lilian.nyisu.com</div>
             </div>
           </div>
 

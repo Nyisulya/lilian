@@ -1,6 +1,7 @@
 /**
  * Ultra-Fast Table QR Drink Ordering System (order.js)
- * Instant Zero-Delay Bootstrapping, Strict 4-Drinks Max, Per-Drink Limits, Master Service Switch.
+ * Instant Zero-Delay Bootstrapping, Strict Cumulative Limit Across All Orders (Usiku Mzima),
+ * Per-Drink Limits (e.g. Ceres max 2), Master Service Switch, Background SMS/WA/Telegram Dispatch.
  */
 
 let allDrinks = [];
@@ -9,14 +10,28 @@ let activeTable = { id: 'meza-1', name: 'Meza Kuu' };
 let currentCategory = 'all';
 let cart = {}; // { [drinkId]: { drink, qty } }
 let serviceActive = true;
-let maxTotalPerOrder = 4;
+let maxTotalPerOrder = 4; // Overall limit per guest for the whole night
+
+// Guest Session ID for cumulative tracking across multiple orders and page reloads
+function getGuestSessionId() {
+  let id = localStorage.getItem('wedding_guest_session_id');
+  if (!id) {
+    id = 'guest_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+    localStorage.setItem('wedding_guest_session_id', id);
+  }
+  return id;
+}
+
+const guestSessionId = getGuestSessionId();
+let guestTotalOrdered = 0; // Cumulative drinks ordered tonight
+let guestItemCounts = {};   // { [drinkId]: countOrderedTonight }
 
 // Instant bootstrap or fallback load
 document.addEventListener('DOMContentLoaded', () => {
   initOrderSystem();
 });
 
-function initOrderSystem() {
+async function initOrderSystem() {
   detectTableFromUrl();
 
   // 1. FAST BOOTSTRAP: Check if data was injected by server for 0ms rendering
@@ -30,12 +45,17 @@ function initOrderSystem() {
 
     applyServiceStatus();
     updateTableUI();
+    updateQuotaUI();
     renderDrinks();
+
+    // Fetch live cumulative quota asynchronously
+    fetchGuestQuota();
     return;
   }
 
   // 2. FALLBACK: Fetch if opened directly as static file
-  loadFallbackData();
+  await loadFallbackData();
+  fetchGuestQuota();
 }
 
 function applyServiceStatus() {
@@ -51,6 +71,64 @@ function updateTableUI() {
 
   const trayTable = document.getElementById('tray-table-display');
   if (trayTable) trayTable.textContent = `📍 ${activeTable.name}`;
+}
+
+// Fetch cumulative quota for this person for tonight
+async function fetchGuestQuota() {
+  try {
+    const res = await fetch(`/api/orders/quota/${guestSessionId}`);
+    if (res.ok) {
+      const data = await res.json();
+      guestTotalOrdered = typeof data.totalOrdered === 'number' ? data.totalOrdered : 0;
+      guestItemCounts = data.drinkCounts || {};
+      if (typeof data.maxTotal === 'number') {
+        maxTotalPerOrder = data.maxTotal;
+      }
+      if (typeof data.serviceActive === 'boolean') {
+        serviceActive = data.serviceActive;
+        applyServiceStatus();
+      }
+      updateQuotaUI();
+      renderDrinks();
+      updateTrayUI();
+    }
+  } catch (err) {
+    console.error('Error fetching guest quota:', err);
+  }
+}
+
+// Update Quota Pill in Header
+function updateQuotaUI() {
+  const pill = document.getElementById('quota-display-pill');
+  const txt = document.getElementById('quota-display-text');
+  if (!txt) return;
+
+  const currentCartCount = getTotalCartCount();
+  const cumulative = guestTotalOrdered + currentCartCount;
+  const remaining = Math.max(0, maxTotalPerOrder - guestTotalOrdered);
+
+  if (guestTotalOrdered >= maxTotalPerOrder) {
+    txt.textContent = `🔒 Umefikisha Kikomo (${guestTotalOrdered}/${maxTotalPerOrder} Vinywaji)`;
+    if (pill) {
+      pill.style.background = 'rgba(239, 68, 68, 0.2)';
+      pill.style.border = '1.5px solid #ef4444';
+      pill.style.color = '#fca5a5';
+    }
+  } else if (remaining === 1) {
+    txt.textContent = `🍹 Umeagiza ${guestTotalOrdered}/${maxTotalPerOrder} (Imebaki 1 Tu)`;
+    if (pill) {
+      pill.style.background = 'rgba(234, 179, 8, 0.2)';
+      pill.style.border = '1px solid #eab308';
+      pill.style.color = '#fde047';
+    }
+  } else {
+    txt.textContent = `🍹 Umeagiza ${guestTotalOrdered}/${maxTotalPerOrder} (Zimebaki ${remaining})`;
+    if (pill) {
+      pill.style.background = 'rgba(16, 185, 129, 0.15)';
+      pill.style.border = '1px solid rgba(16, 185, 129, 0.5)';
+      pill.style.color = '#6ee7b7';
+    }
+  }
 }
 
 // Detect Table ID from path /order/:tableId or ?table=...
@@ -103,6 +181,7 @@ async function loadFallbackData() {
 
     applyServiceStatus();
     updateTableUI();
+    updateQuotaUI();
     renderDrinks();
   } catch (err) {
     console.error('Error loading fallback drinks data:', err);
@@ -133,7 +212,7 @@ function showToast(msg) {
   clearTimeout(window.__toastTimeout);
   window.__toastTimeout = setTimeout(() => {
     t.classList.remove('show');
-  }, 3200);
+  }, 3400);
 }
 
 // Render Drinks Grid
@@ -142,7 +221,8 @@ function renderDrinks() {
   if (!container) return;
 
   const totalCartCount = getTotalCartCount();
-  const isOverallLimitReached = totalCartCount >= maxTotalPerOrder;
+  const cumulativeTotal = guestTotalOrdered + totalCartCount;
+  const isOverallLimitReached = cumulativeTotal >= maxTotalPerOrder;
 
   const filtered = currentCategory === 'all' 
     ? allDrinks 
@@ -161,17 +241,56 @@ function renderDrinks() {
     const cartItem = cart[d.id];
     const qty = cartItem ? cartItem.qty : 0;
     const hasQty = qty > 0;
-    const maxItemQty = d.maxQtyPerOrder || 4;
-    const isItemLimitReached = qty >= maxItemQty;
+
+    // Per-item cumulative limits
+    const maxItemLimit = d.maxQtyPerOrder !== undefined ? d.maxQtyPerOrder : maxTotalPerOrder;
+    const orderedOfThisItem = guestItemCounts[d.id] || 0;
+    const cumulativeItemQty = orderedOfThisItem + qty;
+    const isItemLimitReached = cumulativeItemQty >= maxItemLimit;
+    const isItemFullyDepleted = orderedOfThisItem >= maxItemLimit;
+
     const canIncrement = !isOverallLimitReached && !isItemLimitReached;
 
     const visualHtml = d.image
       ? `<div class="drink-image-wrap"><img src="${d.image}" alt="${escapeHtml(d.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'drink-icon-wrap\\'>${d.icon || '🍹'}</div>'"></div>`
       : `<div class="drink-icon-wrap">${d.icon || '🍹'}</div>`;
 
-    const limitNoticeHtml = maxItemQty < 4
-      ? `<div class="drink-limit-pill">⚠️ Mwisho ${maxItemQty} tu kwa meza</div>`
-      : '';
+    // Limit badge
+    let limitNoticeHtml = '';
+    if (isItemFullyDepleted) {
+      limitNoticeHtml = `<div class="drink-limit-pill" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.15);">🔒 Umefikisha kikomo (${orderedOfThisItem}/${maxItemLimit})</div>`;
+    } else if (maxItemLimit < maxTotalPerOrder) {
+      limitNoticeHtml = `<div class="drink-limit-pill">⚠️ Mwisho ${maxItemLimit} usiku mzima ${orderedOfThisItem > 0 ? `(Umeagiza: ${orderedOfThisItem})` : ''}</div>`;
+    }
+
+    // Action button
+    let actionBtnHtml = '';
+    if (isItemFullyDepleted) {
+      actionBtnHtml = `
+        <button type="button" class="btn-add-drink limit-reached-btn" disabled style="opacity: 0.6; cursor: not-allowed;">
+          🔒 Mwisho Umefikiwa
+        </button>
+      `;
+    } else {
+      actionBtnHtml = `
+        <button type="button" 
+                class="btn-add-drink ${isOverallLimitReached ? 'limit-reached-btn' : ''}" 
+                id="btn-add-${d.id}" 
+                style="${hasQty ? 'display: none;' : 'display: block;'}" 
+                onclick="addDrinkToCart('${d.id}')">
+          + Ongeza
+        </button>
+
+        <div class="qty-control-wrap ${hasQty ? 'active' : ''}" id="qty-wrap-${d.id}">
+          <button type="button" class="qty-btn" onclick="changeQty('${d.id}', -1)">-</button>
+          <span class="qty-val" id="qty-val-${d.id}">${qty}</span>
+          <button type="button" 
+                  class="qty-btn ${!canIncrement ? 'limit-reached-btn' : ''}" 
+                  id="qty-plus-${d.id}" 
+                  onclick="changeQty('${d.id}', 1)">+</button>
+        </div>
+      `;
+    }
 
     return `
       <div class="drink-card" id="card-${d.id}">
@@ -183,29 +302,14 @@ function renderDrinks() {
         </div>
 
         <div class="drink-card-footer">
-          <button type="button" 
-                  class="btn-add-drink ${isOverallLimitReached ? 'limit-reached-btn' : ''}" 
-                  id="btn-add-${d.id}" 
-                  style="${hasQty ? 'display: none;' : 'display: block;'}" 
-                  onclick="addDrinkToCart('${d.id}')">
-            + Ongeza
-          </button>
-
-          <div class="qty-control-wrap ${hasQty ? 'active' : ''}" id="qty-wrap-${d.id}">
-            <button type="button" class="qty-btn" onclick="changeQty('${d.id}', -1)">-</button>
-            <span class="qty-val" id="qty-val-${d.id}">${qty}</span>
-            <button type="button" 
-                    class="qty-btn ${!canIncrement ? 'limit-reached-btn' : ''}" 
-                    id="qty-plus-${d.id}" 
-                    onclick="changeQty('${d.id}', 1)">+</button>
-          </div>
+          ${actionBtnHtml}
         </div>
       </div>
     `;
   }).join('');
 }
 
-// Cart Management with limits enforcement
+// Cart Management with cumulative limits enforcement
 function addDrinkToCart(drinkId) {
   if (!serviceActive) {
     showToast('Samahani, huduma ya kuagiza vinywaji imefungwa kwa sasa ukumbini.');
@@ -217,15 +321,17 @@ function addDrinkToCart(drinkId) {
   if (!drink) return;
 
   const totalCartCount = getTotalCartCount();
-  if (totalCartCount >= maxTotalPerOrder) {
-    showToast(`⚠️ Kikomo cha vinywaji ${maxTotalPerOrder} kwa agizo moja kimefikiwa!`);
+  const cumulativeTotal = guestTotalOrdered + totalCartCount;
+  if (cumulativeTotal >= maxTotalPerOrder) {
+    showToast(`⚠️ Umefikisha kikomo chako cha jumla cha vinywaji ${maxTotalPerOrder} kwa usiku mzima!`);
     return;
   }
 
-  const maxItemLimit = drink.maxQtyPerOrder || 4;
+  const maxItemLimit = drink.maxQtyPerOrder !== undefined ? drink.maxQtyPerOrder : maxTotalPerOrder;
+  const orderedCount = guestItemCounts[drinkId] || 0;
   const currentItemQty = cart[drinkId] ? cart[drinkId].qty : 0;
-  if (currentItemQty >= maxItemLimit) {
-    showToast(`⚠️ Kikomo cha ${drink.name} ni ${maxItemLimit} pekee kwa agizo moja!`);
+  if (orderedCount + currentItemQty >= maxItemLimit) {
+    showToast(`⚠️ Kikomo cha ${drink.name} ni ${maxItemLimit} tu kwa usiku mzima! Tayari umeagiza ${orderedCount}.`);
     return;
   }
 
@@ -236,6 +342,7 @@ function addDrinkToCart(drinkId) {
 
   renderDrinks();
   updateTrayUI();
+  updateQuotaUI();
 }
 
 function changeQty(drinkId, delta) {
@@ -249,14 +356,16 @@ function changeQty(drinkId, delta) {
     }
 
     const totalCartCount = getTotalCartCount();
-    if (totalCartCount >= maxTotalPerOrder) {
-      showToast(`⚠️ Kikomo cha vinywaji ${maxTotalPerOrder} kwa agizo moja kimefikiwa!`);
+    const cumulativeTotal = guestTotalOrdered + totalCartCount;
+    if (cumulativeTotal >= maxTotalPerOrder) {
+      showToast(`⚠️ Umefikisha kikomo chako cha jumla cha vinywaji ${maxTotalPerOrder} kwa usiku mzima!`);
       return;
     }
 
-    const maxItemLimit = cart[drinkId].drink.maxQtyPerOrder || 4;
-    if (cart[drinkId].qty >= maxItemLimit) {
-      showToast(`⚠️ Kikomo cha ${cart[drinkId].drink.name} ni ${maxItemLimit} pekee kwa agizo moja!`);
+    const maxItemLimit = cart[drinkId].drink.maxQtyPerOrder !== undefined ? cart[drinkId].drink.maxQtyPerOrder : maxTotalPerOrder;
+    const orderedCount = guestItemCounts[drinkId] || 0;
+    if (orderedCount + cart[drinkId].qty >= maxItemLimit) {
+      showToast(`⚠️ Kikomo cha ${cart[drinkId].drink.name} ni ${maxItemLimit} tu kwa usiku mzima!`);
       return;
     }
 
@@ -270,6 +379,7 @@ function changeQty(drinkId, delta) {
 
   renderDrinks();
   updateTrayUI();
+  updateQuotaUI();
 }
 
 function updateTrayUI() {
@@ -278,9 +388,10 @@ function updateTrayUI() {
 
   const items = Object.values(cart);
   const totalCount = items.reduce((sum, item) => sum + item.qty, 0);
+  const remainingOverall = Math.max(0, maxTotalPerOrder - (guestTotalOrdered + totalCount));
 
   if (countBadge) {
-    countBadge.textContent = `${totalCount} / ${maxTotalPerOrder} ${totalCount === 1 ? 'Kinywaji' : 'Vinywaji'}`;
+    countBadge.textContent = `${totalCount} ${totalCount === 1 ? 'Kinywaji' : 'Vinywaji'} (Nafasi iliyobaki: ${remainingOverall})`;
   }
 
   if (tray) {
@@ -292,7 +403,7 @@ function updateTrayUI() {
   }
 }
 
-// Submit Order to Server & Multi-Channel SMS/WA Dispatch
+// Submit Order to Server & Multi-Channel SMS/WA/Telegram Dispatch
 async function submitDrinkOrder() {
   if (!serviceActive) {
     applyServiceStatus();
@@ -307,16 +418,18 @@ async function submitDrinkOrder() {
   }
 
   const totalCount = items.reduce((sum, item) => sum + item.qty, 0);
-  if (totalCount > maxTotalPerOrder) {
-    showToast(`Kikomo cha agizo moja ni vinywaji ${maxTotalPerOrder} pekee.`);
+  if (guestTotalOrdered + totalCount > maxTotalPerOrder) {
+    const rem = Math.max(0, maxTotalPerOrder - guestTotalOrdered);
+    showToast(`Umebakiwa na nafasi ya vinywaji ${rem} tu kwa usiku mzima (Kikomo cha jumla ni ${maxTotalPerOrder}).`);
     return;
   }
 
-  // Check per-item limits
+  // Check cumulative per-item limits
   for (const it of items) {
-    const limit = it.drink.maxQtyPerOrder || 4;
-    if (it.qty > limit) {
-      showToast(`Kikomo cha ${it.drink.name} ni ${limit} pekee.`);
+    const limit = it.drink.maxQtyPerOrder !== undefined ? it.drink.maxQtyPerOrder : maxTotalPerOrder;
+    const past = guestItemCounts[it.drink.id] || 0;
+    if (past + it.qty > limit) {
+      showToast(`Kikomo cha ${it.drink.name} ni ${limit} tu kwa usiku mzima. Umebakiwa na nafasi ya ${Math.max(0, limit - past)}.`);
       return;
     }
   }
@@ -327,10 +440,11 @@ async function submitDrinkOrder() {
 
   if (submitBtn) {
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>⏳ Inatuma Oda kwa Wahudumu...</span>`;
+    submitBtn.innerHTML = `<span>⏳ Inatuma Oda...</span>`;
   }
 
   const payload = {
+    guestSessionId,
     tableId: activeTable.id,
     tableName: activeTable.name,
     guestName,
@@ -361,14 +475,21 @@ async function submitDrinkOrder() {
     }
 
     if (res.ok && data.success) {
-      // Clear Cart
       const orderedItems = [...items];
       cart = {};
+
+      // Update cumulative counts immediately
+      guestTotalOrdered = typeof data.totalOrdered === 'number' ? data.totalOrdered : (guestTotalOrdered + totalCount);
+      items.forEach(it => {
+        guestItemCounts[it.drink.id] = (guestItemCounts[it.drink.id] || 0) + it.qty;
+      });
+
+      updateQuotaUI();
       renderDrinks();
       updateTrayUI();
 
-      // Show Success Modal
-      openSuccessModal(data.order || payload, orderedItems);
+      // Show Success Modal instantly with remaining quota
+      openSuccessModal(data.order || payload, orderedItems, data.remainingQuota);
     } else {
       showToast(`Hitilafu: ${data.error || 'Haikuweza kutuma oda. Tafadhali jaribu tena.'}`);
     }
@@ -383,13 +504,37 @@ async function submitDrinkOrder() {
   }
 }
 
-function openSuccessModal(order, items) {
+function openSuccessModal(order, items, remainingQuota) {
   const modal = document.getElementById('order-success-modal');
   const tableEl = document.getElementById('success-modal-table');
   const itemsEl = document.getElementById('success-modal-items');
+  const quotaBox = document.getElementById('success-modal-quota-box');
 
   if (tableEl) {
     tableEl.textContent = `📍 ${activeTable.name}`;
+  }
+
+  if (quotaBox) {
+    const rem = typeof remainingQuota === 'number' ? remainingQuota : Math.max(0, maxTotalPerOrder - guestTotalOrdered);
+    if (rem > 0) {
+      quotaBox.innerHTML = `
+        <div style="font-size: 0.95rem; color: #34d399; margin-bottom: 4px;">
+          🍹 Umeagiza jumla ya <strong>${guestTotalOrdered}</strong> kati ya <strong>${maxTotalPerOrder}</strong> vinywaji vyako.
+        </div>
+        <div style="color: #6ee7b7; font-size: 0.82rem;">
+          Bado una nafasi ya kuagiza vinywaji <strong>${rem}</strong> usiku wa leo!
+        </div>
+      `;
+    } else {
+      quotaBox.innerHTML = `
+        <div style="font-size: 0.95rem; color: #fae19c; margin-bottom: 4px;">
+          🍹 Umeagiza jumla ya <strong>${guestTotalOrdered}</strong> kati ya <strong>${maxTotalPerOrder}</strong> vinywaji vyako.
+        </div>
+        <div style="color: #e2e8f0; font-size: 0.82rem;">
+          ✨ Umefikisha kikomo chako cha jumla cha vinywaji kwa usiku mzima. Furahia sherehe!
+        </div>
+      `;
+    }
   }
 
   if (itemsEl) {
@@ -401,7 +546,7 @@ function openSuccessModal(order, items) {
     `).join('');
 
     itemsEl.innerHTML = `
-      <div style="font-weight: 700; color: var(--gold-light); margin-bottom: 8px;">Vinywaji Ulivyoagiza:</div>
+      <div style="font-weight: 700; color: var(--gold-light); margin-bottom: 8px;">Vinywaji Ulivyoagiza Mda Huu:</div>
       ${itemsHtml}
       ${order.notes ? `<div style="margin-top: 10px; font-size: 0.8rem; color: #fae19c; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px;">📝 <em>"${escapeHtml(order.notes)}"</em></div>` : ''}
     `;

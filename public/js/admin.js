@@ -3403,6 +3403,15 @@ async function loadOrderNotificationConfig() {
     if (badge) {
       badge.textContent = `🟢 SMS-Gate Imewashwa (${orderNotificationPhones.length} Namba)`;
     }
+
+    const maxDrinksInput = document.getElementById('order-global-max-drinks-input');
+    const maxDrinksBadge = document.getElementById('global-max-drinks-badge');
+    if (maxDrinksInput && cfg.maxTotalPerOrder) {
+      maxDrinksInput.value = cfg.maxTotalPerOrder;
+    }
+    if (maxDrinksBadge && cfg.maxTotalPerOrder) {
+      maxDrinksBadge.textContent = `Kikomo: Vinywaji ${cfg.maxTotalPerOrder} Usiku Mzima`;
+    }
   } catch (err) {
     console.error('Error loading SMS-Gate config:', err);
   }
@@ -4214,6 +4223,48 @@ window.addNewOrderPhoneFromInput = addNewOrderPhoneFromInput;
 window.removeOrderPhone = removeOrderPhone;
 window.setDrinkMaxPreset = setDrinkMaxPreset;
 
+function setGlobalMaxDrinksPreset(val) {
+  const input = document.getElementById('order-global-max-drinks-input');
+  if (input) input.value = val;
+}
 
+async function saveGlobalMaxDrinksLimit() {
+  const input = document.getElementById('order-global-max-drinks-input');
+  const alertEl = document.getElementById('global-max-drinks-alert');
+  const badge = document.getElementById('global-max-drinks-badge');
+  const val = parseInt(input?.value || 4, 10);
 
+  if (isNaN(val) || val < 1 || val > 20) {
+    alert('Tafadhali weka idadi sahihi ya vinywaji (kati ya 1 na 20).');
+    return;
+  }
 
+  try {
+    const res = await fetch('/api/orders/notification-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ maxTotalPerOrder: val })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      if (badge) badge.textContent = `Kikomo: Vinywaji ${val} Usiku Mzima`;
+      if (alertEl) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = 'rgba(16, 185, 129, 0.2)';
+        alertEl.style.color = '#34d399';
+        alertEl.style.border = '1px solid #10b981';
+        alertEl.innerHTML = `✅ Kikomo kikuu kimesasishwa kuwa <strong>vinywaji ${val}</strong> kwa kila mgeni kwa usiku mzima!`;
+        setTimeout(() => { alertEl.style.display = 'none'; }, 6000);
+      } else {
+        alert(`✅ Kikomo kikuu kimesasishwa kuwa vinywaji ${val} kwa kila mgeni kwa usiku mzima!`);
+      }
+    } else {
+      alert(`Hitilafu: ${data.error || 'Haikuweza kuhifadhi'}`);
+    }
+  } catch (e) {
+    alert('Hitilafu ya mtandao: ' + e.message);
+  }
+}
+
+window.setGlobalMaxDrinksPreset = setGlobalMaxDrinksPreset;
+window.saveGlobalMaxDrinksLimit = saveGlobalMaxDrinksLimit;

@@ -608,10 +608,14 @@
         Send-off ya Lilian • 13 Oktoba 2026
       </p>
       
-      <div>
+      <div style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;">
         <div class="table-active-pill" id="active-table-pill">
           <span>📍</span>
           <span id="active-table-name">Inatambua Meza Yako...</span>
+        </div>
+        <div class="quota-active-pill" id="quota-display-pill" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.5); color: #6ee7b7; padding: 6px 14px; border-radius: 30px; font-size: 0.84rem; font-weight: 700; transition: all 0.25s ease;">
+          <span>🍹</span>
+          <span id="quota-display-text">Kikomo: Vinywaji 4 Usiku Mzima</span>
         </div>
       </div>
     </header>
@@ -681,6 +685,10 @@
 
       <div class="success-items-list" id="success-modal-items">
         <!-- Filled dynamically -->
+      </div>
+
+      <div id="success-modal-quota-box" style="margin: 12px 0; padding: 10px 14px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.45); border-radius: 12px; color: #a7f3d0; font-size: 0.86rem; font-weight: 700; text-align: center; line-height: 1.4;">
+        <!-- Filled dynamically with cumulative count & remaining quota -->
       </div>
 
       <p class="success-note">
