@@ -910,18 +910,18 @@
     {
       "id": "30",
       "code": "1030",
-      "name": "Geofray &Frank",
+      "name": "Godfrey",
       "title": "Mualikwa Maalumu",
       "phone": "255629156215",
       "committeeMember": "",
       "tableId": "",
-      "seats": 2,
-      "cardType": "Double",
+      "seats": 1,
+      "cardType": "Single",
       "pledgeAmount": 50000,
       "paidAmount": 50000,
       "isCompleted": true,
       "rsvpStatus": "pending",
-      "guestCountAttending": 2,
+      "guestCountAttending": 1,
       "drinkPreference": null,
       "checkedIn": false,
       "checkInTime": null,
@@ -7383,7 +7383,8 @@
       "reminderCount": 0,
       "wishes": null,
       "createdAt": "2026-10-12T16:35:51.171Z",
-      "updatedAt": "2026-10-12T16:35:51.171Z"
+      "updatedAt": "2026-10-12T16:35:51.171Z",
+      "cardType": "Double"
     },
     {
       "id": "324",
