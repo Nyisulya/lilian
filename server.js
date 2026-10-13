@@ -876,7 +876,10 @@ app.post('/api/whatsapp/test', async (req, res) => {
   const testImg = `${systemUrl}/images/cards/card_1.jpg`;
 
   try {
-    const result = await whatsappService.sendRawWhatsApp(phone, testMsg, testImg, 'Jaribio la WhatsApp', 'Majaribio');
+    const result = await whatsappService.sendRawWhatsApp(phone, testMsg, testImg, 'Jaribio la WhatsApp', 'Majaribio', {
+      useTemplate: config.provider === 'Meta' ? true : false,
+      templateParams: ['Mgeni wa Majaribio', 'Jaribio la Mfumo wa WhatsApp limefanikiwa! ✨🥂']
+    });
     res.json({
       success: result.success,
       message: result.success ? 'Ujumbe wa majaribio na picha ya kadi zimetumwa WhatsApp kwa mafanikio!' : (result.log?.responseMessage || 'Hitilafu ya utumaji'),

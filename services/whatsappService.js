@@ -225,7 +225,7 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
           }
         };
 
-        const headerImageUrl = options.headerImageUrl || (imageUrl && imageUrl.startsWith('http') ? imageUrl : null);
+        const headerImageUrl = options.headerImageUrl || (imageUrl && imageUrl.startsWith('http') ? imageUrl : `${systemUrl}/images/cards/card_1.jpg`);
         if (headerImageUrl) {
           payload.template.components.push({
             type: 'header',
@@ -233,10 +233,19 @@ async function sendRawWhatsApp(toPhone, messageText, imageUrl = '', messageType 
           });
         }
 
-        if (metaParams && Array.isArray(metaParams) && metaParams.length > 0) {
+        // Ensure template parameters match Meta template definition to prevent (#132000)
+        let resolvedParams = metaParams;
+        if ((!resolvedParams || !Array.isArray(resolvedParams) || resolvedParams.length === 0) && metaTemplate === 'mwaliko_wa_sherehe') {
+          resolvedParams = [
+            guestName || 'Mualikwa',
+            options.note || 'Karibu sana tufurahi na kusherehekea pamoja! ✨🥂'
+          ];
+        }
+
+        if (resolvedParams && Array.isArray(resolvedParams) && resolvedParams.length > 0) {
           payload.template.components.push({
             type: 'body',
-            parameters: metaParams.map(p => ({ type: 'text', text: String(p || '') }))
+            parameters: resolvedParams.map(p => ({ type: 'text', text: String(p || '') }))
           });
         }
       } else {
@@ -424,7 +433,7 @@ ${order.notes ? `📝 *Maelekezo:* ${order.notes}\n` : ''}⏰ *Muda:* Saa ${now}
 
 _Mhudumu wetu atafikisha vinywaji hivi moja kwa moja kwenye meza husika mara moja!_ 🥂`;
 
-  return await sendRawWhatsApp(targetPhone, msg, '', 'Oda ya Kinywaji cha Meza', order.guestName || order.tableName);
+  return await sendRawWhatsApp(targetPhone, msg, '', 'Oda ya Kinywaji cha Meza', order.guestName || order.tableName, { useTemplate: false });
 }
 
 module.exports = {

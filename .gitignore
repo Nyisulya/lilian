@@ -7,6 +7,9 @@ Thumbs.db
 *.log
 scratch/
 data/live_db.json
+data/live_db_pre_sync_backup.json
+data/synced_new_guests_report.json
+data/vps_guests_fetched.json
 data/backups/
 data/db.vps.backup.json
 .env
