@@ -1377,10 +1377,53 @@ app.post('/api/verify/set-seats', (req, res) => {
   });
 });
 
-// Reset check-in status (for testing or committee overrides)
-app.post('/api/verify/reset', (req, res) => {
-  const { guestId } = req.body;
+// Reset all check-in scans (for event start / testing reset)
+app.post(['/api/verify/reset-all', '/api/gate/reset-all'], (req, res) => {
   const db = readDB();
+  let resetCount = 0;
+  (db.guests || []).forEach(g => {
+    if (g.checkedIn || g.seatsCheckedIn > 0 || g.checkInTime) {
+      g.checkedIn = false;
+      g.seatsCheckedIn = 0;
+      g.checkInTime = null;
+      g.lastCheckInTime = null;
+      g.checkInLog = [];
+      resetCount++;
+    }
+  });
+  writeDB(db);
+  res.json({
+    success: true,
+    message: `Ukaguzi wa getini umefutwa na kuanza upya. Kadi zote ${resetCount} zilizokuwa zimescaniwa zimerejeshwa kuwa mpya!`,
+    resetCount
+  });
+});
+
+// Reset check-in status (single guest or all)
+app.post('/api/verify/reset', (req, res) => {
+  const { guestId, all } = req.body || {};
+  const db = readDB();
+
+  if (all || guestId === 'all' || !guestId) {
+    let resetCount = 0;
+    (db.guests || []).forEach(g => {
+      if (g.checkedIn || g.seatsCheckedIn > 0 || g.checkInTime) {
+        g.checkedIn = false;
+        g.seatsCheckedIn = 0;
+        g.checkInTime = null;
+        g.lastCheckInTime = null;
+        g.checkInLog = [];
+        resetCount++;
+      }
+    });
+    writeDB(db);
+    return res.json({
+      success: true,
+      message: `Ukaguzi wa getini umefutwa na kuanza upya. Kadi zote ${resetCount} zilizokuwa zimescaniwa zimerejeshwa kuwa mpya!`,
+      resetCount
+    });
+  }
+
   const guest = (db.guests || []).find(g => String(g.id).toLowerCase() === String(guestId || '').toLowerCase() || String(g.code) === String(guestId));
   if (guest) {
     guest.checkedIn = false;

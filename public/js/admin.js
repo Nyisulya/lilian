@@ -304,6 +304,41 @@ function renderStats(stats) {
   if (document.getElementById('stat-percent-text')) {
     document.getElementById('stat-percent-text').textContent = `${f.percentagePaid}% Imelipwa`;
   }
+
+  // Gate Scanner Widget Stats
+  if (document.getElementById('dash-gate-scanned-badge')) {
+    document.getElementById('dash-gate-scanned-badge').textContent = `${stats.checkedInCount || 0} Walioingia`;
+  }
+  if (document.getElementById('dash-gate-main-stat')) {
+    document.getElementById('dash-gate-main-stat').textContent = `${stats.checkedInCount || 0} Wameingia / ${stats.remainingToArrive || 0} Bado`;
+  }
+}
+
+async function resetAllGateScans() {
+  const confirmed = confirm(
+    'JE, UNA UHAKIKA UNATAKA KUANZISHA UPYA UKAGUZI WA GETINI?\n\n' +
+    'Hatua hii itafuta kadi zote zilizowahi kuscaniwa mapema (kama majaribio) na kuanza upya kutoka 0 ili wageni waanze kukaguliwa upya rasmi getini ukumbini.\n\n' +
+    'Bonyeza OK kuthibitisha.'
+  );
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch('/api/verify/reset-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ all: true })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('✅ ' + (data.message || 'Ukaguzi wa getini umefutwa na kuanza upya kutoka 0!'));
+      await loadStats();
+      await loadGuests();
+    } else {
+      alert('❌ Hitilafu: ' + (data.error || 'Haikuweza kurejesha ukaguzi.'));
+    }
+  } catch (err) {
+    alert('❌ Hitilafu ya mtandao: ' + err.message);
+  }
 }
 
 function renderDashboardOverview() {

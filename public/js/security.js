@@ -593,3 +593,34 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+async function confirmResetAllScans() {
+  const confirmed = confirm(
+    'JE, UNA UHAKIKA UNATAKA KUANZISHA UPYA UKAGUZI WA GETINI?\n\n' +
+    'Hatua hii itafuta kadi zote zilizowahi kuscaniwa mapema (kama majaribio) na kuanza upya kutoka 0 ili wageni waanze kukaguliwa upya rasmi ukumbini.\n\n' +
+    'Bonyeza OK kuthibitisha.'
+  );
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch('/api/verify/reset-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ all: true })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('✅ ' + (data.message || 'Ukaguzi umefutwa na kuanza upya!'));
+      recentScans = [];
+      const listEl = document.getElementById('recent-scans-list');
+      if (listEl) listEl.innerHTML = '<div style="color: var(--text-muted); font-size: 0.82rem; text-align: center; padding: 14px;">Bado hakuna mgeni aliyepita getini. Mfumo uko tayari.</div>';
+      const resultContainer = document.getElementById('scan-result-container');
+      if (resultContainer) resultContainer.innerHTML = '';
+      await loadGateStats();
+    } else {
+      alert('❌ Hitilafu: ' + (data.error || 'Haikuweza kurejesha ukaguzi.'));
+    }
+  } catch (err) {
+    alert('❌ Hitilafu ya mtandao: ' + err.message);
+  }
+}

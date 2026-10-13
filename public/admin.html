@@ -300,6 +300,26 @@
               </div>
             </div>
 
+            <!-- 🛡️ Gate Access & Scanner Control Snapshot -->
+            <div class="dashboard-widget-card" style="border: 1.5px solid rgba(212, 175, 55, 0.5); background: linear-gradient(145deg, rgba(8, 28, 18, 0.95) 0%, rgba(3, 14, 9, 0.98) 100%);">
+              <div>
+                <div class="widget-card-header">
+                  <h4>🛡️ Ukaguzi wa Getini (Gate Scanner)</h4>
+                  <span class="badge badge-success" id="dash-gate-scanned-badge">0 Walioingia</span>
+                </div>
+                <div class="widget-main-stat" id="dash-gate-main-stat" style="color: #2ecc71;">0 Wameingia Ndani</div>
+                <p class="widget-subtext">Hali ya ukaguzi wa kadi za getini. Futa majaribio ya kuscan ili ukaguzi rasmi uanze upya.</p>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center; margin-top: 14px; flex-wrap: wrap;">
+                <a href="/security" target="_blank" class="widget-action-link" style="margin-top: 0; color: var(--gold-light); font-weight: 700;">
+                  Fungua Scanner ya Walinzi ↗
+                </a>
+                <button type="button" class="btn btn-sm" onclick="resetAllGateScans()" style="background: #dc2626; border: 1.5px solid #ef4444; color: #fff; font-weight: 800; border-radius: 8px; padding: 6px 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4); display: inline-flex; align-items: center; gap: 6px;">
+                  🔄 Anzisha Upya (Reset Scans)
+                </button>
+              </div>
+            </div>
+
             <!-- Taarifa za Benki & Malipo Snapshot -->
             <div class="dashboard-widget-card">
               <div>
