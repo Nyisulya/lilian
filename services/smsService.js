@@ -182,18 +182,16 @@ async function sendInvitationSMS(guest) {
   const fullName = (guest.name || 'Mualikwa Maalumu').trim();
   const guestCode = guest.code || guest.id || '3001';
 
-  const message = `MWALIKO RASMI WA SEND-OFF YA LILIAN\n\n` +
-    `Habari Ndugu ${fullName},\n\n` +
-    `Familia ya Mr & Mrs Marcus Nyahende inayo heshima kubwa kukualika kwenye Send-off ya binti yao mpendwa Lilian Marcus.\n\n` +
+  const message = `MWALIKO WA SEND-OFF YA LILIAN\n` +
+    `Habari ${fullName},\n` +
+    `Familia ya Mr & Mrs Marcus Nyahende inakualika kwa heshima kwenye Send-off ya binti yao Lilian Marcus.\n\n` +
     `Tarehe: Jumanne, 13 Oktoba 2026\n` +
     `Muda: Kuanzia Saa 12:30 Jioni\n` +
-    `Ukumbi: Bragging Social Hall, Goba, Dar es Salaam\n\n` +
-    `Namba ya Kuingilia Getini: ${guestCode}\n` +
+    `Ukumbi: Bragging Social Hall, Goba\n\n` +
+    `Namba ya Getini: ${guestCode}\n` +
     `Mawasiliano: 0713 980 004\n\n` +
-    `Thibitisha uwepo wako hapa:\n` +
+    `Thibitisha & kadi yako hapa:\n` +
     `https://${domain}/confirm/${guestCode}\n\n` +
-    `Tazama hadithi na picha za Lilian:\n` +
-    `https://${domain}\n\n` +
     `Karibu sana tufurahi pamoja!`;
 
   return await sendRawSMS(guest.phone, message, 'Mwaliko Rasmi (3 SMS)', fullName);
