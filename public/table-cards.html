@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🍾 Vipeperushi vya Meza (Kadi za Oda ya Vinywaji) | Send-off ya Lilian Marcus</title>
+  <title>🍾 Kadi za Meza (Oda ya Vinywaji Mezani) | Send-off ya Lilian Marcus</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/favicon.png">
 
-  <!-- QRCode.js (Local with CDN fallback) -->
+  <!-- QRCode.js -->
   <script src="/js/qrcode.min.js"></script>
   <script>
     if (typeof QRCode === 'undefined') {
@@ -19,35 +19,23 @@
     }
   </script>
 
-  <!-- html2canvas & jsPDF for Ultra High Quality PDF Export -->
+  <!-- html2canvas -->
   <script src="/js/html2canvas.min.js"></script>
   <script>
     if (typeof html2canvas === 'undefined') {
       document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>');
     }
   </script>
-  <script src="/js/jspdf.umd.min.js"></script>
-  <script>
-    if (typeof jspdf === 'undefined' && typeof jsPDF === 'undefined') {
-      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>');
-    }
-  </script>
 
   <style>
-    /* ==========================================================================
-       LUXURY TABLE FLYERS & TENT CARDS STYLES (SINGLE QR - DRINKS ORDER)
-       ========================================================================== */
     :root {
       --gold-primary: #d4af37;
       --gold-light: #fef08a;
       --gold-dark: #996515;
       --gold-gradient: linear-gradient(135deg, #fef08a 0%, #d4af37 50%, #996515 100%);
-      --emerald-dark: #041a12;
+      --emerald-dark: #041c12;
       --emerald-surface: #072e20;
       --emerald-border: #0e5239;
-      --text-gold: #f5d061;
-      --text-white: #ffffff;
-      --border-radius: 12px;
     }
 
     * {
@@ -58,24 +46,24 @@
 
     body {
       font-family: 'Outfit', sans-serif;
-      background: #0f172a;
+      background: #09121d;
       color: #333;
       padding: 20px 10px;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ==========================================================================
-       CONTROL TOOLBAR (HIDDEN IN PRINT)
-       ========================================================================== */
+    /* ========================================================
+       TOP TOOLBAR (INAPOTEA WAKATI WA KUPRINT)
+       ======================================================== */
     .no-print-toolbar {
-      max-width: 1040px;
+      max-width: 1080px;
       margin: 0 auto 25px;
       background: #061f16;
       border: 1.5px solid var(--gold-primary);
       border-radius: 16px;
-      padding: 20px 24px;
+      padding: 22px 24px;
       color: #fff;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
     }
 
     .toolbar-header {
@@ -91,33 +79,32 @@
 
     .toolbar-title h1 {
       font-family: 'Cinzel', serif;
-      font-size: 1.38rem;
+      font-size: 1.4rem;
       color: var(--gold-light);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .toolbar-title p {
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: #94a3b8;
       margin-top: 4px;
     }
 
     .toolbar-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       align-items: center;
       flex-wrap: wrap;
     }
 
-    /* Primary Download PDF Button */
     .btn-download-pdf {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: #ffffff;
       font-weight: 800;
-      font-size: 0.96rem;
-      padding: 11px 22px;
+      font-size: 0.95rem;
+      padding: 12px 22px;
       border-radius: 30px;
       border: 1.5px solid #34d399;
       cursor: pointer;
@@ -140,7 +127,7 @@
       color: #041a12;
       font-weight: 800;
       font-size: 0.92rem;
-      padding: 11px 20px;
+      padding: 12px 22px;
       border-radius: 30px;
       border: 1px solid #fff;
       cursor: pointer;
@@ -160,7 +147,7 @@
 
     .toolbar-controls-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 14px;
       align-items: center;
     }
@@ -175,20 +162,19 @@
       margin-bottom: 6px;
     }
 
-    .control-item select,
-    .control-item input {
+    .control-item select {
       width: 100%;
       background: #04140e;
-      border: 1px solid rgba(212, 175, 55, 0.4);
+      border: 1.5px solid rgba(212, 175, 55, 0.4);
       border-radius: 8px;
-      padding: 9px 12px;
+      padding: 10px 12px;
       color: #fff;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       outline: none;
+      transition: all 0.2s;
     }
 
-    .control-item select:focus,
-    .control-item input:focus {
+    .control-item select:focus {
       border-color: var(--gold-primary);
       box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
     }
@@ -197,9 +183,9 @@
       grid-column: 1 / -1;
       background: rgba(14, 82, 57, 0.45);
       border: 1px solid rgba(212, 175, 55, 0.35);
-      padding: 10px 16px;
+      padding: 12px 18px;
       border-radius: 10px;
-      font-size: 0.86rem;
+      font-size: 0.88rem;
       color: #a7f3d0;
       display: flex;
       justify-content: space-between;
@@ -208,169 +194,108 @@
       gap: 10px;
     }
 
-    /* Stationery Guidance Tip Banner */
     .stationery-tips-banner {
       grid-column: 1 / -1;
-      background: rgba(212, 175, 55, 0.1);
+      background: rgba(212, 175, 55, 0.12);
       border: 1px dashed var(--gold-primary);
       border-radius: 10px;
       padding: 12px 16px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: #fef08a;
       line-height: 1.5;
     }
 
-    /* ==========================================================================
-       PRINT CONTAINER (A4 SHEETS)
-       ========================================================================== */
-    .print-sheet-container {
-      max-width: 1040px;
+    /* ========================================================
+       GALLERY CONTAINER
+       ======================================================== */
+    .cards-gallery-container {
+      max-width: 1100px;
       margin: 0 auto;
     }
 
-    /* THE A4 SHEET PAGE CONTAINER */
-    .a4-sheet-page {
-      position: relative;
-      margin-bottom: 30px;
-      page-break-after: always;
-      break-after: page;
-      background: #04140e;
-      border: 1.5px solid rgba(212, 175, 55, 0.35);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    /* SINGLE STANDALONE MODE (DEFAULT): MOJA MOJA */
+    .standalone-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 28px;
+      justify-content: center;
     }
 
-    .sheet-header-badge {
+    /* WRAPPER FOR EACH CARD ON SCREEN */
+    .table-card-wrapper {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      background: rgba(212, 175, 55, 0.12);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 8px;
-      padding: 7px 14px;
-      margin-bottom: 14px;
-      font-size: 0.82rem;
-      color: var(--gold-light);
-      font-weight: 700;
     }
 
-    .btn-sheet-png {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      color: #fff;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.74rem;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all 0.2s;
-    }
-
-    .btn-sheet-png:hover {
-      background: var(--gold-gradient);
-      color: #04140e;
-    }
-
-    /* GRID FOR 4 CARDS PER A4 (2x2) */
-    .cards-grid-layout.layout-4 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    /* GRID FOR 6 CARDS PER A4 (2x3) */
-    .cards-grid-layout.layout-6 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    /* ==========================================================================
-       THE FLYER CARD (KIPEPERUSHI CHA MEZA)
-       ========================================================================== */
-    .table-flyer-card {
+    /* THE MINI STANDALONE CARD ITSELF */
+    .mini-table-card {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 16px;
+      padding: 18px 18px 16px;
+      background: linear-gradient(150deg, #05281b 0%, #03170e 100%);
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(212, 175, 55, 0.1);
       position: relative;
-      border-radius: 14px;
-      padding: 12px 14px 10px;
+      color: #fff;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      page-break-inside: avoid;
-      break-inside: avoid;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-      border: 2px dashed rgba(212, 175, 55, 0.45); /* Cutting Guide line */
-      background: #041810;
-      transition: all 0.2s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
-    /* CUT GUIDE SCISSORS ICON */
-    .table-flyer-card::after {
-      content: '✂';
-      position: absolute;
-      top: -10px;
-      right: 15px;
-      font-size: 11px;
-      color: #999;
+    .mini-table-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(212, 175, 55, 0.15);
     }
 
-    /* THEME 1: ROYAL EMERALD & GOLD (RICH LUXURY) */
-    .theme-emerald .card-inner-box {
-      background: linear-gradient(145deg, #062318 0%, #03140d 100%);
-      border: 1.5px solid var(--gold-primary);
+    .mini-table-card .card-inner-frame {
+      border: 1px solid rgba(212, 175, 55, 0.35);
       border-radius: 12px;
-      padding: 12px 12px 10px;
-      color: #fff;
-      position: relative;
-      box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.08);
+      padding: 14px 14px 12px;
+      background: rgba(3, 20, 13, 0.65);
     }
 
-    /* THEME 2: CHAMPAGNE IVORY & GOLD (INK-SAVER LUXURY) */
-    .theme-ivory .a4-sheet-page {
-      background: #fdfbf7;
-      border-color: #d4af37;
-    }
-
-    .theme-ivory .table-flyer-card {
-      background: #faf6ec;
+    /* THEME 2: CHAMPAGNE IVORY (INK SAVER) */
+    .theme-ivory .mini-table-card {
+      background: linear-gradient(150deg, #ffffff 0%, #fbf7ee 100%);
       border-color: #c59b27;
-    }
-
-    .theme-ivory .card-inner-box {
-      background: linear-gradient(145deg, #fffdf7 0%, #faf5ea 100%);
-      border: 1.5px solid #c59b27;
-      border-radius: 12px;
-      padding: 12px 12px 10px;
       color: #111827;
-      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     }
 
-    /* CARD HEADER */
-    .card-brand-tag {
+    .theme-ivory .mini-table-card .card-inner-frame {
+      border-color: rgba(197, 155, 39, 0.4);
+      background: #faf6eb;
+    }
+
+    /* BRAND & TABLE HEADER */
+    .card-top-tag {
       font-family: 'Cinzel', serif;
-      font-size: 0.68rem;
+      font-size: 0.74rem;
       font-weight: 700;
       letter-spacing: 2px;
       text-align: center;
       text-transform: uppercase;
       color: var(--gold-primary);
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
-    .theme-ivory .card-brand-tag {
+    .theme-ivory .card-top-tag {
       color: #996515;
     }
 
-    .card-table-badge {
+    .card-table-title {
       text-align: center;
       margin-bottom: 2px;
     }
 
-    .card-table-badge h2 {
+    .card-table-title h2 {
       font-family: 'Cinzel', serif;
-      font-size: 1.45rem;
+      font-size: 2.1rem;
       font-weight: 900;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       line-height: 1.1;
       display: inline-block;
       background: var(--gold-gradient);
@@ -378,218 +303,228 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .theme-ivory .card-table-badge h2 {
+    .theme-ivory .card-table-title h2 {
       background: none;
       -webkit-text-fill-color: #062318;
       color: #062318;
-      border-bottom: 2px solid var(--gold-primary);
-      padding-bottom: 1px;
     }
 
-    .card-hall-tag {
+    .card-sub-venue {
       text-align: center;
-      font-size: 0.65rem;
-      font-weight: 600;
+      font-size: 0.68rem;
+      font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: #34d399;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
 
-    .theme-ivory .card-hall-tag {
-      color: #047857;
+    .theme-ivory .card-sub-venue {
+      color: #059669;
     }
 
-    /* ==========================================================================
-       SINGLE QR CODE SECTION (KUAGIZA VINYWAJI MEZANI)
-       ========================================================================== */
-    .card-qr-single-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 8px;
-    }
-
-    .qr-column-box {
-      background: rgba(4, 20, 14, 0.7);
-      border: 1px solid rgba(212, 175, 55, 0.35);
+    /* QR CODE CENTER SECTION */
+    .card-qr-box {
+      background: rgba(4, 18, 12, 0.85);
+      border: 1.5px solid rgba(212, 175, 55, 0.4);
       border-radius: 12px;
-      padding: 10px 14px 8px;
+      padding: 14px 12px 10px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 260px;
+      margin-bottom: 12px;
     }
 
-    .theme-ivory .qr-column-box {
+    .theme-ivory .card-qr-box {
       background: #ffffff;
-      border: 1.5px solid #d4af37;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-color: #d4af37;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
-    .qr-col-header {
-      font-size: 0.78rem;
+    .qr-badge-title {
+      font-size: 0.82rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
       color: var(--gold-light);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 5px;
-      line-height: 1.2;
+      gap: 6px;
     }
 
-    .theme-ivory .qr-col-header {
+    .theme-ivory .qr-badge-title {
       color: #062318;
     }
 
-    /* QR CODE FRAME WITH HIGH CONTRAST SO CAMERAS SCAN INSTANTLY */
-    .qr-medallion-frame {
+    .qr-white-frame {
       background: #ffffff;
-      padding: 6px;
+      padding: 8px;
       border-radius: 10px;
       border: 2px solid var(--gold-primary);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
-    .qr-medallion-frame canvas,
-    .qr-medallion-frame img {
-      width: 125px !important;
-      height: 125px !important;
+    .qr-white-frame canvas,
+    .qr-white-frame img {
+      width: 145px !important;
+      height: 145px !important;
       display: block;
       image-rendering: pixelated;
     }
 
-    /* COMPACT MODE FOR 6 PER PAGE */
-    .layout-6 .qr-medallion-frame canvas,
-    .layout-6 .qr-medallion-frame img {
-      width: 95px !important;
-      height: 95px !important;
-    }
-
-    .qr-col-caption {
-      font-size: 0.72rem;
-      line-height: 1.25;
-      color: #cbd5e1;
+    .qr-scan-instruction {
+      font-size: 0.74rem;
+      line-height: 1.3;
+      color: #e2e8f0;
       font-weight: 600;
-      padding: 0 4px;
       margin-top: 4px;
+      padding: 0 4px;
     }
 
-    .qr-url-hint {
-      font-size: 0.68rem;
+    .theme-ivory .qr-scan-instruction {
+      color: #374151;
+    }
+
+    .qr-direct-link {
+      font-size: 0.72rem;
       font-weight: 700;
       color: var(--gold-light);
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-top: 5px;
-      word-break: break-all;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      padding: 3px 10px;
+      border-radius: 5px;
+      margin-top: 6px;
       font-family: monospace;
-      display: inline-block;
+      letter-spacing: 0.5px;
     }
 
-    .theme-ivory .qr-url-hint {
+    .theme-ivory .qr-direct-link {
       background: #f1f5f9;
       color: #0f172a;
       border-color: #cbd5e1;
     }
 
-    .theme-ivory .qr-col-caption {
-      color: #374151;
-      font-weight: 600;
-    }
-
     /* CARD FOOTER */
-    .card-footer-strip {
+    .card-bottom-footer {
       text-align: center;
       border-top: 1px solid rgba(212, 175, 55, 0.25);
-      padding-top: 6px;
-      margin-top: 4px;
+      padding-top: 8px;
     }
 
-    .theme-ivory .card-footer-strip {
+    .theme-ivory .card-bottom-footer {
       border-top-color: rgba(212, 175, 55, 0.4);
     }
 
-    .card-footer-date {
-      font-size: 0.65rem;
+    .card-footer-event {
+      font-size: 0.68rem;
       color: #94a3b8;
       font-weight: 500;
       margin-bottom: 2px;
     }
 
-    .theme-ivory .card-footer-date {
+    .theme-ivory .card-footer-event {
       color: #4b5563;
     }
 
-    .card-footer-promo {
-      font-size: 0.62rem;
+    .card-footer-system {
+      font-size: 0.68rem;
       color: var(--gold-primary);
       font-weight: 700;
-      letter-spacing: 0.5px;
     }
 
-    .theme-ivory .card-footer-promo {
+    .theme-ivory .card-footer-system {
       color: #996515;
     }
 
-    /* ==========================================================================
-       PROGRESS MODAL FOR PDF DOWNLOAD
-       ========================================================================== */
-    .pdf-progress-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.88);
-      backdrop-filter: blur(10px);
-      z-index: 9999;
+    /* DIRECT ACTION BUTTONS UNDER EACH CARD (HIDDEN IN PRINT) */
+    .card-action-bar {
       display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 360px;
+      margin-top: 10px;
+    }
+
+    .btn-card-action {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      padding: 20px;
+      gap: 6px;
+      transition: all 0.2s;
     }
 
-    .pdf-progress-card {
-      background: linear-gradient(145deg, #09281a 0%, #03140c 100%);
-      border: 2px solid var(--gold-primary);
-      border-radius: 20px;
-      padding: 30px 24px;
-      text-align: center;
-      max-width: 440px;
-      width: 100%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.25);
+    .btn-card-print {
+      background: #0f2d21;
+      border: 1px solid var(--gold-primary);
+      color: #fef08a;
     }
 
-    .pdf-progress-bar-bg {
-      width: 100%;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 16px 0 10px;
-      border: 1px solid rgba(212, 175, 55, 0.3);
-    }
-
-    .pdf-progress-bar-fill {
-      width: 0%;
-      height: 100%;
+    .btn-card-print:hover {
       background: var(--gold-gradient);
-      transition: width 0.25s ease;
+      color: #04140e;
     }
 
-    /* ==========================================================================
-       PRINT MEDIA QUERIES (PERFECT A4 SHEETS)
-       ========================================================================== */
+    .btn-card-png {
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #e2e8f0;
+    }
+
+    .btn-card-png:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    /* ========================================================
+       CLASSIC A4 SHEET MODE (OPTIONAL FALLBACK)
+       ======================================================== */
+    .a4-sheet-page {
+      background: #04140e;
+      border: 1.5px solid rgba(212, 175, 55, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 30px;
+    }
+
+    .theme-ivory .a4-sheet-page {
+      background: #fdfbf7;
+      border-color: #d4af37;
+    }
+
+    .cards-grid-layout.layout-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .cards-grid-layout.layout-6 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .grid-cut-card {
+      position: relative;
+      border: 1.5px dashed rgba(212, 175, 55, 0.45);
+      border-radius: 12px;
+      padding: 8px;
+    }
+
+    /* ========================================================
+       PRINT MEDIA STYLES (STANDALONE CLEAN PRINT)
+       ======================================================== */
     @media print {
       body {
         background: #ffffff !important;
@@ -598,16 +533,50 @@
       }
 
       .no-print-toolbar,
-      .pdf-progress-overlay {
+      .card-action-bar {
         display: none !important;
       }
 
-      .print-sheet-container {
+      .cards-gallery-container {
         max-width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
       }
 
+      /* WHEN PRINTING A SINGLE TABLE */
+      body.print-only-one .table-card-wrapper:not(.active-print-target) {
+        display: none !important;
+      }
+
+      /* STANDALONE CARDS: 1 PER PAGE CLEAN & CENTERED */
+      .standalone-grid {
+        display: block !important;
+      }
+
+      .table-card-wrapper {
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin: 0 auto 0 !important;
+        padding: 8mm 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        min-height: 95vh !important;
+      }
+
+      .mini-table-card {
+        box-shadow: none !important;
+        max-width: 95mm !important;
+        width: 95mm !important;
+        border: 2px solid #d4af37 !important;
+        border-radius: 12px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      /* A4 MULTI-CARD SHEET PRINT MODE */
       .a4-sheet-page {
         background: #ffffff !important;
         border: none !important;
@@ -616,18 +585,6 @@
         margin: 0 !important;
         page-break-after: always !important;
         break-after: page !important;
-        border-radius: 0 !important;
-      }
-
-      .sheet-header-badge {
-        display: none !important;
-      }
-
-      .table-flyer-card {
-        box-shadow: none !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-        border: 1px dashed #bbb !important;
       }
 
       .cards-grid-layout.layout-4 {
@@ -645,60 +602,66 @@
 <body class="theme-emerald">
 
   <!-- ========================================================
-       TOP INTERACTIVE TOOLBAR (INAPOTEA WAKATI WA KUPRINT)
+       TOP TOOLBAR
        ======================================================== -->
   <div class="no-print-toolbar">
     <div class="toolbar-header">
       <div class="toolbar-title">
-        <h1>🍾 Vipeperushi vya Meza (Kadi za Oda ya Vinywaji)</h1>
-        <p>Vipeperushi vyenye QR Code moja ya meza ya kuagiza vinywaji tayari kwa kupakua PDF au kuprint stationery.</p>
+        <h1>🍾 Kadi za Meza (Oda ya Vinywaji Mezani)</h1>
+        <p>Kadi ndogo safi za kuweka mezani zenye QR Code ya kuagiza vinywaji — kila meza inajitegemea (moja moja).</p>
       </div>
       <div class="toolbar-actions">
         <!-- Direct PDF Download Button -->
         <button type="button" class="btn-download-pdf" id="btn-download-pdf" onclick="downloadPdfFile()">
-          <span>📥 Pakua PDF (Stationery Ready)</span>
+          <span>📥 Pakua PDF (Moja Moja - A6 / Mini)</span>
         </button>
 
         <!-- Native Print / Save PDF Button -->
-        <button type="button" class="btn-print-now" onclick="triggerBrowserPrint()">
-          <span>🖨️ Chapisha / Hifadhi PDF</span>
+        <button type="button" class="btn-print-now" onclick="triggerBrowserPrintAll()">
+          <span>🖨️ Chapisha Zote (Moja Moja)</span>
         </button>
       </div>
     </div>
 
     <div class="toolbar-controls-grid">
+      <!-- Chagua Meza Maalumu au Zote -->
+      <div class="control-item">
+        <label>Chagua Meza:</label>
+        <select id="select-filter-table" onchange="renderCards()">
+          <option value="all" selected>Meza Zote (Meza 1 hadi 35)</option>
+        </select>
+      </div>
+
+      <!-- Mpangilio wa Kadi -->
+      <div class="control-item">
+        <label>Muundo wa Karatasi:</label>
+        <select id="select-layout-mode" onchange="renderCards()">
+          <option value="1" selected>✨ Kadi Moja Moja (Karatasi Ndogo / A6 - Hakuna Kukata)</option>
+          <option value="4">📄 Kadi 4 kwa Karatasi ya A4 (Zilizoungana na Mistari ya Kukata)</option>
+          <option value="6">📄 Kadi 6 kwa Karatasi ya A4 (Eco Pocket)</option>
+        </select>
+      </div>
+
       <!-- Idadi ya Meza -->
       <div class="control-item">
-        <label>Idadi ya Meza:</label>
-        <select id="select-tables-count" onchange="regenerateCards()">
-          <option value="35" selected>Meza 35 (Meza 1 hadi 35)</option>
-          <option value="40">Meza 40 (Meza 1 hadi 40)</option>
-          <option value="30">Meza 30 (Meza 1 hadi 30)</option>
-          <option value="25">Meza 25 (Meza 1 hadi 25)</option>
-          <option value="20">Meza 20 (Meza 1 hadi 20)</option>
-          <option value="10">Meza 10 (Meza 1 hadi 10)</option>
-          <option value="5">Meza 5 (Meza 1 hadi 5)</option>
+        <label>Jumla ya Meza:</label>
+        <select id="select-tables-count" onchange="initTableFilterOptions(); renderCards();">
+          <option value="35" selected>Meza 35 (Meza 1 - 35)</option>
+          <option value="40">Meza 40 (Meza 1 - 40)</option>
+          <option value="30">Meza 30 (Meza 1 - 30)</option>
+          <option value="25">Meza 25 (Meza 1 - 25)</option>
+          <option value="20">Meza 20 (Meza 1 - 20)</option>
+          <option value="10">Meza 10 (Meza 1 - 10)</option>
         </select>
       </div>
 
       <!-- Nakala kwa Kila Meza -->
       <div class="control-item">
         <label>Nakala kwa Kila Meza:</label>
-        <select id="select-copies-per-table" onchange="regenerateCards()">
-          <option value="1">Nakala 1 kwa kila meza</option>
+        <select id="select-copies-per-table" onchange="renderCards()">
+          <option value="1" selected>Nakala 1 kwa kila meza</option>
           <option value="2">Nakala 2 kwa kila meza</option>
-          <option value="3" selected>Nakala 3 kwa kila meza</option>
-          <option value="4">Nakala 4 kwa kila meza</option>
-          <option value="5">Nakala 5 kwa kila meza</option>
-        </select>
-      </div>
-
-      <!-- Muundo wa Karatasi ya A4 -->
-      <div class="control-item">
-        <label>Vipeperushi kwa Karatasi (A4):</label>
-        <select id="select-page-density" onchange="changeDensity()">
-          <option value="4" selected>Kadi 4 kwa Karatasi ya A4 (Standard Tent Card)</option>
-          <option value="6">Kadi 6 kwa Karatasi ya A4 (Eco Pocket - Inaokoa Zaidi)</option>
+          <option value="3">Nakala 3 kwa kila meza</option>
         </select>
       </div>
 
@@ -706,242 +669,142 @@
       <div class="control-item">
         <label>Mandhari ya Rangi:</label>
         <select id="select-theme" onchange="changeTheme()">
-          <option value="theme-emerald" selected>👑 Kijani cha Kifalme & Dhahabu (Emerald & Gold)</option>
-          <option value="theme-ivory">📜 Krimu & Dhahabu (Champagne Ivory - Inatunza Wino wa Stationary)</option>
+          <option value="theme-emerald" selected>👑 Kijani cha Kifalme (Emerald & Gold)</option>
+          <option value="theme-ivory">📜 Krimu & Dhahabu (Champagne Ivory - Inatunza Wino)</option>
         </select>
       </div>
 
-      <!-- Kurasa za Kupakua kwenye PDF -->
-      <div class="control-item">
-        <label>Chagua Kurasa za Kupakua PDF:</label>
-        <select id="select-pdf-range">
-          <option value="all" selected>Kurasa Zote (Meza Zote) [Kamili]</option>
-          <option value="sample-1">Karatasi 1 ya Kwanza Tu (Sample)</option>
-          <option value="first-5">Karatasi 1 hadi 5 (Meza za Mwanzo)</option>
-          <option value="first-10">Karatasi 1 hadi 10 (Nusu ya Kwanza)</option>
-        </select>
-      </div>
-
-      <!-- Hesabu ya Karatasi & Makisio ya Gharama -->
+      <!-- Hesabu ya Karatasi -->
       <div class="paper-summary-badge">
-        <span id="badge-total-flyers">📊 Jumla ya Vipeperushi: 105</span>
-        <span id="badge-total-pages">📄 Karatasi za A4 Zitakazotumika: 27 tu!</span>
-        <span>✂️ Mistari ya kukatia (dashed lines) ipo tayari</span>
+        <span id="badge-total-flyers">📊 Jumla ya Kadi: 35</span>
+        <span id="badge-mode-description">✨ Muundo: Kadi Moja Moja (Kila meza inajitegemea, stationery hawapati shida kukata!)</span>
       </div>
 
       <!-- Stationery Tips Box -->
       <div class="stationery-tips-banner">
-        💡 <strong>Muongozo wa Stationery:</strong><br>
-        1. Bonyeza <strong>"📥 Pakua PDF (Stationery Ready)"</strong> kuipakua kama faili halisi la PDF kwenye simu au flash drive.<br>
-        2. Kwenye kila karatasi hapa chini kuna kitufe cha <strong>"📥 Pakua Picha (PNG)"</strong> kama unataka kumtumia fundi wa stationery picha WhatsApp.<br>
-        3. Pia unaweza kubonyeza <strong>"🖨️ Chapisha / Hifadhi PDF"</strong> na kuchagua <em>"Save as PDF"</em> kwenye kompyuta yako.
+        💡 <strong>Mwongozo mwepesi kwa Stationery:</strong><br>
+        1. Kila meza ina kadi yake binafsi (hazijaungana tena).<br>
+        2. Kwenye kila kadi hapa chini kuna vitufe vya: <strong>"🖨️ Print Meza Hii Tu"</strong> na <strong>"📥 Pakua Picha (PNG)"</strong>.<br>
+        3. Pia unaweza kubonyeza kitufe cha juu cha <strong>"📥 Pakua PDF"</strong> kupata faili la PDF lenye kila meza kwenye ukurasa wake mmoja mmoja tayari kwa mashine ya stationery!
       </div>
     </div>
   </div>
 
   <!-- ========================================================
-       PRINT SHEET CONTAINER (A4 PAGES)
+       GALLERY CONTAINER
        ======================================================== -->
-  <div class="print-sheet-container" id="sheets-container">
-    <!-- Populated dynamically by javascript into A4 Sheets -->
+  <div class="cards-gallery-container" id="cards-container">
+    <!-- Populated dynamically by javascript -->
   </div>
 
-  <!-- PDF Generation Progress Modal -->
-  <div id="pdf-progress-overlay" class="pdf-progress-overlay" style="display: none;">
-    <div class="pdf-progress-card">
-      <div style="font-size: 3rem; margin-bottom: 8px;">📄</div>
-      <h3 style="color: var(--gold-light); font-family: 'Cinzel', serif; font-size: 1.25rem; margin-bottom: 6px;">
-        Inatengeneza File la PDF...
-      </h3>
-      <p id="pdf-progress-text" style="color: #cbd5e1; font-size: 0.88rem; line-height: 1.4;">
-        Tafadhali subiri, inatayarisha vipeperushi vya meza...
-      </p>
-
-      <div class="pdf-progress-bar-bg">
-        <div id="pdf-progress-bar" class="pdf-progress-bar-fill"></div>
-      </div>
-
-      <div style="font-size: 0.78rem; color: #94a3b8;">
-        Faili la PDF litaanza kupakuliwa mara moja likikamilika!
-      </div>
-    </div>
-  </div>
-
-  <!-- SCRIPT ENGINE -->
   <script>
-    // Live Base Domain (Fallback to lilian.nyisu.com when printing or localhost)
     const BASE_DOMAIN = window.location.hostname.includes('localhost') 
       ? window.location.origin 
       : 'https://lilian.nyisu.com';
 
     document.addEventListener('DOMContentLoaded', () => {
-      regenerateCards();
+      initTableFilterOptions();
+      renderCards();
     });
+
+    function initTableFilterOptions() {
+      const select = document.getElementById('select-filter-table');
+      const totalTables = parseInt(document.getElementById('select-tables-count').value, 10) || 35;
+      const currentVal = select.value;
+
+      select.innerHTML = '<option value="all">Meza Zote (Meza 1 hadi ' + totalTables + ')</option>';
+      for (let t = 1; t <= totalTables; t++) {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = `Meza ${t} Pekee`;
+        select.appendChild(opt);
+      }
+
+      if (currentVal && (currentVal === 'all' || parseInt(currentVal) <= totalTables)) {
+        select.value = currentVal;
+      } else {
+        select.value = 'all';
+      }
+    }
 
     function changeTheme() {
       const theme = document.getElementById('select-theme').value;
       document.body.className = theme;
     }
 
-    function changeDensity() {
-      regenerateCards();
-    }
-
-    function updatePaperSummary() {
-      const tablesCount = parseInt(document.getElementById('select-tables-count').value, 10) || 35;
-      const copies = parseInt(document.getElementById('select-copies-per-table').value, 10) || 3;
-      const density = parseInt(document.getElementById('select-page-density').value, 10) || 4;
-
-      const totalFlyers = tablesCount * copies;
-      const totalSheets = Math.ceil(totalFlyers / density);
-
-      document.getElementById('badge-total-flyers').textContent = `📊 Jumla ya Vipeperushi: ${totalFlyers}`;
-      document.getElementById('badge-total-pages').textContent = `📄 Karatasi za A4 Zitakazotumika: ${totalSheets} tu!`;
-    }
-
-    function triggerBrowserPrint() {
+    function triggerBrowserPrintAll() {
+      document.body.classList.remove('print-only-one');
+      document.querySelectorAll('.active-print-target').forEach(el => el.classList.remove('active-print-target'));
       window.print();
     }
 
-    async function regenerateCards() {
-      const tablesCount = parseInt(document.getElementById('select-tables-count').value, 10) || 35;
-      const copies = parseInt(document.getElementById('select-copies-per-table').value, 10) || 3;
-      const density = parseInt(document.getElementById('select-page-density').value, 10) || 4;
+    function printSingleCard(tableNum) {
+      document.body.classList.add('print-only-one');
+      document.querySelectorAll('.active-print-target').forEach(el => el.classList.remove('active-print-target'));
+      
+      const target = document.getElementById(`wrapper-table-${tableNum}`);
+      if (target) {
+        target.classList.add('active-print-target');
+      }
 
-      const container = document.getElementById('sheets-container');
-      container.innerHTML = '';
+      window.print();
 
-      updatePaperSummary();
+      window.addEventListener('afterprint', () => {
+        document.body.classList.remove('print-only-one');
+        if (target) target.classList.remove('active-print-target');
+      }, { once: true });
+    }
 
-      const totalFlyers = tablesCount * copies;
-      const totalSheets = Math.ceil(totalFlyers / density);
+    async function downloadSingleCardImage(tableNum) {
+      const cardEl = document.getElementById(`card-table-${tableNum}`);
+      if (!cardEl) return;
 
-      let cardIndex = 0;
-      let currentSheetIndex = 0;
-      let currentSheetEl = null;
-      let cardsInCurrentSheet = 0;
+      const isIvory = document.body.classList.contains('theme-ivory');
+      const bgColor = isIvory ? '#ffffff' : '#041c12';
 
-      for (let tableNum = 1; tableNum <= tablesCount; tableNum++) {
-        const tableId = `meza-${tableNum}`;
-        const orderUrl = `${BASE_DOMAIN}/order/${tableId}`;
+      try {
+        const canvas = await html2canvas(cardEl, {
+          scale: 3, // High DPI for crystal clear print
+          useCORS: true,
+          logging: false,
+          backgroundColor: bgColor
+        });
 
-        for (let copy = 1; copy <= copies; copy++) {
-          cardIndex++;
-
-          // Create new A4 Sheet when needed
-          if (cardsInCurrentSheet === 0) {
-            currentSheetIndex++;
-            currentSheetEl = document.createElement('div');
-            currentSheetEl.className = `a4-sheet-page`;
-            currentSheetEl.id = `sheet-${currentSheetIndex}`;
-
-            const sheetHeader = document.createElement('div');
-            sheetHeader.className = 'sheet-header-badge';
-            sheetHeader.innerHTML = `
-              <span>📄 Karatasi ya A4 #${currentSheetIndex} kati ya ${totalSheets}</span>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <button type="button" class="btn-sheet-png" onclick="downloadSheetImage(${currentSheetIndex})">
-                  📥 Pakua Karatasi Hii Tu (PNG)
-                </button>
-              </div>
-            `;
-
-            const cardsGrid = document.createElement('div');
-            cardsGrid.className = `cards-grid-layout layout-${density}`;
-            cardsGrid.id = `grid-sheet-${currentSheetIndex}`;
-
-            currentSheetEl.appendChild(sheetHeader);
-            currentSheetEl.appendChild(cardsGrid);
-            container.appendChild(currentSheetEl);
-          }
-
-          const targetGrid = currentSheetEl.querySelector(`.cards-grid-layout`);
-          const flyer = createFlyerElement(tableNum, tableId, orderUrl, cardIndex);
-          targetGrid.appendChild(flyer);
-
-          // Generate Drinks Order QR with pure black and optimal scanning density
-          const qrDrinksEl = flyer.querySelector(`.qr-drinks-${cardIndex}`);
-          const qrSize = density === 6 ? 95 : 125;
-          new QRCode(qrDrinksEl, {
-            text: orderUrl,
-            width: qrSize,
-            height: qrSize,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.M
-          });
-
-          cardsInCurrentSheet++;
-          if (cardsInCurrentSheet >= density) {
-            cardsInCurrentSheet = 0;
-          }
-        }
+        const link = document.createElement('a');
+        link.download = `Kadi_Meza_${tableNum}_Sendoff_Lilian.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        alert('Hitilafu wakati wa kupakua picha: ' + err.message);
       }
     }
 
-    function createFlyerElement(tableNum, tableId, orderUrl, index) {
-      const div = document.createElement('div');
-      div.className = 'table-flyer-card';
-
-      div.innerHTML = `
-        <div class="card-inner-box">
-          <div class="card-brand-tag">✨ SEND-OFF YA LILIAN MARCUS ✨</div>
-          
-          <div class="card-table-badge">
-            <h2>📍 MEZA ${tableNum}</h2>
-          </div>
-          
-          <div class="card-hall-tag">VIP TABLE SERVICE &bull; BRAGGING SOCIAL HALL, GOBA</div>
-
-          <!-- Single QR Code Section: Drinks Order -->
-          <div class="card-qr-single-container">
-            <div class="qr-column-box">
-              <div class="qr-col-header">
-                <span>🍾</span> ODA YA VINYWAJI MEZANI
-              </div>
-              <div class="qr-medallion-frame qr-drinks-${index}"></div>
-              <div class="qr-col-caption">
-                Scan hapa kwa kamera ya simu kuagiza vinywaji vyako
-              </div>
-              <div class="qr-url-hint">lilian.nyisu.com/order/${tableId}</div>
-            </div>
-          </div>
-
-          <div class="card-footer-strip">
-            <div class="card-footer-date">📅 Jumanne, 13 Oktoba 2026 &bull; Karibuni Tufurahi Pamoja!</div>
-            <div class="card-footer-promo">✨ Mfumo wa Kidijitali: <strong>0787 661 560</strong> (Nyisulya)</div>
-          </div>
-        </div>
-      `;
-
-      return div;
-    }
-
-    // Direct Multi-Page PDF Download for Stationery Printing (Server-Side Ultra-Fast & Crisp Vector PDF)
     function downloadPdfFile() {
       const tables = document.getElementById('select-tables-count')?.value || '35';
-      const copies = document.getElementById('select-copies-per-table')?.value || '3';
-      const density = document.getElementById('select-page-density')?.value || '4';
+      const copies = document.getElementById('select-copies-per-table')?.value || '1';
+      const density = document.getElementById('select-layout-mode')?.value || '1';
       const theme = document.getElementById('select-theme')?.value || 'theme-emerald';
-      const range = document.getElementById('select-pdf-range')?.value || 'all';
+      const filterTable = document.getElementById('select-filter-table')?.value || 'all';
 
-      const downloadUrl = `/api/table-cards/pdf?tables=${tables}&copies=${copies}&density=${density}&theme=${theme}&range=${range}`;
+      let downloadUrl = `/api/table-cards/pdf?tables=${tables}&copies=${copies}&density=${density}&theme=${theme}`;
+      if (filterTable !== 'all') {
+        downloadUrl += `&table=${filterTable}`;
+      }
 
       const btn = document.getElementById('btn-download-pdf');
       if (btn) {
         const origHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<span>⏳ Inapakua Faili la PDF... Tafadhali subiri kidogo</span>';
+        btn.innerHTML = '<span>⏳ Inatayarisha PDF ya Meza...</span>';
         setTimeout(() => {
           btn.disabled = false;
           btn.innerHTML = origHtml;
-        }, 6000);
+        }, 5000);
       }
 
-      // Create download trigger element
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.setAttribute('download', 'Vipeperushi_Meza_Sendoff_Lilian.pdf');
+      link.setAttribute('download', `Kadi_za_Meza_Sendoff_Lilian.pdf`);
       document.body.appendChild(link);
       link.click();
       setTimeout(() => {
@@ -949,35 +812,173 @@
       }, 1000);
     }
 
-    // Download Single Sheet as High-Resolution PNG (Great for WhatsApp sharing to Stationary)
-    async function downloadSheetImage(sheetIndex) {
-      const sheet = document.getElementById(`sheet-${sheetIndex}`);
-      if (!sheet) return;
+    function renderCards() {
+      const container = document.getElementById('cards-container');
+      container.innerHTML = '';
 
-      const badge = sheet.querySelector('.sheet-header-badge');
-      if (badge) badge.style.display = 'none';
+      const totalTables = parseInt(document.getElementById('select-tables-count').value, 10) || 35;
+      const copies = parseInt(document.getElementById('select-copies-per-table').value, 10) || 1;
+      const density = parseInt(document.getElementById('select-layout-mode').value, 10) || 1;
+      const filter = document.getElementById('select-filter-table').value;
 
-      const isIvory = document.body.classList.contains('theme-ivory');
-      const bgColor = isIvory ? '#ffffff' : '#041810';
+      let targetTables = [];
+      if (filter === 'all') {
+        for (let t = 1; t <= totalTables; t++) targetTables.push(t);
+      } else {
+        targetTables.push(parseInt(filter, 10));
+      }
 
-      try {
-        const canvas = await html2canvas(sheet, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: bgColor
+      const totalCards = targetTables.length * copies;
+      document.getElementById('badge-total-flyers').textContent = `📊 Jumla ya Kadi: ${totalCards}`;
+
+      if (density === 1) {
+        // ==========================================
+        // STANDALONE MODE: MOJA MOJA (DEFAULT)
+        // ==========================================
+        document.getElementById('badge-mode-description').textContent = 
+          '✨ Muundo: Kadi Moja Moja (Kila meza inajitegemea, stationery hawapati shida kukata!)';
+
+        const grid = document.createElement('div');
+        grid.className = 'standalone-grid';
+
+        targetTables.forEach(tableNum => {
+          for (let c = 1; c <= copies; c++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-card-wrapper';
+            wrapper.id = `wrapper-table-${tableNum}`;
+
+            const card = createSingleCardHTML(tableNum);
+            card.id = `card-table-${tableNum}`;
+            wrapper.appendChild(card);
+
+            // Action bar
+            const bar = document.createElement('div');
+            bar.className = 'card-action-bar';
+            bar.innerHTML = `
+              <button type="button" class="btn-card-action btn-card-print" onclick="printSingleCard(${tableNum})">
+                🖨️ Print Meza Hii
+              </button>
+              <button type="button" class="btn-card-action btn-card-png" onclick="downloadSingleCardImage(${tableNum})">
+                📥 Pakua Picha (PNG)
+              </button>
+            `;
+            wrapper.appendChild(bar);
+            grid.appendChild(wrapper);
+
+            // Generate QR Code
+            setTimeout(() => {
+              const qrContainer = card.querySelector(`.qr-slot-${tableNum}`);
+              if (qrContainer && !qrContainer.hasChildNodes()) {
+                const orderUrl = `${BASE_DOMAIN}/order/meza-${tableNum}`;
+                new QRCode(qrContainer, {
+                  text: orderUrl,
+                  width: 145,
+                  height: 145,
+                  colorDark: "#000000",
+                  colorLight: "#ffffff",
+                  correctLevel: QRCode.CorrectLevel.M
+                });
+              }
+            }, 10);
+          }
         });
 
-        if (badge) badge.style.display = '';
+        container.appendChild(grid);
+      } else {
+        // ==========================================
+        // A4 SHEET MODE (4 AU 6 PER PAGE)
+        // ==========================================
+        document.getElementById('badge-mode-description').textContent = 
+          `📄 Muundo: Karatasi za A4 (${density} kwa Karatasi)`;
 
-        const link = document.createElement('a');
-        link.download = `Karatasi_${sheetIndex}_Vipeperushi_Sendoff_Lilian.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      } catch (e) {
-        if (badge) badge.style.display = '';
-        alert('Hitilafu: ' + e.message);
+        let cardIndex = 0;
+        let currentSheet = null;
+        let cardsInSheet = 0;
+        let sheetIndex = 0;
+
+        targetTables.forEach(tableNum => {
+          for (let c = 1; c <= copies; c++) {
+            cardIndex++;
+
+            if (cardsInSheet === 0) {
+              sheetIndex++;
+              currentSheet = document.createElement('div');
+              currentSheet.className = 'a4-sheet-page';
+              currentSheet.innerHTML = `
+                <div style="color: var(--gold-light); font-size: 0.82rem; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between;">
+                  <span>📄 Karatasi #${sheetIndex} (A4 Sheet)</span>
+                </div>
+                <div class="cards-grid-layout layout-${density}"></div>
+              `;
+              container.appendChild(currentSheet);
+            }
+
+            const targetGrid = currentSheet.querySelector('.cards-grid-layout');
+            const cutCard = document.createElement('div');
+            cutCard.className = 'grid-cut-card';
+
+            const card = createSingleCardHTML(tableNum);
+            cutCard.appendChild(card);
+            targetGrid.appendChild(cutCard);
+
+            setTimeout(() => {
+              const qrContainer = card.querySelector(`.qr-slot-${tableNum}`);
+              if (qrContainer && !qrContainer.hasChildNodes()) {
+                const orderUrl = `${BASE_DOMAIN}/order/meza-${tableNum}`;
+                const size = density === 6 ? 100 : 125;
+                new QRCode(qrContainer, {
+                  text: orderUrl,
+                  width: size,
+                  height: size,
+                  colorDark: "#000000",
+                  colorLight: "#ffffff",
+                  correctLevel: QRCode.CorrectLevel.M
+                });
+              }
+            }, 10);
+
+            cardsInSheet++;
+            if (cardsInSheet >= density) {
+              cardsInSheet = 0;
+            }
+          }
+        });
       }
+    }
+
+    function createSingleCardHTML(tableNum) {
+      const card = document.createElement('div');
+      card.className = 'mini-table-card';
+
+      card.innerHTML = `
+        <div class="card-inner-frame">
+          <div class="card-top-tag">✨ SEND-OFF YA LILIAN MARCUS ✨</div>
+          
+          <div class="card-table-title">
+            <h2>📍 MEZA ${tableNum}</h2>
+          </div>
+          
+          <div class="card-sub-venue">VIP TABLE SERVICE &bull; BRAGGING SOCIAL HALL, GOBA</div>
+
+          <div class="card-qr-box">
+            <div class="qr-badge-title">
+              <span>🍾</span> ODA YA VINYWAJI MEZANI
+            </div>
+            <div class="qr-white-frame qr-slot-${tableNum}"></div>
+            <div class="qr-scan-instruction">
+              Scan hapa kwa kamera ya simu kuagiza vinywaji vyako
+            </div>
+            <div class="qr-direct-link">lilian.nyisu.com/order/meza-${tableNum}</div>
+          </div>
+
+          <div class="card-bottom-footer">
+            <div class="card-footer-event">📅 Jumanne, 13 Oktoba 2026 &bull; Karibuni Tufurahi Pamoja!</div>
+            <div class="card-footer-system">✨ Mfumo wa Kidijitali: <strong>0787 661 560</strong> (Nyisulya)</div>
+          </div>
+        </div>
+      `;
+
+      return card;
     }
   </script>
 </body>
