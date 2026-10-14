@@ -18,5 +18,3 @@ data/db.vps.backup.json
 .env.*
 __pycache__/
 *.pyc
-
-!public/images/cards/.gitkeep
