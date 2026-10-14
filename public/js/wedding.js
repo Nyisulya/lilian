@@ -453,6 +453,17 @@ function renderGalleryGrid() {
   grid.innerHTML = '';
 
   const total = filteredGalleryPhotos.length;
+  if (total === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 50px 20px; background: rgba(18, 53, 36, 0.4); border-radius: 16px; border: 1px solid rgba(212, 175, 55, 0.3);">
+        <div style="font-size: 2.5rem; margin-bottom: 12px;">👑✨</div>
+        <h3 style="color: var(--gold-light); font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 8px;">Sherehe ya Send-Off ya Kifalme Imehitimishwa</h3>
+        <p style="color: #e0f2ea; max-width: 600px; margin: 0 auto; line-height: 1.7; font-size: 0.95rem;">Tunatoa shukrani zetu za dhati kutoka mioyoni mwetu kwa upendo, sala, michango na uwepo wenu wote katika kufanikisha usiku huu wa kihistoria. Mungu awabariki sana!</p>
+      </div>
+    `;
+    if (toggleBox) toggleBox.style.display = 'none';
+    return;
+  }
   const showAll = isGalleryExpanded || total <= INITIAL_GALLERY_LIMIT;
   const displayPhotos = showAll ? filteredGalleryPhotos : filteredGalleryPhotos.slice(0, INITIAL_GALLERY_LIMIT);
 

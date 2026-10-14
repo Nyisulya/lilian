@@ -72,9 +72,29 @@ function renderRoyalCard(data) {
   const envGuest = document.getElementById('envelope-guest-name');
   if (envGuest) envGuest.textContent = guest.name;
 
-  // 2. Official High-Resolution Card Image (Matches pristine local card exactly)
+  // 2. Official High-Resolution Card Image
   const officialCardImg = document.getElementById('official-card-img');
   if (officialCardImg) {
+    officialCardImg.onerror = function() {
+      const container = officialCardImg.parentElement;
+      if (container) {
+        container.innerHTML = `
+          <div style="background: radial-gradient(circle at center, #0e3020 0%, #05140d 100%); border: 2px solid #d4af37; border-radius: 16px; padding: 40px 24px; text-align: center; color: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="font-size: 3rem; margin-bottom: 15px;">👑</div>
+            <h2 style="font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.5rem; margin-bottom: 10px;">Send-off ya ${escapeHtml(brideName)}</h2>
+            <div style="font-size: 1.2rem; color: #e0f2ea; margin-bottom: 20px; font-weight: 600;">${escapeHtml(guest.name)}</div>
+            <p style="color: #c0d8cc; line-height: 1.7; font-size: 0.95rem; margin-bottom: 20px;">
+              Sherehe ya Send-Off ilifanyika kwa mafanikio makubwa tarehe 13 Oktoba 2026 ukumbini Bragging Social Hall, Goba. Kadi zimefungwa rasmi.
+            </p>
+            <div style="display: inline-block; padding: 10px 20px; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; border-radius: 30px; color: #f4d068; font-weight: 500;">
+              ✨ Asante sana kwa upendo na baraka zako! ✨
+            </div>
+          </div>
+        `;
+      }
+      const downloadBtn = document.getElementById('btn-download-card');
+      if (downloadBtn) downloadBtn.style.display = 'none';
+    };
     officialCardImg.src = `/api/card/image/${encodeURIComponent(guest.id)}?v=20261013g`;
     officialCardImg.alt = `Kadi Rasmi ya Mwaliko: Send-off ya ${brideName} - ${guest.name}`;
   }
